@@ -1,0 +1,22 @@
+# Weekday 17:30 SAST (15:30 UTC) gym reminder via Web Push.
+# Secrets: VAPID_PRIVATE_KEY, SUBSCRIPTIONS (the "reminder codes" copied from the app, pasted one after another).
+# GitHub may start scheduled runs a few minutes late. "Run workflow" on the Actions tab sends one now (for testing).
+name: Gym reminder
+on:
+  schedule:
+    - cron: "30 15 * * 1-5"
+  workflow_dispatch:
+jobs:
+  remind:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm install --no-save web-push@3.6.7
+      - run: node .github/remind.js
+        env:
+          VAPID_PUBLIC_KEY: BFy7JLLBKWaCBMTywUHVJG9-RT3lpDEmREuwJApdDHle03juJW_hu4GxHPbB_KWOMR7m-yrjQqoZjqjtT-RF9qU
+          VAPID_PRIVATE_KEY: ${{ secrets.VAPID_PRIVATE_KEY }}
+          SUBSCRIPTIONS: ${{ secrets.SUBSCRIPTIONS }}

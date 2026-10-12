@@ -25,3 +25,13 @@ logSession(L, k, "tue", 2, 8); assert.deepStrictEqual(L[k], { d: "tue", n: 2, t:
 logSession(L, k, "mon", 0, 8); assert.deepStrictEqual(L[k], { d: "tue", n: 2, t: 8 }); // other day's untick ignored
 logSession(L, k, "tue", 0, 8); assert.strictEqual(L[k], undefined);
 console.log("ok");
+
+// Reminder codes pasted back-to-back (with or without commas/newlines) parse as a list
+const { parseSubs } = require("./.github/remind.js");
+const sub = n => JSON.stringify({ endpoint: "https://push/" + n, expirationTime: null, keys: { p256dh: "p", auth: "a" } });
+assert.strictEqual(parseSubs(sub(1) + "\n" + sub(2)).length, 2);
+assert.strictEqual(parseSubs(sub(1) + "," + sub(2)).length, 2);
+assert.strictEqual(parseSubs("[" + sub(1) + "]").length, 1);
+assert.strictEqual(parseSubs(sub(1)).length, 1);
+assert.deepStrictEqual(parseSubs(""), []);
+console.log("ok remind");

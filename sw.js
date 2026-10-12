@@ -1,5 +1,5 @@
 // Bump VERSION after editing any file so clients pick up the change (and the ?v= on track.js in index.html).
-const VERSION = "v11";
+const VERSION = "v12";
 const CORE = ["./", "index.html", "track.js", "manifest.webmanifest", "icon.svg", "icon-192.png", "icon-512.png"];
 
 self.addEventListener("install", e => {
@@ -19,4 +19,19 @@ self.addEventListener("fetch", e => {
       return r;
     }).catch(() => caches.match(e.request, {ignoreSearch: true}))
   );
+});
+
+// Gym reminder push (sent by .github/workflows/reminder.yml). Tapping it opens today's workout.
+self.addEventListener("push", e => {
+  const d = e.data ? e.data.json() : {};
+  e.waitUntil(self.registration.showNotification(d.title || "Gym time", {
+    body: d.body || "Today's Desk Reset session is ready.", icon: "icon-192.png", badge: "icon-192.png", tag: "gym-reminder"
+  }));
+});
+self.addEventListener("notificationclick", e => {
+  e.notification.close();
+  e.waitUntil(clients.matchAll({type: "window", includeUncontrolled: true}).then(ws => {
+    const w = ws.find(x => x.url.startsWith(self.registration.scope));
+    return w ? w.focus() : clients.openWindow("./#workout");
+  }));
 });

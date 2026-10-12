@@ -116,6 +116,9 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
 .share{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;background:var(--accent);color:var(--on-accent);font:700 17px var(--f-display);letter-spacing:.06em;text-transform:uppercase;min-height:48px;padding:0 18px;border-radius:12px;cursor:pointer;width:100%;box-shadow:0 6px 16px rgb(249 115 22 / .28)}
 .share:hover{filter:brightness(1.05)}
 .share:active{transform:scale(.98)}
+.btn2{display:inline-flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:44px;border:1px solid var(--line);background:var(--surface-2);color:var(--ink);font:600 15px var(--f-body);border-radius:12px;cursor:pointer}
+.btn2:hover{border-color:var(--accent)}
+.btn2:disabled{color:var(--muted);cursor:default;border-color:var(--line)}
 .share:disabled{background:var(--surface-2);color:var(--muted);box-shadow:none;cursor:default;transform:none}
 .dayhead .share{margin-top:10px}
 
@@ -239,6 +242,9 @@ td:first-child{font:700 15px var(--f-display);white-space:nowrap;color:var(--acc
           </div>
           <button type="button" class="share" id="install"></button>
           <p class="vnote" id="installhelp" hidden></p>
+          <div class="label" id="remindlabel">Reminders · weekdays 17:30</div>
+          <button type="button" class="btn2" id="remind" aria-describedby="remindlabel"></button>
+          <p class="vnote" id="remindhelp" hidden></p>
         </div>
       </div>
     </div>
@@ -268,7 +274,7 @@ td:first-child{font:700 15px var(--f-display);white-space:nowrap;color:var(--acc
 </div>
 <nav class="bottomnav" id="nav" aria-label="Sections"></nav>
 
-<script src="track.js?v=11"></script><!-- ?v= forces a fresh copy past old service workers / HTTP cache; match sw.js VERSION -->
+<script src="track.js?v=12"></script><!-- ?v= forces a fresh copy past old service workers / HTTP cache; match sw.js VERSION -->
 <script>
 const ICONS = {
   play:'<polygon points="6 3 20 12 6 21 6 3"/>',
@@ -289,6 +295,7 @@ const ICONS = {
   trend:'<path d="M22 7 13.5 15.5 8.5 10.5 2 17"/><path d="M16 7h6v6"/>',
   monitor:'<rect width="20" height="14" x="2" y="3" rx="2"/><path d="M8 21h8M12 17v4"/>',
   book:'<path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/>',
+  bell:'<path d="M10.27 21a2 2 0 0 0 3.46 0"/><path d="M3.26 15.33A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.67C19.41 13.96 18 12.5 18 8A6 6 0 0 0 6 8c0 4.5-1.41 5.96-2.74 7.33"/>',
   download:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5M12 15V3"/>'
 };
 const ic = n => `<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">${ICONS[n]}</svg>`;
@@ -830,6 +837,41 @@ installBtn.addEventListener("click", async () => {
   installHelp.hidden = false;
 });
 renderInstall();
+
+// Gym reminders: this phone subscribes to Web Push; .github/workflows/reminder.yml sends weekdays 17:30.
+// The phone's "reminder code" (its push subscription) must be added to the SUBSCRIPTIONS secret on GitHub.
+const VAPID_PUBLIC = "BFy7JLLBKWaCBMTywUHVJG9-RT3lpDEmREuwJApdDHle03juJW_hu4GxHPbB_KWOMR7m-yrjQqoZjqjtT-RF9qU";
+const remindBtn = document.getElementById("remind"), remindHelp = document.getElementById("remindhelp");
+const remindMsg = t => { remindHelp.textContent = t; remindHelp.hidden = false; };
+const b64url = s => Uint8Array.from(atob(s.replace(/-/g,"+").replace(/_/g,"/") + "===".slice((s.length + 3) % 4)), c => c.charCodeAt(0));
+const pushOK = () => "serviceWorker" in navigator && "PushManager" in window && "Notification" in window;
+async function renderRemind(){
+  if(!pushOK()){
+    remindBtn.disabled = true; remindBtn.innerHTML = ic("bell") + "Reminders unavailable";
+    remindMsg(isIOS && !isStandalone() ? "On iPhone, add the app to your Home Screen first, then turn reminders on from the installed app." : "This browser doesn't support notifications.");
+    return;
+  }
+  const sub = await (await navigator.serviceWorker.ready).pushManager.getSubscription();
+  remindBtn.innerHTML = ic("bell") + (sub ? "Share my reminder code" : "Turn on gym reminders");
+}
+remindBtn.addEventListener("click", async () => {
+  try{
+    if(Notification.permission === "default") await Notification.requestPermission(); // ask first, while the tap still counts as a user gesture (iOS)
+    if(Notification.permission !== "granted") return remindMsg("Notifications are blocked for this app. Allow them in your phone's Settings, then try again.");
+    const reg = await navigator.serviceWorker.ready;
+    const sub = await reg.pushManager.getSubscription();
+    if(!sub){ // first tap subscribes; sharing needs a fresh tap (the permission prompt used this one up on iOS)
+      await reg.pushManager.subscribe({userVisibleOnly: true, applicationServerKey: b64url(VAPID_PUBLIC)});
+      await renderRemind();
+      return remindMsg("Reminders are on for this phone. Now tap “Share my reminder code” and send it to whoever set up the app.");
+    }
+    const code = JSON.stringify(sub);
+    try{ if(navigator.share){ await navigator.share({text: code}); return remindMsg("Reminder code shared. Once it's added to the reminder list you'll get a nudge every weekday at 17:30."); } }catch(e){ if(e.name === "AbortError") return; }
+    await navigator.clipboard.writeText(code);
+    remindMsg("Reminder code copied. Send it to whoever set up the app so it can be added to the reminder list.");
+  }catch(e){ remindMsg("Couldn't turn on reminders: " + e.message); }
+});
+renderRemind();
 
 if("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");
 </script>
