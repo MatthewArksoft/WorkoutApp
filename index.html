@@ -1,4 +1,4 @@
-<!doctype html><html><head><meta charset=utf-8><title>Desk Reset Program</title><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0F172A"><link rel="icon" href="icon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Desk Reset"><script>try{const t=JSON.parse(localStorage.getItem("dr-theme"));if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html><head><meta charset=utf-8><title>Desk Reset Program</title><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#F4F5F7"><link rel="icon" href="icon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Desk Reset"><script>try{const t=JSON.parse(localStorage.getItem("dr-theme"));if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600;700&display=swap">
@@ -10,7 +10,9 @@
   --done:#16A34A; --done-ink:#166534; --done-soft:#DCFCE7;
   --warn-ink:#B45309; --warn-soft:#FEF3C7;
   --cardio:#E11D48; --cardio-ink:#BE123C; --cardio-soft:#FFE4E6;
-  --hero:#0F172A; --hero-line:transparent;
+  --hero-bg:var(--surface); --hero-line:var(--line); --hero-ink:var(--ink); --hero-muted:var(--muted); --hero-eyebrow:var(--accent-ink);
+  --glow-a:rgb(249 115 22 / .16); --glow-b:rgb(225 29 72 / .07); --hero-chip:var(--surface-2); --hero-chip-line:var(--line); --hero-chip-ink:#334155;
+  --hero-btn:var(--surface-2); --hero-btn-line:var(--line); --hero-btn-hover:var(--line);
   --shadow:0 1px 2px rgb(15 23 42 / .04),0 6px 20px rgb(15 23 42 / .06);
   --f-display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
   --f-body:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
@@ -22,14 +24,18 @@
   --done:#22C55E; --done-ink:#4ADE80; --done-soft:#0E2A1A;
   --warn-ink:#FBBF24; --warn-soft:#2A2010;
   --cardio:#FB7185; --cardio-ink:#FDA4AF; --cardio-soft:#2E1220;
-  --hero:#0F172A; --hero-line:#22304A; --shadow:none; color-scheme:dark}}
+  --hero-bg:#0F172A; --hero-line:#22304A; --hero-ink:#F8FAFC; --hero-muted:#CBD5E1; --hero-eyebrow:#FDBA74;
+  --glow-a:rgb(249 115 22 / .38); --glow-b:rgb(225 29 72 / .18); --hero-chip:rgb(255 255 255 / .08); --hero-chip-line:rgb(255 255 255 / .14); --hero-chip-ink:#E2E8F0;
+  --hero-btn:rgb(255 255 255 / .08); --hero-btn-line:rgb(255 255 255 / .16); --hero-btn-hover:rgb(255 255 255 / .16); --shadow:none; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#0B1120; --surface:#131B2E; --surface-2:#0F172A; --ink:#F1F5F9; --muted:#9AA8BC; --line:#22304A;
   --accent:#FB923C; --accent-ink:#FDBA74; --accent-soft:#2A1A0E;
   --done:#22C55E; --done-ink:#4ADE80; --done-soft:#0E2A1A;
   --warn-ink:#FBBF24; --warn-soft:#2A2010;
   --cardio:#FB7185; --cardio-ink:#FDA4AF; --cardio-soft:#2E1220;
-  --hero:#0F172A; --hero-line:#22304A; --shadow:none; color-scheme:dark}
+  --hero-bg:#0F172A; --hero-line:#22304A; --hero-ink:#F8FAFC; --hero-muted:#CBD5E1; --hero-eyebrow:#FDBA74;
+  --glow-a:rgb(249 115 22 / .38); --glow-b:rgb(225 29 72 / .18); --hero-chip:rgb(255 255 255 / .08); --hero-chip-line:rgb(255 255 255 / .14); --hero-chip-ink:#E2E8F0;
+  --hero-btn:rgb(255 255 255 / .08); --hero-btn-line:rgb(255 255 255 / .16); --hero-btn-hover:rgb(255 255 255 / .16); --shadow:none; color-scheme:dark}
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.55;padding-inline:16px;padding-block:0 48px;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
 .wrap{max-width:720px;margin:0 auto}
@@ -38,20 +44,20 @@ button,a,summary,label{transition:background-color .15s var(--ease),border-color
 button:focus-visible,a:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
 /* Hero */
-header.top{margin-top:12px;padding:20px;border-radius:20px;color:#F8FAFC;border:1px solid var(--hero-line);
-  background:radial-gradient(120% 120% at 100% 0%,rgb(249 115 22 / .38),transparent 55%),radial-gradient(80% 80% at 0% 100%,rgb(225 29 72 / .18),transparent 60%),var(--hero)}
+header.top{margin-top:12px;padding:20px;border-radius:20px;color:var(--hero-ink);border:1px solid var(--hero-line);box-shadow:var(--shadow);
+  background:radial-gradient(120% 120% at 100% 0%,var(--glow-a),transparent 55%),radial-gradient(80% 80% at 0% 100%,var(--glow-b),transparent 60%),var(--hero-bg)}
 .tophead{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
-.eyebrow{font:700 13px var(--f-display);letter-spacing:.14em;text-transform:uppercase;color:#FDBA74;margin:0 0 4px}
+.eyebrow{font:700 13px var(--f-display);letter-spacing:.14em;text-transform:uppercase;color:var(--hero-eyebrow);margin:0 0 4px}
 h1{font-family:var(--f-display);font-weight:700;font-size:clamp(34px,8vw,48px);line-height:.95;margin:0;letter-spacing:.005em;text-transform:uppercase;text-wrap:balance}
-.lede{color:#CBD5E1;margin:12px 0 0;max-width:60ch;font-size:15px}
+.lede{color:var(--hero-muted);margin:12px 0 0;max-width:60ch;font-size:15px}
 .meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:16px}
-.meta .chip{color:#E2E8F0;background:rgb(255 255 255 / .08);border-color:rgb(255 255 255 / .14)}
+.meta .chip{color:var(--hero-chip-ink);background:var(--hero-chip);border-color:var(--hero-chip-line)}
 .chip{display:inline-flex;align-items:center;font:600 13px var(--f-body);padding:4px 10px;border:1px solid var(--line);border-radius:999px;color:var(--muted);background:var(--surface-2)}
 
 /* Menu */
 .menu{position:relative;flex:0 0 auto}
-.menubtn{width:44px;height:44px;display:grid;place-items:center;border:1px solid rgb(255 255 255 / .16);background:rgb(255 255 255 / .08);color:#F8FAFC;border-radius:12px;cursor:pointer;padding:0}
-.menubtn:hover,.menubtn[aria-expanded="true"]{background:rgb(255 255 255 / .16)}
+.menubtn{width:44px;height:44px;display:grid;place-items:center;border:1px solid var(--hero-btn-line);background:var(--hero-btn);color:var(--hero-ink);border-radius:12px;cursor:pointer;padding:0}
+.menubtn:hover,.menubtn[aria-expanded="true"]{background:var(--hero-btn-hover)}
 .menupanel{position:absolute;right:0;top:52px;z-index:10;outline:1px solid rgb(255 255 255 / .04);width:min(288px,calc(100vw - 32px));background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:var(--r);padding:16px;display:grid;gap:12px;box-shadow:0 16px 40px rgb(2 6 23 / .28)}
 
 /* Sticky controls */
@@ -66,10 +72,15 @@ h1{font-family:var(--f-display);font-weight:700;font-size:clamp(34px,8vw,48px);l
 .tabs{display:grid;gap:8px;margin-inline:-16px;max-width:none!important;width:auto!important}
 .tabrow{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;scroll-snap-type:x proximity;padding-inline:16px}
 .tabrow::-webkit-scrollbar{display:none}
-.tabrow.sections{gap:2px;margin-inline:16px;padding:3px;overflow:visible;background:var(--surface-2);border:1px solid var(--line);border-radius:12px}
-.tabrow.sections button{flex:1;justify-content:center;border:0;background:transparent;color:var(--muted);border-radius:9px;padding:0 6px;font-size:14px}
-.tabrow.sections button:hover{color:var(--ink)}
-.tabrow.sections button[aria-selected="true"]{background:var(--surface);color:var(--ink);border:0;box-shadow:0 1px 3px rgb(15 23 42 / .12),0 0 0 1px var(--line)}
+/* Bottom navigation (top-level sections) */
+body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
+.bottomnav{position:fixed;left:0;right:0;bottom:0;z-index:20;display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding:6px max(8px,calc((100vw - 560px) / 2)) calc(6px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);background:var(--surface);background:color-mix(in srgb,var(--surface) 92%,transparent);-webkit-backdrop-filter:saturate(1.6) blur(14px);backdrop-filter:saturate(1.6) blur(14px)}
+.bottomnav button{display:grid;justify-items:center;align-content:center;gap:4px;min-height:56px;border:0;background:none;color:var(--muted);font:600 12px var(--f-body);letter-spacing:.01em;border-radius:12px;cursor:pointer;padding:4px 2px}
+.bottomnav .ind{display:grid;place-items:center;width:56px;height:30px;border-radius:999px;transition:background-color .2s var(--ease)}
+.bottomnav .ic{width:22px;height:22px}
+.bottomnav button:hover{color:var(--ink)}
+.bottomnav button[aria-current="page"]{color:var(--ink)}
+.bottomnav button[aria-current="page"] .ind{background:var(--accent-soft);color:var(--accent-ink)}
 .tabrow.days{display:grid;grid-template-columns:repeat(5,1fr);overflow:visible}
 .tabrow.days button{justify-content:center;padding:0;position:relative}
 /* days row: TODAY collapses to a dot (text kept for screen readers) */
@@ -248,8 +259,9 @@ td:first-child{font:700 15px var(--f-display);white-space:nowrap;color:var(--acc
   <main id="view" role="tabpanel"></main>
   <p class="note">Not medical advice. With pain in your neck/shoulders, lower back and knees/hips together, a one-off physio assessment is worth it to confirm nothing here needs changing for you.</p>
 </div>
+<nav class="bottomnav" id="nav" aria-label="Sections"></nav>
 
-<script src="track.js?v=8"></script><!-- ?v= forces a fresh copy past old service workers / HTTP cache; match sw.js VERSION -->
+<script src="track.js?v=9"></script><!-- ?v= forces a fresh copy past old service workers / HTTP cache; match sw.js VERSION -->
 <script>
 const ICONS = {
   play:'<polygon points="6 3 20 12 6 21 6 3"/>',
@@ -264,6 +276,10 @@ const ICONS = {
   flame:'<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>',
   cal:'<rect width="18" height="18" x="3" y="4" rx="2"/><path d="M8 2v4M16 2v4M3 10h18M9 16l2 2 4-4"/>',
   trophy:'<path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>',
+  dumbbell:'<path d="M14.4 14.4 9.6 9.6"/><path d="M18.66 21.49a2 2 0 1 1-2.83-2.83l-1.77 1.77a2 2 0 1 1-2.83-2.83l6.36-6.36a2 2 0 1 1 2.83 2.83l-1.77 1.77a2 2 0 1 1 2.83 2.83z"/><path d="m21.5 21.5-1.4-1.4M3.9 3.9 2.5 2.5"/><path d="M6.4 12.77a2 2 0 1 1-2.83-2.83l1.77-1.77a2 2 0 1 1-2.83-2.83l2.83-2.83a2 2 0 1 1 2.83 2.83l1.77-1.77a2 2 0 1 1 2.83 2.83z"/>',
+  trend:'<path d="M22 7 13.5 15.5 8.5 10.5 2 17"/><path d="M16 7h6v6"/>',
+  monitor:'<rect width="20" height="14" x="2" y="3" rx="2"/><path d="M8 21h8M12 17v4"/>',
+  book:'<path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/>',
   download:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5M12 15V3"/>'
 };
 const ic = n => `<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">${ICONS[n]}</svg>`;
@@ -560,6 +576,8 @@ const todayId = ["","mon","tue","wed","thu","fri",""][dowIdx];
 const todayKey = dkey(new Date());
 let day = S.get("dr-seen")===todayKey ? S.get("dr-day", todayId || "mon") : (todayId || S.get("dr-day","mon"));
 S.set("dr-seen", todayKey);
+{ const h = location.hash.slice(1); if(["stats","desk","rules"].includes(h)) day = h; else if(h==="workout" && !["mon","tue","wed","thu","fri"].includes(day)) day = todayId || "mon"; }
+let lastDay = ["mon","tue","wed","thu","fri"].includes(day) ? day : (todayId || "mon");
 // Installed PWAs resume from background without reloading: refresh TODAY, weekly reset and default tab.
 document.addEventListener("visibilitychange", () => { if(!document.hidden && dkey(new Date())!==todayKey) location.reload(); });
 let warmOpen = {}; // per-day warm-up open state the user chose, survives re-renders
@@ -578,8 +596,22 @@ function renderEq(){
 }
 function renderTabs(){
   const btn = ([id,t]) => `<button role="tab" type="button" data-day="${id}" aria-controls="view" aria-selected="${id===day}">${t}${id===todayId?'<span class="today">TODAY</span>':''}</button>`;
-  tabsEl.innerHTML = `<div class="tabrow sections">${[["stats","Progress"],["desk","Desk breaks"],["rules","Rules"]].map(btn).join("")}</div>`
-    + `<div class="tabrow days">${DAYS.map(d=>btn([d.id, d.tab])).join("")}</div>`;
+  tabsEl.innerHTML = `<div class="tabrow days">${DAYS.map(d=>btn([d.id, d.tab])).join("")}</div>`;
+}
+const SECTIONS = [["workout","Workout","dumbbell"],["stats","Progress","trend"],["desk","Desk breaks","monitor"],["rules","Rules","book"]];
+const navEl = document.getElementById("nav"), bar = document.querySelector(".bar");
+const section = () => DAYS.some(x=>x.id===day) ? "workout" : day;
+function renderNav(){
+  navEl.innerHTML = SECTIONS.map(([id,t,i])=>`<button type="button" data-nav="${id}"${section()===id?' aria-current="page"':''}><span class="ind">${ic(i)}</span>${t}</button>`).join("");
+}
+// Switch top-level section; pushes a history entry so the phone's back button returns to the previous section.
+function go(sec, push = true){
+  if(sec === "workout"){ if(!DAYS.some(x=>x.id===day)) day = lastDay; } else day = sec;
+  S.set("dr-day", day);
+  if(push && location.hash !== "#"+sec) history.pushState(null, "", "#"+sec);
+  render();
+  const top = view.getBoundingClientRect().top + scrollY - (bar.hidden ? 0 : bar.offsetHeight) - 8;
+  if(scrollY > top) scrollTo({top});
 }
 function progressFor(d){
   const keys = d.ex.map((_,i)=>d.id+":"+i).concat([d.id+":warm"], CARDIO[d.id]?[d.id+":cardio"]:[]);
@@ -711,12 +743,11 @@ async function share(){
 function render(){
   // innerHTML swaps drop keyboard focus; put it back on the same control
   const a = document.activeElement, ds = a ? a.dataset || {} : {};
-  const sel = a && a.id ? "#"+CSS.escape(a.id) : ds.day ? `[data-day="${ds.day}"]` : ds.reset ? `[data-reset="${ds.reset}"]` : null;
+  const sel = a && a.id ? "#"+CSS.escape(a.id) : ds.day ? `[data-day="${ds.day}"]` : ds.reset ? `[data-reset="${ds.reset}"]` : ds.nav ? `[data-nav="${ds.nav}"]` : null;
   renderEq(); renderTabs();
   const d = DAYS.find(x=>x.id===day);
   view.innerHTML = d ? renderDay(d) : day==="desk" ? renderDesk() : day==="stats" ? renderStats() : renderRules();
-  const b = tabsEl.querySelector('[aria-selected="true"]'), row = b.parentElement, tr = row.getBoundingClientRect(), br = b.getBoundingClientRect();
-  if(br.left < tr.left || br.right > tr.right) row.scrollLeft += br.left - tr.left - 16;
+  bar.hidden = !d; renderNav();
   if(sel){ const el = document.querySelector(sel); if(el) el.focus({preventScroll:true}); }
 }
 
@@ -726,10 +757,12 @@ document.getElementById("eq").addEventListener("click",e=>{
 });
 tabsEl.addEventListener("click",e=>{
   const b=e.target.closest("button[data-day]"); if(!b) return;
-  day=b.dataset.day; S.set("dr-day",day); render();
-  const top = view.getBoundingClientRect().top + scrollY - document.querySelector(".bar").offsetHeight - 8;
+  day = lastDay = b.dataset.day; S.set("dr-day",day); render();
+  const top = view.getBoundingClientRect().top + scrollY - bar.offsetHeight - 8;
   if(scrollY > top) scrollTo({top}); // jump to the new content, not back up to the hero
 });
+navEl.addEventListener("click", e => { const b = e.target.closest("button[data-nav]"); if(b) go(b.dataset.nav); });
+addEventListener("popstate", () => { const h = location.hash.slice(1); go(["stats","desk","rules"].includes(h) ? h : "workout", false); });
 view.addEventListener("change",e=>{
   const k=e.target.dataset && e.target.dataset.key; if(!k) return;
   if(e.target.checked) checks[k]=true; else delete checks[k];
@@ -757,7 +790,9 @@ let theme = S.get("dr-theme","auto");
 function renderTheme(){
   if(theme==="auto") delete document.documentElement.dataset.theme; else document.documentElement.dataset.theme = theme;
   document.querySelectorAll("#theme button").forEach(b=>b.setAttribute("aria-pressed", b.dataset.theme===theme));
+  document.querySelector('meta[name="theme-color"]').content = getComputedStyle(document.documentElement).getPropertyValue("--bg").trim();
 }
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => renderTheme());
 document.getElementById("theme").addEventListener("click", e => {
   const b = e.target.closest("button[data-theme]"); if(!b) return;
   theme = b.dataset.theme; S.set("dr-theme", theme); renderTheme();
