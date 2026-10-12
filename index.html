@@ -66,6 +66,10 @@ h1{font-family:var(--f-display);font-weight:700;font-size:clamp(34px,8vw,48px);l
 .tabs{display:grid;gap:8px;margin-inline:-16px;max-width:none!important;width:auto!important}
 .tabrow{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;scroll-snap-type:x proximity;padding-inline:16px}
 .tabrow::-webkit-scrollbar{display:none}
+.tabrow.sections{gap:2px;margin-inline:16px;padding:3px;overflow:visible;background:var(--surface-2);border:1px solid var(--line);border-radius:12px}
+.tabrow.sections button{flex:1;justify-content:center;border:0;background:transparent;color:var(--muted);border-radius:9px;padding:0 6px;font-size:14px}
+.tabrow.sections button:hover{color:var(--ink)}
+.tabrow.sections button[aria-selected="true"]{background:var(--surface);color:var(--ink);border:0;box-shadow:0 1px 3px rgb(15 23 42 / .12),0 0 0 1px var(--line)}
 .tabrow.days{display:grid;grid-template-columns:repeat(5,1fr);overflow:visible}
 .tabrow.days button{justify-content:center;padding:0;position:relative}
 /* days row: TODAY collapses to a dot (text kept for screen readers) */
@@ -196,7 +200,7 @@ td:first-child{font:700 15px var(--f-display);white-space:nowrap;color:var(--acc
 .recent .ok{color:var(--done-ink)}
 
 @media (max-width:480px){.ch{grid-template-columns:auto 1fr}.ch .chk{grid-column:1/-1;justify-self:start}.scale{grid-template-columns:1fr}.wlist li{grid-template-columns:64px 1fr auto}.stat b{font-size:34px}}
-@media (min-width:768px){body{padding-inline:24px}.bar{margin-inline:-24px;padding-inline:24px}.tabs{margin-inline:auto;max-width:720px!important;width:100%!important}.tabrow{padding-inline:0}header.top{padding:28px;margin-top:20px}}
+@media (min-width:768px){body{padding-inline:24px}.bar{margin-inline:-24px;padding-inline:24px}.tabs{margin-inline:auto;max-width:720px!important;width:100%!important}.tabrow{padding-inline:0}.tabrow.sections{margin-inline:0}header.top{padding:28px;margin-top:20px}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}}
 </style>
 
@@ -245,7 +249,7 @@ td:first-child{font:700 15px var(--f-display);white-space:nowrap;color:var(--acc
   <p class="note">Not medical advice. With pain in your neck/shoulders, lower back and knees/hips together, a one-off physio assessment is worth it to confirm nothing here needs changing for you.</p>
 </div>
 
-<script src="track.js?v=7"></script><!-- ?v= forces a fresh copy past old service workers / HTTP cache; match sw.js VERSION -->
+<script src="track.js?v=8"></script><!-- ?v= forces a fresh copy past old service workers / HTTP cache; match sw.js VERSION -->
 <script>
 const ICONS = {
   play:'<polygon points="6 3 20 12 6 21 6 3"/>',
@@ -574,7 +578,7 @@ function renderEq(){
 }
 function renderTabs(){
   const btn = ([id,t]) => `<button role="tab" type="button" data-day="${id}" aria-controls="view" aria-selected="${id===day}">${t}${id===todayId?'<span class="today">TODAY</span>':''}</button>`;
-  tabsEl.innerHTML = `<div class="tabrow">${[["stats","Progress"],["desk","Desk breaks"],["rules","Rules"]].map(btn).join("")}</div>`
+  tabsEl.innerHTML = `<div class="tabrow sections">${[["stats","Progress"],["desk","Desk breaks"],["rules","Rules"]].map(btn).join("")}</div>`
     + `<div class="tabrow days">${DAYS.map(d=>btn([d.id, d.tab])).join("")}</div>`;
 }
 function progressFor(d){
