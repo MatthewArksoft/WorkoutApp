@@ -63,8 +63,13 @@ h1{font-family:var(--f-display);font-weight:700;font-size:clamp(34px,8vw,48px);l
 .seg button{flex:1;min-width:0;min-height:40px;border:0;background:transparent;color:var(--muted);font:600 14px var(--f-body);padding:6px;border-radius:9px;cursor:pointer;line-height:1.2}
 .seg button:hover{color:var(--ink)}
 .seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgb(15 23 42 / .12),0 0 0 1px var(--line)}
-.tabs{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;scroll-snap-type:x proximity;margin-inline:-16px;padding-inline:16px;max-width:none!important;width:auto!important}
-.tabs::-webkit-scrollbar{display:none}
+.tabs{display:grid;gap:8px;margin-inline:-16px;max-width:none!important;width:auto!important}
+.tabrow{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;scroll-snap-type:x proximity;padding-inline:16px}
+.tabrow::-webkit-scrollbar{display:none}
+.tabrow.days{display:grid;grid-template-columns:repeat(5,1fr);overflow:visible}
+.tabrow.days button{justify-content:center;padding:0;position:relative}
+/* days row: TODAY collapses to a dot (text kept for screen readers) */
+.tabrow.days .today{position:absolute;top:6px;right:7px;font-size:0;gap:0}
 .tabs button{flex:0 0 auto;scroll-snap-align:start;min-height:40px;display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:600 15px var(--f-body);padding:0 14px;border-radius:999px;cursor:pointer}
 .tabs button:hover{border-color:var(--muted)}
 .tabs button[aria-selected="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
@@ -191,7 +196,7 @@ td:first-child{font:700 15px var(--f-display);white-space:nowrap;color:var(--acc
 .recent .ok{color:var(--done-ink)}
 
 @media (max-width:480px){.ch{grid-template-columns:auto 1fr}.ch .chk{grid-column:1/-1;justify-self:start}.scale{grid-template-columns:1fr}.wlist li{grid-template-columns:64px 1fr auto}.stat b{font-size:34px}}
-@media (min-width:768px){body{padding-inline:24px}.bar{margin-inline:-24px;padding-inline:24px}.tabs{margin-inline:auto;padding-inline:0;max-width:720px!important;width:100%!important}header.top{padding:28px;margin-top:20px}}
+@media (min-width:768px){body{padding-inline:24px}.bar{margin-inline:-24px;padding-inline:24px}.tabs{margin-inline:auto;max-width:720px!important;width:100%!important}.tabrow{padding-inline:0}header.top{padding:28px;margin-top:20px}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;animation:none!important}}
 </style>
 
@@ -230,7 +235,7 @@ td:first-child{font:700 15px var(--f-display);white-space:nowrap;color:var(--acc
       <div class="seg" role="group" aria-labelledby="eqlabel" id="eq">
         <button type="button" data-eq="machine">Machines</button>
         <button type="button" data-eq="free">Free weights</button>
-        <button type="button" data-eq="body">Bodyweight / bands</button>
+        <button type="button" data-eq="body">Home/Body Weight</button>
       </div>
     </div>
     <div class="tabs" role="tablist" id="tabs"></div>
@@ -240,7 +245,7 @@ td:first-child{font:700 15px var(--f-display);white-space:nowrap;color:var(--acc
   <p class="note">Not medical advice. With pain in your neck/shoulders, lower back and knees/hips together, a one-off physio assessment is worth it to confirm nothing here needs changing for you.</p>
 </div>
 
-<script src="track.js?v=6"></script><!-- ?v= forces a fresh copy past old service workers / HTTP cache; match sw.js VERSION -->
+<script src="track.js?v=7"></script><!-- ?v= forces a fresh copy past old service workers / HTTP cache; match sw.js VERSION -->
 <script>
 const ICONS = {
   play:'<polygon points="6 3 20 12 6 21 6 3"/>',
@@ -271,7 +276,7 @@ const WARMUP = [
   {n:"Half-kneeling hip flexor stretch", d:"30 s / side", c:"Tuck pelvis under and squeeze the back glute. Small lean forward is enough."}
 ];
 
-/* opts: machine / free / body -> [name, note] */
+/* opts: machine / free / body -> [name, note, cues?]. body = home: floor, wall, door, chair, stairs, towel, backpack, small loop bands (no anchor, no pull-up bar). */
 const DAYS = [
  {id:"mon", tab:"Mon", title:"Upper back & shoulders", time:"~70 min",
   why:"Rounded shoulders and forward head come from a weak upper back and tight chest. Today is all pulling, plus small muscles that hold the shoulder blades in place.",
@@ -279,27 +284,27 @@ const DAYS = [
    {slot:"Horizontal row", dose:"4 × 10–12", rest:"90 s",
     o:{machine:["Seated cable row (neutral grip)","Use the V-handle. Sit tall, don't rock."],
        free:["Chest-supported dumbbell row","Lie face-down on a 30–45° incline bench. Takes all load off your lower back."],
-       body:["Inverted row","Under a Smith bar or TRX. Raise the bar or bend knees to make it easier."]},
+       body:["Door towel row","Loop a towel round both handles of a sturdy, closed door. Stand on the side it opens away from you, lean back with straight arms, then row your chest to the door. Feet closer = easier."]},
     cues:["Chest up, neck long (slight chin tuck)","Drive elbows toward your back pockets","Pause 1 s with shoulder blades squeezed"],
     avoid:"Shrugging toward your ears or yanking with the lower back.",
     pain:"Neck tightens up? Lighten the load and keep the chin tucked for the whole set."},
    {slot:"Vertical pull", dose:"3 × 10", rest:"90 s",
     o:{machine:["Lat pulldown (neutral or wide grip, to chest)","Lean back ~10°. Pull to upper chest, never behind the neck."],
        free:["Dumbbell pullover (on bench)","Light weight, slight elbow bend. Stop when you feel a lat stretch, not shoulder pinch."],
-       body:["Band-assisted pull-up or slow negatives","Jump up, lower for 3–4 s. Or kneeling band pulldown."]},
+       body:["Prone towel pulldown","Face-down on the floor, arms overhead holding a towel pulled tight. Lift your chest slightly and pull elbows down to your ribs; pause 2 s."]},
     cues:["Start by pulling shoulders down, then bend elbows","Elbows travel down and in toward ribs","Control the way up for 2–3 s"],
     avoid:"Pulling behind the neck. Leaning far back to turn it into a row.",
     pain:"Shoulder pinch at the top? Use a neutral (palms facing) grip and don't go to full overhead stretch."},
    {slot:"Face pull", dose:"3 × 15", rest:"60 s",
     o:{machine:["Cable face pull (rope, eye height)","Pull the rope apart as it comes to your face."],
        free:["Incline prone rear-delt raise","Chest on incline bench, light dumbbells, thumbs up."],
-       body:["Band face pull","Anchor band at eye height. Same pattern as the cable."]},
+       body:["Mini-band W pull-apart","Band round both wrists, elbows bent at your sides. Rotate hands out against the band, then raise into a W.",["Elbows stay tucked to your sides as you rotate out","Raise to a W: elbows down, hands up by your ears","Hold 1 s, slow on the way back"]]},
     cues:["Pull toward your eyes, hands finish beside your ears","Rotate so knuckles point to the ceiling","Hold 1 s at the back"],
     avoid:"Going heavy. This is a 'feel it' exercise for rear shoulders and rotator cuff."},
    {slot:"Prone Y–T–W", dose:"2 × 8 each letter", rest:"60 s",
     o:{machine:["Cable Y-raise (low pulley, single arm)","Lift arm up and out in a Y line."],
        free:["Prone Y-T-W on incline bench (1–2 kg)","Lie face-down. Tiny plates or no weight is fine."],
-       body:["Floor Y-T-W, no weight","Face-down on floor, forehead on a towel."]},
+       body:["Floor Y-T-W, no weight","Face-down on the floor, forehead on a folded towel."]},
     cues:["Thumbs up for Y and T","Lift with the muscles between your shoulder blades","Keep neck neutral; don't lift your head"],
     avoid:"Arching the lower back to get the arms higher."},
    {slot:"Deep neck flexors", dose:"3 × 10 × 5 s hold", rest:"45 s",
@@ -322,41 +327,41 @@ const DAYS = [
    {slot:"Hip thrust", dose:"4 × 10", rest:"90 s",
     o:{machine:["Hip thrust / glute drive machine","Pad across hips, upper back on the pad."],
        free:["Barbell or dumbbell hip thrust","Upper back on a bench, pad the bar."],
-       body:["Single-leg glute bridge","Shoulders on floor or bench. Other knee hugged in."]},
+       body:["Single-leg glute bridge","Shoulders on the floor or the edge of the couch. Other knee hugged in. Too easy? Mini band above the knees."]},
     cues:["Chin tucked, ribs down: look forward, not at the ceiling","Push through heels, squeeze glutes hard for 2 s","Shins vertical at the top"],
     avoid:"Arching the lower back to finish. The movement ends when hips are in line with the torso.",
     pain:"Low back pinch? Tuck the pelvis more and reduce the range."},
    {slot:"Split squat", dose:"3 × 8 / side", rest:"75 s",
     o:{machine:["Smith machine split squat","The bar guides you so you can focus on depth and knee position."],
        free:["Dumbbell reverse lunge","Stepping back is easier on the knees than stepping forward."],
-       body:["Supported split squat","Hold a rack or wall for balance; slow 3 s down."]},
+       body:["Supported split squat","Hold a wall, door frame or chair back for balance; slow 3 s down."]},
     cues:["Front knee tracks over the middle toes","Torso slightly forward, weight in the front heel","Back knee lowers straight down"],
     avoid:"Front knee collapsing inward or the front heel lifting.",
     pain:"Knee pain? Only go as deep as is pain-free; put a pad or step under the back knee to limit depth."},
    {slot:"Hip hinge", dose:"3 × 10", rest:"90 s",
     o:{machine:["Cable pull-through","Rope between legs. Hips back, then snap glutes forward."],
        free:["Dumbbell Romanian deadlift","Dumbbells slide down the thighs. Soft knees."],
-       body:["Banded good morning or single-leg RDL","Band under feet, behind neck. Or balance on one leg."]},
+       body:["Single-leg RDL","Fingertips on a wall or chair for balance. Hold a full water bottle or backpack once it gets easy."]},
     cues:["Push hips back like closing a car door with your butt","Spine stays neutral the whole time","Stop at a hamstring stretch, usually mid-shin"],
     avoid:"Rounding the lower back to reach lower.",
-    pain:"Lower back ache during or after: use the cable option, go lighter, and shorten the range."},
+    pain:"Lower back ache during or after: go lighter and shorten the range. In the gym, the cable pull-through is the gentlest option."},
    {slot:"Quad strength (knee-friendly)", dose:"3 × 10", rest:"75 s",
     o:{machine:["Leg press (feet mid-to-high on platform)","Lower until knees at ~90°. Don't let hips curl off the seat."],
        free:["Goblet box squat","Hold a dumbbell at the chest, sit back to a bench, stand up."],
-       body:["Spanish squat or wall sit","Band behind knees anchored to a rack, sit back. Or wall sit 30–45 s."]},
+       body:["Wall sit or slow squat to a chair","Wall sit 30–45 s, or sit back to a chair over 3 s and stand. Mini band above the knees helps keep them out."]},
     cues:["Knees follow the toes","Full foot pressure: big toe, little toe, heel","Control the lowering for 3 s"],
     avoid:"Bouncing out of the bottom or letting knees drift in.",
     pain:"Front-of-knee pain? Spanish squat and wall sits are the most knee-friendly; start there."},
    {slot:"Hip abduction", dose:"3 × 15", rest:"45 s",
     o:{machine:["Seated hip abduction machine","Lean slightly forward to hit the glutes more."],
        free:["Cable standing hip abduction","Ankle strap, low pulley. Stand tall, small range."],
-       body:["Banded lateral walk or clamshell","Band above knees. Stay low and keep tension."]},
+       body:["Mini-band lateral walk or clamshell","Band just above the knees. Stay low and keep tension the whole time."]},
     cues:["Slow and controlled","Keep pelvis level","Feel it on the side of the hip"],
     avoid:"Swinging or rocking the torso to move the weight."},
    {slot:"Finisher stretch", dose:"2 × 45 s / side",
     o:{machine:["Couch stretch (bench version)","Back foot up on a bench, front foot planted."],
        free:["Couch stretch (bench version)","Back foot up on a bench, front foot planted."],
-       body:["Couch stretch","Back knee on a pad near a wall, foot up the wall."]},
+       body:["Couch stretch","Back knee on a cushion in front of the couch or a wall, foot up behind you."]},
     cues:["Squeeze the back glute","Tuck pelvis under","Stay upright; stretch at the front of the hip"],
     avoid:"Arching the lower back to fake a deeper stretch.",
     pain:"Kneecap pressure? Put more padding under the knee or do the half-kneeling version from the warm-up."}
@@ -386,9 +391,9 @@ const DAYS = [
    {slot:"Anti-rotation press", dose:"3 × 10 / side", rest:"45 s",
     o:{machine:["Cable Pallof press","Stand side-on to the cable, press out from the chest and hold 2 s."],
        free:["Landmine Pallof / anti-rotation","Hold the bar end at chest height, press out without twisting."],
-       body:["Band Pallof press","Band anchored at chest height."]},
+       body:["Plank shoulder taps","High plank, feet wide. Slowly tap the opposite shoulder without your hips rocking. Knees down to make it easier.",["Feet wider = easier, narrower = harder","Hips stay level, as if a glass of water sits on your back","Slow: 2 s per tap, breathe out on each"]]},
     cues:["Stand tall, glutes on","Press straight out, resist the twist","Breathe out on the press"],
-    avoid:"Letting the shoulders or hips rotate toward the anchor."},
+    avoid:"Letting the shoulders or hips twist or rotate."},
    {slot:"Dead bug", dose:"3 × 8 / side", rest:"45 s",
     o:{machine:["Cable dead bug","Hold a cable overhead from behind; extend opposite arm and leg."],
        free:["Dumbbell dead bug","Hold one light dumbbell straight up with both hands; move the legs only."],
@@ -398,7 +403,7 @@ const DAYS = [
    {slot:"Mobility circuit", dose:"2 rounds", rest:"none",
     o:{machine:["Foam roller T-spine + world's greatest stretch + child's pose lat stretch","5 roller extensions, 5 WGS per side, 30 s child's pose reaching each side."],
        free:["Foam roller T-spine + world's greatest stretch + child's pose lat stretch","5 roller extensions, 5 WGS per side, 30 s child's pose reaching each side."],
-       body:["Foam roller T-spine + world's greatest stretch + child's pose lat stretch","No roller? Do thoracic extensions over a bench or chair back."]},
+       body:["Chair T-spine extension + world's greatest stretch + child's pose lat stretch","5 extensions over a chair back, 5 WGS per side, 30 s child's pose reaching each side.",["Chair back sits across your upper back, not your lower back","Hands support your head as you lean back","Move slowly and breathe"]]},
     cues:["Roller across the upper back only, not the lower back","Support your head with your hands","Move slowly and breathe"],
     avoid:"Rolling the lower back or forcing range."},
   ]},
@@ -408,14 +413,14 @@ const DAYS = [
    {slot:"Horizontal press", dose:"3 × 10", rest:"90 s",
     o:{machine:["Chest press machine (neutral grip)","Handles at mid-chest. Neutral grip is kinder on shoulders."],
        free:["Low-incline dumbbell press (15–30°, neutral grip)","Palms facing each other, elbows ~45° from the body."],
-       body:["Push-up (hands elevated if needed)","Hands on a bench to make it easier."]},
+       body:["Push-up (hands elevated if needed)","Hands on a kitchen counter, table edge or stairs to make it easier."]},
     cues:["Shoulder blades back and down before you press","Elbows about 45° from the torso","Full control on the way down"],
     avoid:"Elbows flared straight out to the side.",
     pain:"Front-of-shoulder pain? Raise the hands (push-up) or shorten the range on the way down."},
    {slot:"Row", dose:"4 × 10", rest:"90 s",
     o:{machine:["Chest-supported machine row / T-bar row","Chest on the pad; pull with elbows."],
        free:["Single-arm dumbbell row (bench-supported)","Hand and knee on the bench, flat back."],
-       body:["Inverted row","Feet further forward makes it harder."]},
+       body:["Single-arm door towel row","Towel round both handles of a sturdy, closed door; stand on the side it opens away from you. One hand on the towel, lean back and row."]},
     cues:["Pull the elbow to the hip","Pause and squeeze 1 s","Neck long, eyes down"],
     avoid:"Twisting the torso to move the weight."},
    {slot:"Angled press", dose:"3 × 8 / side", rest:"75 s",
@@ -428,7 +433,7 @@ const DAYS = [
    {slot:"Rear-delt fly", dose:"3 × 15", rest:"60 s",
     o:{machine:["Reverse pec deck","Handles at shoulder height, slight elbow bend."],
        free:["Chest-supported rear-delt fly","Face-down on an incline bench, light dumbbells."],
-       body:["Band pull-apart","Arms straight, pull the band to the chest."]},
+       body:["Mini-band pull-apart","Band round both hands, arms straight at chest height. Pull apart as wide as the band allows."]},
     cues:["Lead with the back of the hand","Arms move out wide, not back","Stop when hands are level with the body"],
     avoid:"Squeezing the shoulder blades so hard that you shrug. Rear delts do this one."},
    {slot:"Serratus work", dose:"2 × 12", rest:"45 s",
@@ -450,39 +455,39 @@ const DAYS = [
    {slot:"Main hinge", dose:"4 × 6–8", rest:"2 min",
     o:{machine:["45° back extension (glute-focused)","Pad at hip crease, hinge from the hips, hold a plate if easy."],
        free:["Trap-bar deadlift (or kettlebell deadlift)","Stand in the middle of the bar, push the floor away."],
-       body:["Single-leg RDL (hold a support)","Hand on a rack for balance; reach the free leg back."]},
+       body:["Single-leg RDL (hold a support)","Hand on a wall or chair for balance; reach the free leg back. Hold a loaded backpack in the other hand to progress."]},
     cues:["Brace before each rep: breathe in, then tighten","Hips and shoulders rise together","Finish by squeezing glutes, not leaning back"],
     avoid:"Grinding out reps. Stop with 2–3 reps left in the tank.",
     pain:"Lower back flares? Use the back-extension option with bodyweight only and a small range."},
    {slot:"Step-up", dose:"3 × 8 / side", rest:"75 s",
     o:{machine:["Single-leg leg press","Light, controlled, knee in line with toes."],
        free:["Dumbbell step-up (box knee-height or lower)","Drive through the top heel; don't push off the back foot."],
-       body:["Bodyweight step-up","Slow lowering for 3 s."]},
+       body:["Stair step-up","Use the bottom stair (or two). Slow lowering for 3 s."]},
     cues:["Whole foot on the box","Lean slightly forward and drive up through the heel","Lower under control"],
     avoid:"Pushing off the bottom leg or letting the knee cave in.",
-    pain:"Knee pain? Use a lower box. Pain-free height beats a high box."},
+    pain:"Knee pain? Use a lower step or box. Pain-free height beats a high one."},
    {slot:"Straight-arm pulldown", dose:"3 × 12", rest:"60 s",
     o:{machine:["Cable straight-arm pulldown","Rope or bar, hinge slightly, pull to the thighs."],
        free:["Dumbbell pullover (bench)","Light, controlled, stop before any shoulder pinch."],
-       body:["Band straight-arm pulldown","Anchor band high."]},
+       body:["Prone swimmers","Face-down, arms overhead. Lift your arms and sweep them round to your lower back, then return.",["Thumbs up, arms just off the floor","Squeeze shoulder blades down as the arms sweep back","Neck long: forehead hovers, eyes on the floor"]]},
     cues:["Arms nearly straight","Pull with the lats, finish hands by the thighs","Ribs down; don't arch"],
     avoid:"Bending the elbows and turning it into a triceps pushdown."},
    {slot:"Farmer carry", dose:"4 × 30–40 m", rest:"75 s",
     o:{machine:["Trap-bar carry","Load the trap bar, stand tall, walk."],
        free:["Dumbbell or kettlebell farmer carry","Heavy but posture stays perfect."],
-       body:["Loaded backpack carry or suitcase carry","Backpack worn on the front, or one heavy bag in one hand."]},
+       body:["Loaded backpack or shopping-bag carry","Backpack filled with books or water bottles worn on the front, or one full shopping bag in one hand."]},
     cues:["Tall as possible, crown of head up","Shoulders down and slightly back","Short, quick, steady steps"],
     avoid:"Shrugging, leaning, or letting the weights swing."},
    {slot:"Face pull / pull-apart", dose:"2 × 20", rest:"45 s",
     o:{machine:["Cable face pull (rope)","Light; finish with hands beside ears."],
        free:["Incline prone rear-delt raise","Very light dumbbells."],
-       body:["Band pull-apart","Arms straight, pull to chest height."]},
+       body:["Mini-band pull-apart","Band round both hands, arms straight. Pull to chest height."]},
     cues:["High reps, light weight","Squeeze 1 s","Keep neck relaxed"],
     avoid:"Turning it into a heavy row."},
    {slot:"Finisher stretch", dose:"2 × 45 s / side",
     o:{machine:["Hamstring stretch on bench + couch stretch","Heel on bench, hinge forward with a flat back. Then couch stretch."],
        free:["Hamstring stretch on bench + couch stretch","Heel on bench, hinge forward with a flat back. Then couch stretch."],
-       body:["Lying hamstring stretch (strap) + couch stretch","Strap around the foot, leg up. Then couch stretch."]},
+       body:["Lying hamstring stretch (towel) + couch stretch","Towel round the foot, leg up. Then couch stretch."]},
     cues:["Hinge from the hips, not the back","Gentle stretch, around 5/10","Long exhales"],
     avoid:"Rounding the back to reach your toes."}
   ]}
@@ -494,34 +499,34 @@ const CARDIO = {
   plan:"5 min easy → 6 × (30 s hard / 90 s easy) → 3 min easy",
   o:{machine:["Air bike or rower intervals","Bike: seat high, sit upright, push and pull the arms. Rower: legs, then hips, then arms; finish tall."],
      free:["Kettlebell swing intervals","Swing for 30 s, walk for 90 s. Hinge at the hips; don't squat it up."],
-     body:["Low-impact interval circuit","30 s fast, rotating step-ups, skater steps and hands-on-bench mountain climbers. 90 s walking between."]},
+     body:["Low-impact interval circuit","30 s fast, rotating stair step-ups, skater steps and hands-on-couch mountain climbers. 90 s walking or marching between."]},
   cues:["Hard = 8/10: talking is not possible, but form holds","Easy = walk or spin until your breathing settles","Chest up and neck long, even when tired"],
   avoid:"Hunching over the bike handles or rowing with a rounded back.",
-  pain:"Knees: use the bike instead of impact moves. Lower back: use the bike instead of swings or the rower."},
+  pain:"Knees: pick the bike, or swap impact moves for fast marching. Lower back: skip swings and the rower; bike or brisk marching instead."},
  tue:{slot:"Cardio · Zone 2", dose:"15–20 min", rest:null,
   plan:"Steady pace after leg day. Keep it easy so your legs recover.",
   o:{machine:["Incline treadmill walk (5–10%)","Hands off the rails, about 5–6 km/h."],
      free:["Ruck walk (backpack 5–10 kg)","Weight packed high and tight against your back. Walk tall."],
      body:["Brisk outdoor walk","Pick a route with a hill if you have one."]},
   cues:Z2_CUES,
-  avoid:"Holding the treadmill handles; it puts you right back in the desk posture.",
+  avoid:"Leaning on rails or handles, or walking while looking down at your phone; both put you right back in the desk posture.",
   pain:"Sore knees after leg day: use the elliptical or a flat walk instead of an incline."},
  wed:{slot:"Cardio · Long Zone 2", dose:"30–35 min", rest:null,
   plan:"Lighter gym day, so this is your longest steady session.",
   o:{machine:["Elliptical or incline treadmill","Stand upright with a light grip or no hands."],
      free:["Ruck walk (backpack 5–10 kg)","Add weight slowly over the weeks, never at the cost of posture."],
-     body:["Brisk outdoor walk or easy cycle","Sit upright on the bike and raise the handlebars if you can."]},
+     body:["Brisk outdoor walk","Steady pace the whole way. Raining? Same time on the stairs or marching in place."]},
   cues:Z2_CUES,
   avoid:"Turning it into a hard session. Easy is the point.",
-  pain:"Knees: the elliptical and the bike are the gentlest options."},
+  pain:"Knees: the elliptical, the bike or a flat walk are the gentlest options."},
  thu:{slot:"Cardio · Tempo rounds", dose:"~20 min", rest:null,
   plan:"5 min easy → 3 × (3 min at 7/10 / 2 min easy)",
   o:{machine:["Rower, bike or elliptical tempo","Steady and strong in the 3-minute blocks, not an all-out sprint."],
      free:["Dumbbell / kettlebell complex","Each 3-min round: 10 goblet squats, 10 rows per side, 10 RDLs, 20 m carry. Moderate weight, keep moving."],
-     body:["Bodyweight tempo circuit","Each 3-min round: step-ups, incline push-ups, reverse lunges, hands-on-bench mountain climbers."]},
+     body:["Bodyweight tempo circuit","Each 3-min round: stair step-ups, counter push-ups, reverse lunges, hands-on-couch mountain climbers."]},
   cues:["7/10: you can only get out a few words at a time","Stay steady across all 3 rounds; don't start too fast","Form beats speed"],
   avoid:"Letting posture fall apart as you tire. Slow down instead.",
-  pain:"Lower back: use the machine option and skip RDLs in the complex."},
+  pain:"Lower back: skip the RDLs and any hinging, and keep the pace steady."},
  fri:{slot:"Cardio · Zone 2", dose:"15–20 min", rest:null,
   plan:"Easy steady pace to finish the week.",
   o:{machine:["Elliptical or stationary bike","Sit or stand upright; raise the handlebars if your back rounds."],
@@ -541,7 +546,7 @@ const DESK = [
   ["Shoulder blade squeezes","10 × 3 s","Down and back, not up toward the ears."]
 ];
 
-const LABEL = {machine:"Machine", free:"Free weights", body:"Bodyweight"};
+const LABEL = {machine:"Machine", free:"Free weights", body:"Home"};
 const S = {get(k,d){try{const v=localStorage.getItem(k);return v===null?d:JSON.parse(v)}catch(e){return d}},
            set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 
@@ -568,8 +573,9 @@ function renderEq(){
   document.querySelectorAll("#eq button").forEach(b=>b.setAttribute("aria-pressed", b.dataset.eq===eq));
 }
 function renderTabs(){
-  const items = [["stats","Progress"]].concat(DAYS.map(d=>[d.id, d.tab]), [["desk","Desk breaks"],["rules","Rules & progression"]]);
-  tabsEl.innerHTML = items.map(([id,t])=>`<button role="tab" type="button" data-day="${id}" aria-controls="view" aria-selected="${id===day}">${t}${id===todayId?'<span class="today">TODAY</span>':''}</button>`).join("");
+  const btn = ([id,t]) => `<button role="tab" type="button" data-day="${id}" aria-controls="view" aria-selected="${id===day}">${t}${id===todayId?'<span class="today">TODAY</span>':''}</button>`;
+  tabsEl.innerHTML = `<div class="tabrow">${[["stats","Progress"],["desk","Desk breaks"],["rules","Rules"]].map(btn).join("")}</div>`
+    + `<div class="tabrow days">${DAYS.map(d=>btn([d.id, d.tab])).join("")}</div>`;
 }
 function progressFor(d){
   const keys = d.ex.map((_,i)=>d.id+":"+i).concat([d.id+":warm"], CARDIO[d.id]?[d.id+":cardio"]:[]);
@@ -604,7 +610,7 @@ function renderDay(d){
 }
 function cardHTML(key, letter, e, cls){
     const k = overrides[key] || eq;
-    const [vn, vnote] = e.o[k];
+    const [vn, vnote, vcues] = e.o[k];
     const alts = Object.keys(e.o).filter(x=>x!==k && e.o[x][0]!==vn);
     const isDone = !!checks[key];
     return `<article class="card${cls}${isDone?' is-done':''}">
@@ -616,7 +622,7 @@ function cardHTML(key, letter, e, cls){
       <div class="row"><span class="pill">${esc(e.dose)}</span>${e.rest?`<span class="pill rest">Rest ${esc(e.rest)}</span>`:''}<span class="chip">${LABEL[k]}</span></div>
       ${e.plan?`<p class="plan">${esc(e.plan)}</p>`:''}
       <p class="vnote">${esc(vnote)}</p>
-      <ul class="cues">${e.cues.map(c=>`<li>${ic("check")}<span>${esc(c)}</span></li>`).join("")}</ul>
+      <ul class="cues">${(vcues || e.cues).map(c=>`<li>${ic("check")}<span>${esc(c)}</span></li>`).join("")}</ul>
       <p class="avoid">${ic("ban")}<span><b>Avoid:</b> ${esc(e.avoid)}</span></p>
       ${e.pain?`<p class="pain">${ic("alert")}<span><b>If it hurts:</b> ${esc(e.pain)}</span></p>`:''}
       <div class="actions">
@@ -705,8 +711,8 @@ function render(){
   renderEq(); renderTabs();
   const d = DAYS.find(x=>x.id===day);
   view.innerHTML = d ? renderDay(d) : day==="desk" ? renderDesk() : day==="stats" ? renderStats() : renderRules();
-  const b = tabsEl.querySelector('[aria-selected="true"]'), tr = tabsEl.getBoundingClientRect(), br = b.getBoundingClientRect();
-  if(br.left < tr.left || br.right > tr.right) tabsEl.scrollLeft += br.left - tr.left - 16;
+  const b = tabsEl.querySelector('[aria-selected="true"]'), row = b.parentElement, tr = row.getBoundingClientRect(), br = b.getBoundingClientRect();
+  if(br.left < tr.left || br.right > tr.right) row.scrollLeft += br.left - tr.left - 16;
   if(sel){ const el = document.querySelector(sel); if(el) el.focus({preventScroll:true}); }
 }
 
