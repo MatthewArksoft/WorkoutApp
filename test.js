@@ -1,6 +1,6 @@
 // Run: node test.js
 const assert = require("assert");
-const { streak, week, shareText } = require("./track.js");
+const { streak, week, shareText, logSession } = require("./track.js");
 const done = { d: "mon", n: 8, t: 8 }, half = { d: "mon", n: 3, t: 8 };
 
 // Wed 2026-10-14. Fri+Mon+Tue done, weekend in between, today not started -> 3
@@ -15,4 +15,13 @@ assert.strictEqual(streak({}, wed), 0);
 
 assert.deepStrictEqual(week({ ...log, "2026-10-14": half }, wed).map(x => x.state), ["done", "done", "partial", "", ""]);
 assert.ok(shareText("Matt", log, wed).includes("(2/5)"));
+// logSession: another day's ticks must not clobber a completed session
+const k = "2026-10-12", L = {};
+logSession(L, k, "mon", 8, 8);
+logSession(L, k, "tue", 1, 8); assert.deepStrictEqual(L[k], { d: "mon", n: 8, t: 8 });
+logSession(L, k, "tue", 0, 8); assert.deepStrictEqual(L[k], { d: "mon", n: 8, t: 8 });
+logSession(L, k, "mon", 7, 8); assert.deepStrictEqual(L[k], { d: "mon", n: 7, t: 8 }); // same day can untick
+logSession(L, k, "tue", 2, 8); assert.deepStrictEqual(L[k], { d: "tue", n: 2, t: 8 }); // partial: last touched wins
+logSession(L, k, "mon", 0, 8); assert.deepStrictEqual(L[k], { d: "tue", n: 2, t: 8 }); // other day's untick ignored
+logSession(L, k, "tue", 0, 8); assert.strictEqual(L[k], undefined);
 console.log("ok");

@@ -24,6 +24,15 @@ function week(log, today = new Date()) {
   });
 }
 
+// Record day `id` at n/t ticks for date key k. One entry per date: the last-touched day wins,
+// except ticks on another day never overwrite or delete a session already completed today.
+function logSession(log, k, id, n, t) {
+  const cur = log[k];
+  if (cur && cur.d !== id && (isDone(cur) || !n)) return log;
+  if (n) log[k] = { d: id, n, t }; else delete log[k];
+  return log;
+}
+
 const total = log => Object.values(log).filter(isDone).length;
 
 function shareText(name, log, today = new Date()) {
@@ -34,4 +43,4 @@ function shareText(name, log, today = new Date()) {
     `Streak: ${s} session${s === 1 ? "" : "s"} · Total: ${total(log)}`;
 }
 
-if (typeof module !== "undefined") module.exports = { dkey, streak, week, total, shareText };
+if (typeof module !== "undefined") module.exports = { dkey, streak, week, total, shareText, logSession };
