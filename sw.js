@@ -1,5 +1,5 @@
 // Bump VERSION after editing any file so clients pick up the change (and the ?v= on track.js in index.html).
-const VERSION = "v10";
+const VERSION = "v11";
 const CORE = ["./", "index.html", "track.js", "manifest.webmanifest", "icon.svg", "icon-192.png", "icon-512.png"];
 
 self.addEventListener("install", e => {
