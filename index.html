@@ -101,6 +101,17 @@ td:first-child{font-family:var(--f-mono);white-space:nowrap}
 .divider{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.08em;font-weight:700}
 .divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--line)}
 .note{font-size:13px;color:var(--muted);margin-top:22px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px;text-align:center}
+.stat b{display:block;font-family:var(--f-display);font-stretch:112%;font-weight:800;font-size:30px;line-height:1.1;color:var(--accent)}
+.stat span{font-size:12px;color:var(--muted)}
+.dots{display:flex;gap:6px}
+.dots div{flex:1;text-align:center;padding:10px 0;border-radius:8px;border:1px solid var(--line);font:600 13px var(--f-body);background:var(--surface)}
+.dots .done{background:var(--done);border-color:var(--done);color:var(--surface)}
+.dots .partial{background:var(--warm-soft);border-color:var(--warm)}
+.dots .today{outline:2px solid var(--accent);outline-offset:1px}
+.share{border:0;background:var(--accent);color:var(--surface);font:700 15px var(--f-body);padding:12px 16px;border-radius:10px;cursor:pointer;width:100%}
+.name{width:100%;font:600 16px var(--f-body);padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink)}
 @media (max-width:480px){.ch{grid-template-columns:auto 1fr}.ch .chk{grid-column:1/-1}.scale{grid-template-columns:1fr}}
 @media (prefers-reduced-motion:reduce){.fill{transition:none}}
 </style>
@@ -133,6 +144,7 @@ td:first-child{font-family:var(--f-mono);white-space:nowrap}
   <p class="note">Not medical advice. With pain in your neck/shoulders, lower back and knees/hips together, a one-off physio assessment is worth it to confirm nothing here needs changing for you.</p>
 </div>
 
+<script src="track.js"></script>
 <script>
 const yt = q => "https://www.youtube.com/results?search_query=" + encodeURIComponent(q + " proper form");
 
@@ -425,6 +437,9 @@ const dowIdx = new Date().getDay(); // 0 Sun
 const todayId = ["","mon","tue","wed","thu","fri",""][dowIdx];
 let day = S.get("dr-day", todayId || "mon");
 let checks = S.get("dr-checks",{});
+let log = S.get("dr-log",{});
+const thisWeek = dkey(monday(new Date()));
+if(S.get("dr-week")!==thisWeek){ checks={}; S.set("dr-checks",checks); S.set("dr-week",thisWeek); } // ticks reset each Monday; history lives in log
 let overrides = {}; // per-exercise equipment override, session only
 
 const tabsEl = document.getElementById("tabs");
@@ -435,7 +450,7 @@ function renderEq(){
   document.querySelectorAll("#eq button").forEach(b=>b.setAttribute("aria-pressed", b.dataset.eq===eq));
 }
 function renderTabs(){
-  const items = DAYS.map(d=>[d.id, d.tab]).concat([["desk","Desk breaks"],["rules","Rules & progression"]]);
+  const items = [["stats","Progress"]].concat(DAYS.map(d=>[d.id, d.tab]), [["desk","Desk breaks"],["rules","Rules & progression"]]);
   tabsEl.innerHTML = items.map(([id,t])=>`<button role="tab" type="button" data-day="${id}" aria-selected="${id===day}">${t}${id===todayId?'<span class="today">TODAY</span>':''}</button>`).join("");
 }
 function progressFor(d){
@@ -453,6 +468,7 @@ function renderDay(d){
     <p class="why">${esc(d.why)}</p>
     <div class="progress"><div class="track" aria-hidden="true"><div class="fill" style="width:${pct}%"></div></div>
       <span class="pct">${done}/${total}</span><button type="button" class="reset" data-reset="${d.id}">Reset day</button></div>
+    ${done===total?'<button type="button" class="share" data-share>🎉 Session done! Share it</button>':''}
   </section>
   <details class="warm"${warmDone?'':' open'}>
     <summary><span>Warm-up · 8 min · every day</span></summary>
@@ -536,10 +552,38 @@ function renderRules(){
       <tr><td>Sat–Sun</td><td>Rest</td><td>Stretch if you feel like it.</td><td>Optional walk</td></tr>
     </tbody></table></div></div>`;
 }
+function renderStats(){
+  const w = week(log), s = streak(log), n = total(log), today = (new Date().getDay()+6)%7;
+  const recent = Object.entries(log).sort((a,b)=>b[0].localeCompare(a[0])).slice(0,10);
+  const title = id => (DAYS.find(x=>x.id===id)||{}).title || id;
+  return `<section class="dayhead"><div class="slot">Keep each other honest</div><h2>Progress</h2>
+    <p class="why">Share your week with your training partner. Check-ins are saved on this phone.</p></section>
+  <div class="panel"><label class="label" for="name">Your name</label>
+    <input class="name" id="name" data-name value="${esc(S.get("dr-name",""))}" placeholder="e.g. Matt" autocomplete="given-name"></div>
+  <div class="stats" style="margin-top:16px">
+    <div class="stat"><b>${s}</b><span>streak</span></div>
+    <div class="stat"><b>${w.filter(x=>x.state==="done").length}/5</b><span>this week</span></div>
+    <div class="stat"><b>${n}</b><span>total</span></div></div>
+  <div class="panel"><h3>This week</h3>
+    <div class="dots">${w.map((x,i)=>`<div class="${x.state}${i===today?' today':''}">${x.label}</div>`).join("")}</div></div>
+  <div class="panel"><button type="button" class="share" data-share>Share my week</button></div>
+  ${recent.length?`<div class="panel"><h3>Recent</h3><ul class="wlist" style="padding:0">${recent.map(([k,e])=>`<li><span class="dose">${k.slice(5)}</span><div class="wn">${esc(title(e.d))}</div><span class="dose">${isDone(e)?'✓':e.n+'/'+e.t}</span></li>`).join("")}</ul></div>`:''}`;
+}
+function record(){
+  const d = DAYS.find(x=>x.id===day); if(!d) return;
+  const [n,t] = progressFor(d), k = dkey(new Date());
+  if(n) log[k] = {d:d.id, n, t}; else delete log[k]; // ponytail: one session per date, last-touched day wins
+  S.set("dr-log",log);
+}
+async function share(){
+  const text = shareText(S.get("dr-name",""), log);
+  try{ if(navigator.share) return await navigator.share({text}); }catch(e){ if(e.name==="AbortError") return; }
+  window.open("https://wa.me/?text="+encodeURIComponent(text), "_blank", "noopener");
+}
 function render(){
   renderEq(); renderTabs();
   const d = DAYS.find(x=>x.id===day);
-  view.innerHTML = d ? renderDay(d) : day==="desk" ? renderDesk() : renderRules();
+  view.innerHTML = d ? renderDay(d) : day==="desk" ? renderDesk() : day==="stats" ? renderStats() : renderRules();
 }
 
 document.getElementById("eq").addEventListener("click",e=>{
@@ -551,15 +595,17 @@ tabsEl.addEventListener("click",e=>{
   day=b.dataset.day; S.set("dr-day",day); render(); window.scrollTo({top:0});
 });
 view.addEventListener("change",e=>{
+  if(e.target.dataset && "name" in e.target.dataset){ S.set("dr-name", e.target.value.trim()); return; }
   const k=e.target.dataset && e.target.dataset.key; if(!k) return;
   if(e.target.checked) checks[k]=true; else delete checks[k];
-  S.set("dr-checks",checks); render();
+  S.set("dr-checks",checks); record(); render();
 });
 view.addEventListener("click",e=>{
+  if(e.target.closest("[data-share]")){ share(); return; }
   const sw=e.target.closest("button[data-swap]");
   if(sw){ overrides[sw.dataset.swap]=sw.dataset.to; render(); return; }
   const r=e.target.closest("button[data-reset]");
-  if(r){ Object.keys(checks).forEach(k=>{ if(k.startsWith(r.dataset.reset+":")) delete checks[k]; }); S.set("dr-checks",checks); render(); }
+  if(r){ Object.keys(checks).forEach(k=>{ if(k.startsWith(r.dataset.reset+":")) delete checks[k]; }); S.set("dr-checks",checks); record(); render(); }
 });
 render();
 if("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");

@@ -1,6 +1,6 @@
 // Bump VERSION after editing any file so clients pick up the change.
-const VERSION = "v1";
-const CORE = ["./", "index.html", "manifest.webmanifest", "icon.svg", "icon-192.png", "icon-512.png"];
+const VERSION = "v2";
+const CORE = ["./", "index.html", "track.js", "manifest.webmanifest", "icon.svg", "icon-192.png", "icon-512.png"];
 
 self.addEventListener("install", e => {
   e.waitUntil(caches.open(VERSION).then(c => c.addAll(CORE)).then(() => self.skipWaiting()));
