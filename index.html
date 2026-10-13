@@ -167,10 +167,16 @@ details.warm[open] summary .ic{transform:rotate(180deg)}
 .pain .ic,.pain b{color:var(--warn-ink)}
 .avoid b,.pain b{font-weight:700}
 .actions{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center;justify-content:space-between;padding-top:12px;border-top:1px solid var(--line)}
-.alts{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:13px;color:var(--muted)}
-.alts span.k{font-weight:700;text-transform:uppercase;letter-spacing:.08em;font-size:11px}
-.alts button{min-height:36px;border:1px dashed var(--line);background:transparent;padding:4px 10px;border-radius:10px;color:var(--ink);font:500 13px var(--f-body);cursor:pointer;text-align:left}
-.alts button:hover{border-color:var(--accent);border-style:solid}
+.alts{width:100%}
+.alts summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:8px;min-height:44px;font:600 14px var(--f-body);color:var(--accent-ink)}
+.alts summary::-webkit-details-marker{display:none}
+.alts summary .ic{width:16px;height:16px}
+.alts summary .ic:last-child{margin-left:auto;color:var(--muted);transition:transform .2s var(--ease)}
+.alts[open] summary .ic:last-child{transform:rotate(180deg)}
+.altlist{display:grid;gap:6px;margin-top:4px}
+.altlist button{display:grid;gap:2px;text-align:left;min-height:48px;padding:8px 12px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2);color:var(--ink);font:600 14px var(--f-body);cursor:pointer}
+.altlist button:hover{border-color:var(--accent)}
+.altlist .k{font:700 11px var(--f-body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 a{color:var(--accent-ink);font-weight:600}
 .demo{display:inline-flex;align-items:center;gap:8px;min-height:40px;font-size:14px;text-decoration:none;color:var(--ink);background:var(--surface-2);border:1px solid var(--line);padding:0 14px 0 10px;border-radius:10px}
 .demo .ic{width:16px;height:16px;fill:var(--accent);stroke:var(--accent)}
@@ -274,7 +280,7 @@ td:first-child{font:700 15px var(--f-display);white-space:nowrap;color:var(--acc
 </div>
 <nav class="bottomnav" id="nav" aria-label="Sections"></nav>
 
-<script src="track.js?v=12"></script><!-- ?v= forces a fresh copy past old service workers / HTTP cache; match sw.js VERSION -->
+<script src="track.js?v=13"></script><!-- ?v= forces a fresh copy past old service workers / HTTP cache; match sw.js VERSION -->
 <script>
 const ICONS = {
   play:'<polygon points="6 3 20 12 6 21 6 3"/>',
@@ -296,6 +302,7 @@ const ICONS = {
   monitor:'<rect width="20" height="14" x="2" y="3" rx="2"/><path d="M8 21h8M12 17v4"/>',
   book:'<path d="M12 7v14"/><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/>',
   bell:'<path d="M10.27 21a2 2 0 0 0 3.46 0"/><path d="M3.26 15.33A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.67C19.41 13.96 18 12.5 18 8A6 6 0 0 0 6 8c0 4.5-1.41 5.96-2.74 7.33"/>',
+  swap:'<path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/>',
   download:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5M12 15V3"/>'
 };
 const ic = n => `<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">${ICONS[n]}</svg>`;
@@ -573,6 +580,99 @@ const CARDIO = {
   pain:"Pick whichever option feels best after the deadlifts; the bike is easiest on the back."}
 };
 
+/* Extra options per slot (same movement pattern, same joint-friendly intent) so a busy machine never stalls the
+   session. Key: "day:index" or "day:cardio"; each equipment list is appended after that slot's planned option. */
+const EXTRA = {
+ "mon:0":{machine:[["Chest-supported machine row","Chest on the pad takes the lower back out of it. Neutral handles."],["Chest-supported T-bar row","Chest on the pad, neutral-grip handle."],["Single-arm cable row","Kneel or stand; pull the elbow to your hip."]],
+          free:[["Single-arm dumbbell row","Hand and knee on a bench, flat back."],["Seal row","Lie face-down on a flat bench raised on plates; row dumbbells up from the floor."]],
+          body:[["Prone floor row","Face-down, pull elbows back to your sides and squeeze the shoulder blades 2 s."]]},
+ "mon:1":{machine:[["Single-arm kneeling cable pulldown","Kneel under a high pulley; pull the elbow down to your ribs."],["Assisted pull-up machine","Knee pad takes some of your weight. Neutral grip if there is one."],["Machine high row","Chest on the pad; pull handles down and back."]],
+          free:[["Pull-up bar negatives","Step up, lower yourself over 3–4 s. Stop if the shoulder pinches."],["Chest-supported dumbbell lat row","On a 30° incline, row elbows low toward your hips."]]},
+ "mon:2":{machine:[["Reverse pec deck (light)","Thumbs up, slight elbow bend; hands finish level with your body."],["Cable external rotation","Towel between elbow and ribs; rotate the hand out. Light."]],
+          free:[["Side-lying dumbbell external rotation","Elbow tucked on a towel, rotate the dumbbell up. 1–3 kg."],["Bent-over rear-delt raise","Hinge forward, flat back, light dumbbells, thumbs up."]],
+          body:[["Prone W lift","Face-down, elbows bent at your sides; lift and squeeze 2 s."]]},
+ "mon:3":{machine:[["Cable Y-raise, both arms","Hold opposite low cables, raise into a Y. Very light."]],
+          free:[["Incline dumbbell Y-raise","Chest on a 30° bench, raise light dumbbells into a Y, thumbs up."]],
+          body:[["Wall Y-slide with lift-off","Forearms on a wall, slide up into a Y, lift hands off 2 cm."]]},
+ "mon:4":{machine:[["Wall chin tuck","Back of the head on a wall; tuck and slide the head up the wall, 5 s."]],
+          free:[["Wall chin tuck","Back of the head on a wall; tuck and slide the head up the wall, 5 s."]],
+          body:[["Wall chin tuck","Back of the head on a wall; tuck and slide the head up the wall, 5 s."]]},
+ "mon:5":{machine:[["Foam roller pec opener","Lie lengthways on a roller, arms out to the sides, palms up, 60 s."]],
+          free:[["Foam roller pec opener","Lie lengthways on a roller, arms out to the sides, palms up, 60 s."]],
+          body:[["Floor snow angels","On your back, knees bent; slide arms overhead and back down slowly."]]},
+ "tue:0":{machine:[["Smith machine hip thrust","Upper back on a bench, pad the bar. Quick to set up."],["Cable pull-through","Rope between the legs; hips back, squeeze glutes to stand."]],
+          free:[["Dumbbell glute bridge","Shoulders on the floor, dumbbell on the hips. No bench needed."],["Single-leg hip thrust","Upper back on a bench; dumbbell on the working hip."]],
+          body:[["Banded glute bridge, feet on couch","Mini band above the knees, heels on the couch edge."]]},
+ "tue:1":{machine:[["Single-leg leg press","Light, one foot mid-platform, controlled."]],
+          free:[["Goblet split squat","One dumbbell at the chest; easier to balance than two."],["Rear-foot-elevated split squat","Back foot on a bench; start with a short range."]],
+          body:[["Slow reverse lunge","Step back softly, 3 s down. Hold a wall if needed."]]},
+ "tue:2":{machine:[["45° back extension (glute bias)","Pad at the hips, upper back slightly rounded; squeeze glutes to rise."],["Smith machine RDL","Bar slides down the thighs; soft knees."]],
+          free:[["Kettlebell deadlift","Bell between your feet; hips back, stand tall."],["Barbell RDL (light)","Bar stays against the legs; stop at a hamstring stretch."]],
+          body:[["Hip hinge to wall","Stand a foot from a wall, push hips back to touch it. Hold a backpack to load it."]]},
+ "tue:3":{machine:[["Leg extension (partial range)","Light; only from 90° to about 30° bend, slow lowering."],["Hack or pendulum squat (feet high)","Feet high on the plate, shallow pain-free depth."]],
+          free:[["Dumbbell step-down (low step)","Stand on a low step; lower the other heel to tap the floor slowly."],["Heels-elevated goblet squat to box","Heels on a small plate, sit straight down to a box."]],
+          body:[["Slow step-down from stairs","On the bottom stair, tap the other heel to the floor over 3 s."]]},
+ "tue:4":{machine:[["Multi-hip machine (abduction)","Pad on the outside of the knee; push out, small range."]],
+          free:[["Side-lying hip abduction (ankle weight)","Top leg slightly back; lift the heel toward the ceiling."],["Banded lateral walk","Mini band above the knees, stay low."]],
+          body:[["Side plank clamshell","On your side, knees bent, hips up; open the top knee."]]},
+ "tue:5":{machine:[["Half-kneeling hip flexor stretch","Tuck the pelvis, squeeze the back glute, small lean forward."],["Bench pigeon stretch","Front shin across a bench, lean forward with a long spine."]],
+          free:[["Half-kneeling hip flexor stretch","Tuck the pelvis, squeeze the back glute, small lean forward."],["Bench pigeon stretch","Front shin across a bench, lean forward with a long spine."]],
+          body:[["Half-kneeling hip flexor stretch","Tuck the pelvis, squeeze the back glute, small lean forward."]]},
+ "wed:0":{machine:[["Front plank","Forearms under shoulders, squeeze glutes, 20–30 s."],["Tucked hollow hold","Knees bent, lower back pressed to the floor, 10–20 s."]],free:[["Front plank","Forearms under shoulders, squeeze glutes, 20–30 s."],["Tucked hollow hold","Knees bent, lower back pressed to the floor, 10–20 s."]],body:[["Front plank","Forearms under shoulders, squeeze glutes, 20–30 s."],["Tucked hollow hold","Knees bent, lower back pressed to the floor, 10–20 s."]]},
+ "wed:5":{machine:[["Cat-cow + thread the needle","8 slow cat-cows, then 6 thread-the-needle reaches per side."]],free:[["Cat-cow + thread the needle","8 slow cat-cows, then 6 thread-the-needle reaches per side."]],body:[["Cat-cow + thread the needle","8 slow cat-cows, then 6 thread-the-needle reaches per side."]]},
+ "fri:5":{machine:[["Figure-4 stretch + hip flexor stretch","On your back, ankle on the opposite knee, pull in 45 s; then half-kneeling hip flexor stretch."]],free:[["Figure-4 stretch + hip flexor stretch","On your back, ankle on the opposite knee, pull in 45 s; then half-kneeling hip flexor stretch."]],body:[["Figure-4 stretch + hip flexor stretch","On your back, ankle on the opposite knee, pull in 45 s; then half-kneeling hip flexor stretch."]]},
+ "wed:1":{machine:[["Single-arm cable hold","Hold a low cable handle at your side, stand tall without leaning, 30 s."]],
+          free:[["Single-arm farmer carry","One heavy dumbbell, walk 20–30 m standing tall."]]},
+ "wed:2":{machine:[["Bird dog","Hands under shoulders, knees under hips."]],
+          free:[["Bird dog","Hands under shoulders, knees under hips."]]},
+ "wed:3":{machine:[["Half-kneeling cable Pallof press","Down on one knee, glutes on; press out and hold 2 s."],["Band Pallof press","Anchor a gym band to a rack at chest height."]],
+          free:[["Single-arm dumbbell bench press","Lie on a bench, press one dumbbell; don't let the body twist."],["Plank shoulder taps","Feet wide, tap the opposite shoulder without hips rocking."]],
+          body:[["Bear plank shoulder taps","Knees hover 2 cm off the floor; tap the opposite shoulder slowly."]]},
+ "wed:4":{machine:[["Dead bug","Arms to the ceiling, knees at 90°. Lower opposite arm and leg."]],
+          free:[["Swiss-ball dead bug","Squeeze a ball between hands and knees; extend the other arm and leg."]]},
+ "thu:0":{machine:[["Low-incline Smith press","Bench at 15–30°, elbows about 45° from the body."],["Standing cable chest press","Split stance; press both handles forward."]],
+          free:[["Dumbbell floor press","On the floor; elbows touch down and stop. Very shoulder-friendly."],["Push-up on dumbbell handles","Neutral grip on the handles; elevate hands if needed."]],
+          body:[["Pause push-up","1 s pause just above the floor. Hands elevated if needed."]]},
+ "thu:1":{machine:[["Seated cable row (wide grip)","Elbows a little wider for the upper back; no shrugging."],["Plate-loaded low row","Chest on the pad; drive the elbows back."]],
+          free:[["Chest-supported dumbbell row","Face-down on a 30–45° incline."],["Landmine row (single arm)","Bar in a landmine or corner; row the bar end to your hip."]],
+          body:[["Door towel row (both hands)","Towel round both handles of a sturdy closed door; stand on the side it opens away from you."]]},
+ "thu:2":{machine:[["Neutral-grip machine shoulder press (partial)","Stop just below where the shoulder pinches."],["High-incline Smith press","Bench at about 60°, lighter, elbows slightly forward."]],
+          free:[["Half-kneeling single-arm dumbbell press","Neutral grip; press up and slightly forward, ribs down."],["Bottoms-up kettlebell press (light)","Bell upside down; forces a stable shoulder."]]},
+ "thu:3":{machine:[["Cable rear-delt fly","Hold opposite cables at shoulder height; pull out wide."],["Cable face pull","Rope at eye height; hands finish beside your ears."]],
+          free:[["Bent-over rear-delt raise","Hinge forward, flat back, light dumbbells."],["Incline prone Y-T-W","Chest on an incline bench, tiny weights."]],
+          body:[["Prone T raise","Face-down, arms out wide, thumbs up; lift and hold 2 s."]]},
+ "thu:4":{machine:[["Push-up plus","At the top of a push-up, push the floor away so the upper back rounds slightly."]],
+          free:[["Push-up plus","At the top of a push-up, push the floor away so the upper back rounds slightly."]],
+          body:[["Wall slide with reach","Forearms on the wall, slide up and reach a little higher at the top."]]},
+ "thu:5":{machine:[["Child's pose with side reach","Walk hands to one side, breathe into the ribs."]],
+          free:[["Child's pose with side reach","Walk hands to one side, breathe into the ribs."]]},
+ "fri:0":{machine:[["Smith machine RDL","Bar slides down the thighs; soft knees."],["Heavy cable pull-through","Rope between the legs, strong hip snap."]],
+          free:[["Kettlebell deadlift","Bell between your feet; hips back, push the floor away."],["Dumbbell RDL","Dumbbells slide down the thighs, soft knees."]],
+          body:[["Loaded hip hinge to wall","Backpack on; push hips back to touch the wall, stand tall."]]},
+ "fri:1":{machine:[["Leg press (feet high)","Both legs, knee-friendly depth, slow lowering."]],
+          free:[["Goblet reverse lunge","Dumbbell at the chest; step back softly."],["Lateral step-up (low box)","Step up sideways; knee tracks over the toes."]],
+          body:[["Reverse lunge","Hold a wall if needed; 3 s down."]]},
+ "fri:2":{machine:[["Lat pulldown (light, slow)","Pull to the upper chest, 3 s on the way up."],["Single-arm kneeling cable pulldown","Pull the elbow down to your ribs."]],
+          free:[["Kettlebell pullover","Hold the bell by the horns; same as the dumbbell version."]],
+          body:[["Prone towel pulldown","Face-down, towel pulled tight overhead; pull elbows to your ribs."]]},
+ "fri:3":{machine:[["Dumbbell farmer carry","Use dumbbells if the trap bar is taken."]],
+          free:[["Suitcase carry","One heavy dumbbell on one side; don't lean."],["Plate pinch carry","Pinch two plates smooth side out and walk tall."]]},
+ "fri:4":{machine:[["Reverse pec deck (light)","High reps, thumbs up."]],
+          free:[["Bent-over rear-delt raise","Light, flat back."]],
+          body:[["Prone W lift","Face-down, elbows at your sides; lift and squeeze 2 s."]]},
+ "mon:cardio":{machine:[["Incline treadmill intervals","Hard = steep, fast walk with hands off the rails."],["Ski erg or elliptical intervals","Ski erg: hinge and pull down. Elliptical: push the pace."]],
+          free:[["Battle rope intervals","30 s fast waves, 90 s walking. Stand tall."]],
+          body:[["Stair intervals","30 s fast stair climbs, 90 s easy walking."]]},
+ "tue:cardio":{machine:[["Elliptical or bike","Steady and upright."],["Stair climber (slow)","Light hands, upright, steady pace."]]},
+ "wed:cardio":{machine:[["Stationary bike or rower","Easy and steady; long smooth strokes on the rower."]]},
+ "thu:cardio":{machine:[["Ski erg or incline treadmill tempo","3-minute blocks at 7/10."]],
+          free:[["Kettlebell tempo circuit","Each round: goblet squats, kettlebell rows, farmer carry."]]},
+ "fri:cardio":{machine:[["Incline treadmill walk","Hands off the rails."],["Rower (easy)","Long, smooth strokes."]]}
+};
+DAYS.forEach(d => d.ex.forEach((e,i) => e.extra = EXTRA[d.id+":"+i] || {}));
+Object.keys(CARDIO).forEach(id => CARDIO[id].extra = EXTRA[id+":cardio"] || {});
+const eqOpts = (e, k) => [e.o[k], ...(e.extra[k] || [])];
+
 const DESK = [
   ["Chin tucks","10 reps","Sit tall, slide the head back. Undoes forward head posture."],
   ["Doorway or seated pec stretch","30 s","Hands behind head, elbows back. Opens the chest."],
@@ -662,9 +762,13 @@ function renderDay(d){
   return h;
 }
 function cardHTML(key, letter, e, cls){
-    const k = overrides[key] || eq;
-    const [vn, vnote, vcues] = e.o[k];
-    const alts = Object.keys(e.o).filter(x=>x!==k && e.o[x][0]!==vn);
+    const sel = overrides[key] || {k: eq, i: 0}, k = sel.k;
+    const [vn, vnote, vcues] = eqOpts(e, k)[sel.i];
+    // Alternatives: current equipment first, then the others; skip duplicates by name
+    const alts = [];
+    [eq, ...Object.keys(e.o).filter(x=>x!==eq)].forEach(x => eqOpts(e, x).forEach((o,i) => {
+      if(o[0]!==vn && !alts.some(a=>a.o[0]===o[0])) alts.push({k:x, i, o});
+    }));
     const isDone = !!checks[key];
     return `<article class="card${cls}${isDone?' is-done':''}">
       <div class="ch">
@@ -680,7 +784,7 @@ function cardHTML(key, letter, e, cls){
       ${e.pain?`<p class="pain">${ic("alert")}<span><b>If it hurts:</b> ${esc(e.pain)}</span></p>`:''}
       <div class="actions">
         <a class="demo" href="${yt(vn)}" target="_blank" rel="noopener">${ic("play")}Watch demo</a>
-        ${alts.length?`<div class="alts"><span class="k">Swap to:</span>${alts.map(a=>`<button type="button" data-swap="${key}" data-to="${a}">${LABEL[a]}: ${esc(e.o[a][0])}</button>`).join("")}</div>`:''}
+        ${alts.length?`<details class="alts"><summary>${ic("swap")}Busy? ${alts.length} alternative${alts.length===1?"":"s"}${ic("chevron")}</summary><div class="altlist">${alts.map(a=>`<button type="button" data-swap="${key}" data-k="${a.k}" data-i="${a.i}"><span class="k">${LABEL[a.k]}</span>${esc(a.o[0])}</button>`).join("")}</div></details>`:''}
       </div>
     </article>`;
 }
@@ -791,7 +895,7 @@ view.addEventListener("toggle",e=>{ if(e.target.matches("details.warm")) warmOpe
 view.addEventListener("click",e=>{
   if(e.target.closest("[data-share]")){ share(); return; }
   const sw=e.target.closest("button[data-swap]");
-  if(sw){ overrides[sw.dataset.swap]=sw.dataset.to; render(); return; }
+  if(sw){ overrides[sw.dataset.swap]={k: sw.dataset.k, i: +sw.dataset.i}; render(); return; }
   const r=e.target.closest("button[data-reset]");
   if(r && confirm("Clear all ticks for this day?")){ Object.keys(checks).forEach(k=>{ if(k.startsWith(r.dataset.reset+":")) delete checks[k]; }); S.set("dr-checks",checks); record(); render(); }
 });
