@@ -1,0 +1,857 @@
+{
+"ab-wheel": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"abductor-machine": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"air-bike": {
+"cyclic": true,
+"keys": 2,
+"steps": 10
+},
+"assisted-pullup": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"back-extension": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"bag-carry": {
+"cyclic": true,
+"keys": 4,
+"steps": 5
+},
+"ball-crunch": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"ball-dead-bug": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"band-bridge-couch": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"band-pull-apart": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"band-w": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"battle-ropes": {
+"cyclic": true,
+"keys": 2,
+"steps": 5
+},
+"bb-rdl": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"bb-rollout": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"bear-taps": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"bench-ham": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"bench-pull-in": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"bentover-rear-delt": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"bike": {
+"cyclic": true,
+"keys": 2,
+"steps": 10
+},
+"bird-dog": {
+"cyclic": false,
+"keys": 4,
+"steps": 6
+},
+"cable-bird-dog": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"cable-chin-tuck": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"cable-crunch": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"cable-dead-bug": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"cable-er": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"cable-hip-abd": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"cable-hold": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"cable-lat-stretch": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"cable-lift": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"cable-pec-stretch": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"cable-rear-delt-fly": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"cable-serratus": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"cable-y-raise": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"captains-chair": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"cat-cow": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"chair-squat": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"chest-press-machine": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"childs-pose": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"chin-tuck": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"clamshell": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"couch-stretch": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"couch-stretch-bench": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"cross-crunch": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"crunch": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"db-bench-1arm": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"db-dead-bug": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"db-glute-bridge": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"db-incline-row": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"db-pullover": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"db-rdl": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"db-rev-lunge": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"dead-bug": {
+"cyclic": false,
+"keys": 4,
+"steps": 6
+},
+"door-towel-row": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"door-towel-row-1arm": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"elliptical": {
+"cyclic": true,
+"keys": 2,
+"steps": 10
+},
+"face-pull": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"farmer-carry": {
+"cyclic": true,
+"keys": 4,
+"steps": 5
+},
+"figure-4": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"floor-press": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"floor-ytw": {
+"cyclic": false,
+"keys": 4,
+"steps": 6
+},
+"front-plank": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"glute-bridge": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"glute-drive": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"glute-squeeze": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"goblet-box-squat": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"goblet-rev-lunge": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"goblet-split": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"hack-squat": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"heels-up-goblet": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"hip-hinge-wall": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"hip-switch": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"hip-thrust": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"hk-db-press": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"hk-hip-flexor": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"hk-pallof": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"incline-db-press": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"incline-push-up": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"incline-rear-delt": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"incline-y-raise": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"incline-ytw": {
+"cyclic": false,
+"keys": 4,
+"steps": 6
+},
+"kb-complex": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"kb-deadlift": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"kb-press": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"kb-pullover": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"kb-swing": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"kneel-cable-pulldown": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"landmine-pallof": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"landmine-press": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"landmine-rainbow": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"landmine-row": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"lat-pulldown": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"lateral-walk": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"leg-extension": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"leg-press": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"loaded-hinge-wall": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"lying-ham-towel": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"lying-leg-raise": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"machine-crunch": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"machine-high-row": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"machine-row": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"mcgill": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"mountain-climbers": {
+"cyclic": true,
+"keys": 4,
+"steps": 6
+},
+"multi-hip": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"one-arm-db-row": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"open-book": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"pallof-press": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"pallof-rotation": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"pec-opener": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"pec-stretch": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"pigeon-bench": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"plank-reach": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"plate-crunch": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"plate-pinch": {
+"cyclic": true,
+"keys": 4,
+"steps": 5
+},
+"prone-row": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"prone-t": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"prone-towel-pulldown": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"prone-w": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"pull-through": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"pullup-negative": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"push-up": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"push-up-db": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"push-up-side-plank": {
+"cyclic": false,
+"keys": 3,
+"steps": 6
+},
+"rev-lunge": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"reverse-crunch": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"reverse-pec-deck": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"rfess": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"rower": {
+"cyclic": true,
+"keys": 2,
+"steps": 6
+},
+"ruck-walk": {
+"cyclic": true,
+"keys": 4,
+"steps": 5
+},
+"scap-squeeze": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"seal-row": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"seated-cable-row": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"seated-pull-in": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"shoulder-press-machine": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"shoulder-taps": {
+"cyclic": false,
+"keys": 4,
+"steps": 6
+},
+"side-lying-abd": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"side-lying-er": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"side-plank": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"single-arm-cable-press": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"single-arm-cable-row": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"single-leg-bridge": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"single-leg-hip-thrust": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"single-leg-rdl": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"single-leg-rdl-support": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"smith-hip-thrust": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"smith-incline": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"smith-rdl": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"smith-split": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"snow-angel": {
+"cyclic": false,
+"keys": 4,
+"steps": 6
+},
+"stair-climber": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"stair-step": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"standing-cable-press": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"standing-hip-flexor": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"step-mill": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"step-up": {
+"cyclic": false,
+"keys": 4,
+"steps": 6
+},
+"straight-arm-pulldown": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"suitcase": {
+"cyclic": true,
+"keys": 4,
+"steps": 5
+},
+"supine-chin-tuck": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"supine-punch": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"supported-split": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"swimmers": {
+"cyclic": false,
+"keys": 4,
+"steps": 6
+},
+"t-spine-chair": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"t-spine-roller": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"tbar-row": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"trap-bar-carry": {
+"cyclic": true,
+"keys": 4,
+"steps": 5
+},
+"trap-bar-deadlift": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"treadmill": {
+"cyclic": true,
+"keys": 4,
+"steps": 5
+},
+"tuck-hollow": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"walk": {
+"cyclic": true,
+"keys": 4,
+"steps": 5
+},
+"wall-chin-tuck": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"wall-slides": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"woodchop": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+}
+}
