@@ -61,8 +61,10 @@ const total = log => Object.values(log).filter(isDone).length;
 function shareText(name, log, today = new Date()) {
   const w = week(log, today), s = streak(log, today);
   const icon = { done: "✅", partial: "🟡", "": "⬜" };
+  const we = [5, 6].reduce((a, i) => a + ((log[dkey(addDays(monday(today), i))] || {}).items || []).length, 0); // logged Sat/Sun activities
   return `💪 ${name || "Me"} · Desk Reset\n` +
     `This week: ${w.map(x => x.label + " " + icon[x.state]).join("  ")} (${w.filter(x => x.state === "done").length}/5)\n` +
+    (we ? `Weekend: ${we} extra activit${we === 1 ? "y" : "ies"}\n` : "") +
     `Streak: ${s} session${s === 1 ? "" : "s"} · Total: ${total(log)}`;
 }
 

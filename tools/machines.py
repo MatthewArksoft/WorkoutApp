@@ -182,7 +182,10 @@ def shopping_bag(n, hand, out=V((0, 0, 0))):
     for k, dx in enumerate((-0.07, 0.07)):
         rod(n + f"_h{k}", top + V((dx, 0, 0)), hand, 0.006, "uphol")
 
-def mini_band(n, a, b): rod(n, V(a), V(b), 0.018, "band")
+def mini_band(n, a, b):
+    """A stretched loop band: two flat strands, not one stiff rod."""
+    a, b = V(a), V(b); u = (b - a).normalized(); off = (u.cross(V((0, 0, 1))) if abs(u.z) > 0.9 else V((0, 0, 1)) - u * u.z).normalized() * 0.014
+    rod(n, a + off, b + off, 0.007, "band"); rod(n + "_2", a - off, b - off, 0.007, "band")
 
 # ---------------- machines ----------------
 def cable_column(n, x, y, pulley_z, h=2.2):
@@ -753,3 +756,34 @@ def hr_machine(n, J0, J, t=0.85):
         tube(n + f"_ctr{s}", piv, tip, 0.035)
         tube(n + f"_horn{s}", tip, tip + V((0, sg * 0.2, 0)), 0.025, "chrome")
         plate_between(n + f"_plt{s}", tip + V((0, sg * 0.08, 0)), tip + V((0, sg * 0.14, 0)), 0.2)
+
+# ---------- band bar (home): flat platform with a band to each end of a bar with two foam handles ----------
+def band_bar(n, J, anchors):
+    """Bar held in both hands (foam grip under each fist), one band from each platform anchor to the bar end beyond each hand."""
+    hl, hr = J["hand_l"], J["hand_r"]; u = (hl - hr).normalized()
+    el, er = hl + u * 0.13, hr - u * 0.13   # bar ends well outside the fists so the bands clear the elbows
+    rod(n + "_bar", el, er, 0.014, "metal")
+    for k, h in (("l", hl), ("r", hr)): rod(n + "_grip_" + k, h - u * 0.06, h + u * 0.06, 0.021, "foam")
+    for k, a, e in (("l", anchors[0], el), ("r", anchors[1], er)): rod(n + "_band_" + k, V(a), e, 0.011, "band")
+
+def band_plate(J0):
+    """Standing: the platform under both feet (prop 'plat' raises support_z to its top); returns the two band anchors."""
+    c = (J0["ankle_l"] + J0["ankle_r"]) / 2 + V((0.05, 0, 0))
+    box("plat", (c.x, c.y, BB_PLAT_H / 2), (0.30, 0.58, BB_PLAT_H), "plate")
+    return [V((c.x, c.y + 0.27, BB_PLAT_H)), V((c.x, c.y - 0.27, BB_PLAT_H))]
+
+def band_plate_feet(J0):
+    """Seated, legs out: the platform stood on its long edge against both soles; returns the two band anchors."""
+    x = max(J0["toe_l"].x, J0["toe_r"].x) + 0.04; y = (J0["ankle_l"].y + J0["ankle_r"].y) / 2
+    box("vplat", (x, y, 0.15), (BB_PLAT_H, 0.58, 0.30), "plate")
+    return [V((x - BB_PLAT_H / 2, y + 0.27, 0.24)), V((x - BB_PLAT_H / 2, y - 0.27, 0.24))]
+
+def chair_back_at(n, p, side=1):
+    """Dining chair standing beside the person with the top rail of its backrest under the supporting hand at p; the seat
+    extends away from the body (side +1 = toward +Y / the person's left)."""
+    p = V(p); s = side; top = max(p.z - 0.03, 0.62); y0 = p.y + s * 0.02
+    box(n + "_rail", (p.x, y0, top), (0.42, 0.045, 0.06), "wood")
+    for k, dx in enumerate((-0.19, 0.19)):
+        tube(n + f"_post{k}", (p.x + dx, y0, 0.0), (p.x + dx, y0, top), 0.016, "wood")
+        tube(n + f"_fleg{k}", (p.x + dx, y0 + s * 0.40, 0.0), (p.x + dx, y0 + s * 0.40, 0.45), 0.016, "wood")
+    box(n + "_seat", (p.x, y0 + s * 0.21, 0.455), (0.44, 0.44, 0.04), "wood")

@@ -51,7 +51,7 @@
 },
 "band-w": {
 "cyclic": false,
-"keys": 2,
+"keys": 4,
 "steps": 6
 },
 "battle-ropes": {
@@ -59,7 +59,37 @@
 "keys": 2,
 "steps": 8
 },
+"bb-bent-row-home": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"bb-curl-home": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"bb-deadlift-home": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"bb-face-pull-home": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"bb-press-home": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
 "bb-rdl": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"bb-rdl-home": {
 "cyclic": false,
 "keys": 2,
 "steps": 6
@@ -69,9 +99,24 @@
 "keys": 2,
 "steps": 6
 },
-"bear-taps": {
+"bb-seated-row-home": {
 "cyclic": false,
 "keys": 2,
+"steps": 6
+},
+"bb-split-home": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"bb-squat-home": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"bear-taps": {
+"cyclic": false,
+"keys": 4,
 "steps": 6
 },
 "bench-ham": {
@@ -211,7 +256,7 @@
 },
 "cross-crunch": {
 "cyclic": false,
-"keys": 2,
+"keys": 4,
 "steps": 6
 },
 "crunch": {
@@ -514,6 +559,16 @@
 "keys": 2,
 "steps": 6
 },
+"mb-bridge-home": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"mb-pulldown-home": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
 "mcgill": {
 "cyclic": false,
 "keys": 2,
@@ -566,7 +621,7 @@
 },
 "plank-reach": {
 "cyclic": false,
-"keys": 2,
+"keys": 4,
 "steps": 6
 },
 "plate-crunch": {
@@ -846,7 +901,7 @@
 },
 "swimmers": {
 "cyclic": false,
-"keys": 4,
+"keys": 6,
 "steps": 6
 },
 "t-spine-chair": {

@@ -1,7 +1,7 @@
-# Weekday 17:30 SAST (15:30 UTC) gym reminder via Web Push.
+# Weekday 17:30 SAST (15:30 UTC) workout reminder via Web Push.
 # Secrets: VAPID_PRIVATE_KEY, SUBSCRIPTIONS (the "reminder codes" copied from the app, pasted one after another).
 # GitHub may start scheduled runs a few minutes late. "Run workflow" on the Actions tab sends one now (for testing).
-name: Gym reminder
+name: Workout reminder
 on:
   schedule:
     - cron: "30 15 * * 1-5"

@@ -4,6 +4,8 @@
 import hashlib, json, os, re, sys
 
 m = json.load(open(sys.argv[1], encoding="utf8"))
+_app = re.sub(r"const DEMO = \{.*?\};\nconst DM = \{.*?\};", "", open("index.html", encoding="utf8").read(), count=1, flags=re.S)
+m = {k: v for k, v in m.items() if json.dumps(k, ensure_ascii=False) in _app}   # only exercises the app actually lists (home program)
 meta = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "sprite_meta.json")))
 used = set(m.values())
 ext = lambda t: "png" if meta.get(t, [0])[0] == 1 else "webp"   # DM[t][0] == 1 frame -> still PNG, else animated WebP

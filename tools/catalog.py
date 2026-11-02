@@ -408,7 +408,7 @@ T("plate-pinch", ["Plate pinch carry"], gait("Walking_Treadmill", 0, fk_armL=[1,
 T("trap-bar-carry", ["Trap-bar carry"], gait("Walking_Treadmill", 0, fk_armL=[1, 14, 1, 14], fk_armR=[1, 14, 1, 14]), lambda J, J0, *a: trap_bar("tb", J), hands="grip", steps=10)
 T("bag-carry", ["Loaded backpack or shopping-bag carry"], gait("Walking_Treadmill", 0, fk_armL=[1, 12, 1, 10], fk_armR=[1, 12, 1, 10]),
   lambda J, J0, *a: (backpack("pack", J), shopping_bag("bag_l", J["hand_l"], V((0, 0.12, 0))), shopping_bag("bag_r", J["hand_r"], V((0, -0.12, 0)))), hands="grip", steps=10)
-T("walk", ["Brisk outdoor walk"], gait("Walking_Treadmill", 0), None, steps=10)
+T("walk", ["Brisk outdoor walk", "Walk intervals", "Neighbourhood walk", "Long neighbourhood walk", "Tempo walk"], gait("Walking_Treadmill", 0), None, steps=10)
 T("ruck-walk", ["Ruck walk (backpack 5–10 kg)"], gait("Walking_Treadmill", 0), lambda J, J0, *a: backpack("pack", J), steps=10)
 T("treadmill", ["Incline treadmill walk", "Incline treadmill walk (5–10%)", "Incline treadmill intervals", "Ski erg or incline treadmill tempo"],
   gait("Walking_Treadmill", 0), lambda J, J0, *a: treadmill("tm", J0, incline=5), steps=10)
@@ -1725,3 +1725,178 @@ for _n in ("hip-hinge-wall", "loaded-hinge-wall"):
     _t(_n).update(keys=[_hinge(180), _hinge(118)], anchor={"x": ("ankle_r", None)}, stance=None, cam=dict(az=-70, el=8))
 # 90/90 hip switch: front-high camera so the knees visibly drop to one side, then the other
 _t("hip-switch")["cam"] = dict(az=-8, el=30)
+
+# ---------- home rebuild (2026-11-02): contacts on the mat ----------
+HK_FTH, HK_FTHF = 98, 107   # front-thigh pitch per character that puts the front sole flat on the floor with the back shin down
+# Half-kneeling family: hand-set legs (the photo legs left the down knee 5-8 cm off the mat). Down knee + shin + top of the
+# foot on the mat (on_knees grounds the shins), front shin vertical with the sole flat; the front thigh angle that puts that
+# sole on the floor differs per character (leg proportions), hence _f.
+def HKLEGS(back="r", f=False, bth=0):
+    fr = "l" if back == "r" else "r"
+    return {"leg" + back.upper(): [bth, 6, -90, 6, -96], "leg" + fr.upper(): [HK_FTHF if f else HK_FTH, 8, 0, 8]}
+def _hkk(back="r", bth=0, **kw):
+    return {**P(**HKLEGS(back, False, bth), **kw), "_f": HKLEGS(back, True, bth)}
+_t("hk-hip-flexor").update(keys=_SexKeys([_hkk(bth=-8, T=177, S=179,
+                                   reach={"hand_l": ("knee_l", (-0.04, 0.06, 0.07), "world"), "hand_r": ("knee_l", (-0.07, -0.05, 0.09), "world")})] * 2), on_knees=True)
+
+# Quadruped (cat-cow / bird dog): hand-set FK so knees, shins, tops of the feet and both palms rest on the mat
+# (the photo poses hovered the knees 10-19 cm and one hand 6-12 cm off it). Arms straight and vertical under the
+# shoulders; the trunk pitch of each key is solved per character so the straight arms just reach the mat with the
+# shins down (the spine curve moves the shoulders, and arm vs trunk length differs between the two characters).
+def QUAD(t, **rel):   # rel: spine/neck/head pitches relative to the trunk pitch t
+    return P(**{**dict(T=t, S=t, N=t + 3, H=t + 3, armL=[0, 8, 0, 8], armR=[0, 8, 0, 8], legL=[0, 6, -90, 6, -96], legR=[0, 6, -90, 6, -96]),
+                **{k: t + v for k, v in rel.items()}})
+def _qk(tm, tf, **rel): return {**QUAD(tm, **rel), "_f": QUAD(tf, **rel)}
+QCOW, QCAT = dict(S1=-21, S2=-11, S3=1, N=21, H=27), dict(S1=23, S2=7, S3=-25, N=-47, H=-59)
+_t("cat-cow").update(keys=_SexKeys([_qk(98.2, 103.9, **QCOW), _qk(92.1, 96.2, **QCAT)]), on_knees=True)
+BD_ARM, BD_LEG = [92, 4, 92, 4], [-88, 4, -88, 4, -20]   # reach long, not high: arm and leg level with the back
+def _bdk(**limbs):
+    k = _qk(90.8, 96.2); k.update(limbs); k["_f"].update(limbs); return k
+_t("bird-dog").update(keys=_SexKeys([_bdk(), _bdk(armR=BD_ARM, legL=BD_LEG), _bdk(), _bdk(armL=BD_ARM, legR=BD_LEG)]), hands="flat", on_knees=True)
+IPU_V = (131, 118, [2, 10, 2, 10], [-50, 28, 22, 6])   # top/bottom trunk pitch, top/bottom FK arms
+# Incline push-up: hand-set straight body (push-up's _pu_body) pivoting about planted toes, palms planted on a knee-high
+# step; elbows bend to bring the chest to the step edge. Photo keys left the male's hands 6-23 cm above the step.
+IPU_T0, IPU_T1, IPU_A0, IPU_A1 = IPU_V
+_t("incline-push-up").update(keys=[P(**_pu_body(IPU_T0), **both(IPU_A0)), dict(P(**_pu_body(IPU_T1), **both(IPU_A1)), anchor=PU_PIV)],
+                             props=lambda J, J0, *a: box_step("box", J0["hands"].x + 0.14, J0["hands"].z - 0.03, d_=0.4, w=0.62),   # palms ~6 cm in from the near edge; body clear of the step
+                             plant=["foot_l", "foot_r", "hand_l", "hand_r"], hands="flat", nolift=True, anchor={})
+
+# ---------- home rebuild (2026-11-02): review fixes ----------
+# Mini-band W pull-apart: after rotating the hands out, raise into the W (elbows down by the sides, hands up by the ears).
+_w2 = V2((0.05, 0.7, -0.7)) + V2((0.32, 0.22, 0.92))
+_t("band-w").update(keys=list(_t("band-w")["keys"]) + [K("External_Rotation_with_Band", 0, fk_armL=_w2, fk_armR=list(_w2))], pingpong=True)
+# Prone towel pulldown: a towel pulled taut is a flat strip, not a stiff round rod.
+def _strip(n, a, b, width, thick, up=(0, 0, 1)):   # flat fabric strip a->b, its face toward `up`
+    ax = b - a; L = ax.length; ax.normalize(); side = V(up).cross(ax)
+    if side.length < 1e-3: side = V((1, 0, 0)).cross(ax)
+    side.normalize(); nrm = ax.cross(side).normalized()
+    box(n, (a + b) / 2, (L, width, thick), "towel").rotation_quaternion = Matrix((ax, side, nrm)).transposed().to_quaternion()
+def _towel(J, J0, *a):   # taut strip between the fists with a short loose end hanging below each hand
+    _strip("towel", J["hand_l"], J["hand_r"], 0.08, 0.008)
+    for s in "lr": _strip("towel_end_" + s, J["hand_" + s], J["hand_" + s] + V((0.0, 0.0, -0.13)), 0.07, 0.008, (1, 0, 0))
+_t("prone-towel-pulldown")["props"] = P_(MAT, _towel)
+# Chin tucks: a deliberate head-and-shoulders close-up (a framing cut at mid-thigh read as broken, and the 4-5 cm head glide
+# was a few pixels at full-body scale).
+for _n in ("chin-tuck", "wall-chin-tuck"):
+    _t(_n).update(focus=["head", "neck", "shoulder_l", "shoulder_r", "chest"], cam={**_t(_n)["cam"], "margin": 2.5})
+# Shoulder blade squeezes: symmetric, elbows bent at the sides drawing back (was lopsided, one hand across the belly); seen
+# from behind so the blades visibly pull together.
+_SQZ = dict(T=180, S=180, N=180, H=180, legL=[0, 6, 0, 6], legR=[0, 6, 0, 6])
+_t("scap-squeeze").update(keys=[P(**_SQZ, **both([12, 10, 86, 6])), P(**_SQZ, **both([-24, 16, 82, 10]))], anchor={}, stance=None,
+                          cam=dict(az=-132, el=10))
+# Supported single-leg RDL / split squat: hold a chair back at home (was a gym-style steel post on a base plate).
+_t("single-leg-rdl-support")["props"] = lambda J, J0, ctx=None, *a: chair_back_at("chair", _post(ctx) if ctx else J0["hand_l"], 1)
+def _post_ss2(J0): return V((J0["shoulder_r"].x + 0.04, J0["shoulder_r"].y - 0.30, J0["shoulder_r"].z - 0.40))   # beside the hip, clear of the front leg
+_t("supported-split").update(props=lambda J, J0, *a: chair_back_at("chair", _post_ss2(J0), -1), track=lambda ctx: {"hand_r": (_post_ss2(ctx["J0"]), None)})
+# Side plank: the hand-posed forearm side plank (elbow under the shoulder, straight line head to stacked feet, top hand on
+# the hip); the photo hold had a straight support arm and the top leg lifted high (a star plank, not this exercise).
+SPK_T, SPK_TF, SPK_TOP = 102.9, 99.4, 9   # trunk pitch per character with the bottom forearm and the feet touching together (solved); the top leg angles down this much so the feet stack
+def _spk(t): return P(T=t, H=t, roll=-90, armL=[0, 0, 90, -90], armR=[-10, 0, 40, 0], legL=[t - 180, 0, t - 180, 0, 90, -90], legR=[t - 180 + SPK_TOP, 0, t - 180 + SPK_TOP, 0, 90, 90])
+_t("side-plank").update(keys=_SexKeys([{**_spk(SPK_T), "_f": _spk(SPK_TF)}] * 2), anchor={}, cam=dict(az=-80, el=24, margin=1.2))
+# Plank shoulder taps: the push-up's straight-arm high plank (arms were bent and the support palm curled), feet wide; one
+# hand at a time lifts to tap the opposite shoulder while the other palm stays flat on the mat.
+def _plank_mat(J, J0, *a): box("mat", ((J0["hands"].x + J0["toe_l"].x) / 2, 0, 0.006), (1.9, 0.68, 0.012), "mat")   # under hands AND toes
+ST_V = (30, 165)   # tapping arm: upper-arm / forearm pitch
+ST_TAP = [ST_V[0], -34, ST_V[1], -70]
+PLANK_T, PLANK_TF = 104.3, 105.2   # straight-arm high plank pitch per character: palms and toes touch the floor together (solved)
+def _stb(t):
+    b = _pu_body(t); b["legL"][1] = b["legR"][1] = 16; b["legL"][3] = b["legR"][3] = 16; return b   # feet wide
+def _stk(side=None):
+    k = {**P(**_stb(PLANK_T), **both(PUX_TOP_ARM)), "_f": _stb(PLANK_TF)}
+    if side: k["arm" + side] = list(ST_TAP)
+    return k
+_t("shoulder-taps").update(keys=_SexKeys([_stk(), _stk("R"), _stk(), _stk("L")]), props=_plank_mat,
+                           plant=["foot_l", "foot_r"], hands="flat", anchor={}, nolift=True, steps=6)
+# 90/90 hip switches: three-quarter camera again (the front-high view made the shoulders read as broken); palms flat on the
+# mat behind the hips, fingers pointing back (they sank ~7 cm through the floor).
+_t("hip-switch").update(cam=dict(az=-40, el=15), hands="flat", handdir=-115, plant=["hand_l", "hand_r"])   # palms pinned flat where the key-0 arms put them
+
+# Push-up plus: same per-character straight-arm plank pitch (the male's palms hovered ~3 cm), palms seated flat.
+_t("push-up-plus").update(keys=_SexKeys([{**P(**_pup(o[0], PLANK_T), **both(PUX_TOP_ARM)), "_f": _pup(o[0], PLANK_TF)} for o in (PUP_RET, PUP_PRO)]))
+# Flat hands that rest on the floor / mat lie flat on it every frame (they hovered 1.5-8 cm or sank in).
+for _n in ("front-plank", "push-up-plus", "clamshell", "side-plank", "open-book", "glute-bridge", "single-leg-bridge",
+           "mb-bridge-home", "band-bridge-couch", "snow-angel", "push-up", "reverse-crunch", "supine-chin-tuck"):
+    if any(x["name"] == _n for x in CAT): _t(_n).update(floor_palms=True)
+_t("front-plank")["hands"] = "flat"
+# Open book: the folded-towel pillow sat ~5 cm too high (the head sank into it).
+def _ob_mat2(J, J0, *a):
+    box("mat", (J0["pelvis"].x + 0.2, 0.05, 0.006), (2.0, 1.8, 0.012), "mat")
+    h = J0["head"].z - 0.19; box("pillow", (J0["head"].x + 0.04, J0["head"].y, h / 2 + 0.006), (0.2, 0.24, h - 0.012), "pad")   # under the head only, clear of the shoulder
+_t("open-book")["props"] = _ob_mat2
+# Stair step-up: the stairs sat 8-9 cm too close (the trailing shin passed through the bottom step).
+_t("stair-step")["props"] = lambda J, J0, *a: stairs("st", J0["ankle_l"].x - 0.02, rise=0.38 / 2, run=0.3, steps=2)
+
+# ---------- home rebuild: supine ab family ----------
+AB_S3, AB_TW = 248, 30   # upper-spine pitch at the top of a curl-up, trunk twist of the cross-body crunch
+# Supine ab family on the dead bug's floor base (sb: lying on the mat, knees bent, feet flat): the shoulder blades curl just
+# off the mat while the pelvis and lower back stay down. (Crunch sat halfway up, the cross-body crunch floated above the
+# mat on its feet, the tucked hollow hold was a balanced V-sit.)
+AB_HEAD = {"hand_l": ("head", (0.03, 0.09, -0.11)), "hand_r": ("head", (0.03, -0.09, -0.11))}        # fingertips behind the ears, elbows wide
+AB_CHEST = {"hand_l": ("shoulder_r", (0.10, 0.0, 0.09), "world"), "hand_r": ("shoulder_l", (0.13, 0.0, 0.05), "world")}   # one forearm resting over the other   # arms crossed on the chest
+AB_ARM = V2((0.45, 0.25, 0.85)) + V2((-0.25, -0.95, 0.15))          # crossed on the chest (FK start for the reach)
+AB_HEADARM = V2((-0.45, 0.85, 0.25)) + V2((-0.3, -0.9, 0.3))   # elbows wide, hands behind the head
+CR_UP = dict(S1=266, S2=257, S3=AB_S3, N=AB_S3 - 12, H=AB_S3 - 26)   # shoulder blades just clear the mat, chin tucked, eyes toward the knees
+_AB = dict(hands="relaxed", anchor={}, stance=None, cam=dict(az=-70, el=12))
+_t("crunch").update(keys=[sb(**both(AB_ARM)), sb(**CR_UP, **both(AB_ARM))], reach=AB_CHEST, **_AB)
+_XK = dict(S1=264, S2=254, S3=AB_S3 - 4, N=AB_S3 - 16, H=AB_S3 - 28)
+_t("cross-crunch").update(keys=[sb(**both(AB_HEADARM)), sb(**_XK, twist=AB_TW, legR=[190, 8, 92, 8], **both(AB_HEADARM)),
+                                sb(**both(AB_HEADARM)), sb(**_XK, twist=-AB_TW, legL=[190, 8, 92, 8], **both(AB_HEADARM))], reach=AB_HEAD, steps=6, **_AB)
+_t("tuck-hollow").pop("reach", None)
+_t("tuck-hollow").update(keys=[sb(S1=268, S2=260, S3=AB_S3 + 4, N=AB_S3 - 2, H=AB_S3 - 8, legL=DBUG_TAB, legR=DBUG_TAB, **both([118, 10, 118, 10]))] * 2, **_AB)
+
+# ---------- home: band bar (platform + band + bar with two handles), mini bands ----------
+# Standing moves: feet on the platform (raised support), bar in both fists, a band from each platform end to the bar end.
+def _bb_stand(J, J0, *a): band_bar("bb", J, band_plate(J0))
+def _bb_seat(J, J0, *a): mat("mat", J0); band_bar("bb", J, band_plate_feet(J0))
+BB_LEGS = dict(legL=[0, 7, 0, 7], legR=[0, 7, 0, 7])
+BB_HANG = [10, 2, 10, 2]                     # arms hang just in front of the thighs, bar across the front
+def _bbs(t=180, s=None, **kw):              # standing key: trunk t, neutral neck/head in line with the spine
+    s = t if s is None else s
+    return P(**{**dict(T=t, S=s, N=s + 2, H=s + 4, **BB_LEGS, **both(BB_HANG)), **kw})
+_BB = dict(hands="grip", stance=None, anchor={}, cam=dict(az=-62, el=10))
+# Romanian deadlift: soft knees, hips back with a flat back to ~65 deg, bar slides down the thighs to below the knees.
+T("bb-rdl-home", ["Band-bar Romanian deadlift"], [_bbs(), _bbs(115, legL=[15, 7, -4, 7], legR=[15, 7, -4, 7], **both([0, 3, 0, 3]))], _bb_stand, **_BB)
+# Deadlift: knees bend more, hips lower, bar from mid-shin to standing tall.
+T("bb-deadlift-home", ["Band-bar deadlift"], [_bbs(), _bbs(122, legL=[58, 8, -36, 8], legR=[58, 8, -36, 8], **both([0, 3, 0, 3]))], _bb_stand, **_BB)
+# Bent-over row: fixed ~45 deg hinge, arms hang -> elbows drive back to the hips, bar to the belly button.
+_BR = dict(legL=[18, 7, -6, 7], legR=[18, 7, -6, 7])
+T("bb-bent-row-home", ["Band-bar bent-over row"], [_bbs(132, **_BR, **both([0, 4, 0, 4])), _bbs(132, **_BR, **both([-62, 16, 8, 6]))], _bb_stand, **_BB)
+# Squat: bar across the front of the shoulders (fists by the collarbones, elbows up), sit back and down.
+_SQ_HANDS = {"hand_l": ("shoulder_l", (0.10, -0.06, -0.02)), "hand_r": ("shoulder_r", (0.10, 0.06, -0.02))}
+_SQ_ARM = [60, 30, 170, 10]
+T("bb-squat-home", ["Band-bar squat"], [_bbs(**both(_SQ_ARM)), _bbs(152, legL=[76, 14, -28, 12], legR=[76, 14, -28, 12], **both(_SQ_ARM))],
+  _bb_stand, reach=_SQ_HANDS, **_BB)
+# Shoulder press: bar from the front of the shoulders to overhead (arms by the ears), ribs down.
+T("bb-press-home", ["Band-bar shoulder press"], [_bbs(**both([35, 40, 175, 12])), _bbs(**both([176, 16, 178, 10]))], _bb_stand, **_BB)
+# Biceps curl: elbows pinned at the sides, palms forward -> bar to the shoulders.
+T("bb-curl-home", ["Band-bar biceps curl"], [_bbs(**both([3, 9, 6, 9]), palm="forward"), _bbs(**both([8, 9, 150, 9]), palm="back")], _bb_stand, **_BB)
+# Split squat: front (left) foot on the platform, back foot a long step behind on the floor; bar on the front of the shoulders.
+_SS_TOP = dict(legL=[12, 6, -4, 6], legR=[-26, 6, -26, 6, -30])
+_SS_BTM = dict(legL=[74, 6, -8, 6], legR=[-8, 6, -96, 6, -40])
+def _ss_front_foot(ctx):   # front foot stays on the platform top (raised by its thickness)
+    st = ctx["states"][0]["foot_l"]; dz = V((0, 0, BB_PLAT_H))
+    return {"foot_l": (st["tip"] + dz, st["toe"] + dz)}
+def _bb_split(J, J0, *a):
+    c = J0["ankle_l"] + V((0.05, 0, 0)); box("splat", (c.x, c.y - 0.06, BB_PLAT_H / 2), (0.30, 0.58, BB_PLAT_H), "plate")
+    band_bar("bb", J, [V((c.x, c.y + 0.21, BB_PLAT_H)), V((c.x, c.y - 0.33, BB_PLAT_H))])
+T("bb-split-home", ["Band-bar split squat"], [_bbs(176, **_SS_TOP, **both(_SQ_ARM)), _bbs(172, **_SS_BTM, **both(_SQ_ARM))], _bb_split,
+  reach=_SQ_HANDS, track=_ss_front_foot, **_BB)
+# Seated row / face pull: sitting tall on the mat, legs out with soft knees, soles flat against the upright platform.
+_SEAT = dict(T=180, S=180, N=182, H=184, legL=[84, 8, 96, 8, 158], legR=[84, 8, 96, 8, 158])
+_BBSEAT = dict(hands="grip", stance=None, anchor={"z": ("seat", 0.012)}, cam=dict(az=-65, el=12))
+T("bb-seated-row-home", ["Band-bar seated row"], [P(**_SEAT, **both([86, 10, 86, 10])), P(**_SEAT, **both([-38, 14, 78, 6]))], _bb_seat, **_BBSEAT)
+T("bb-face-pull-home", ["Band-bar seated face pull"], [P(**_SEAT, **both([96, 12, 96, 12])), P(**_SEAT, **both([96, 70, 72, -40]))], _bb_seat, **_BBSEAT)   # elbows high and wide, bar finishing in front of the forehead
+# Mini-band pulldown: band round the wrists, arms up in a Y -> pull apart and drive the elbows down to the ribs (W).
+T("mb-pulldown-home", ["Mini-band pulldown"], [_bbs(**both([166, 26, 166, 26])), _bbs(**both([14, 52, 150, 22]))],
+  lambda J, J0, *a: mini_band("band", J["hand_l"], J["hand_r"]), hands="grip", stance=None, anchor={}, cam=dict(az=-28, el=8))
+# Mini-band glute bridge: the glute bridge with a band just above the knees.
+_gb = _t("glute-bridge")
+T("mb-bridge-home", ["Mini-band glute bridge"], _gb["keys"],
+  P_(_gb["props"], lambda J, J0, *a: mini_band("band", J["knee_l"] + (J["hip_l"] - J["knee_l"]) * 0.14, J["knee_r"] + (J["hip_r"] - J["knee_r"]) * 0.14)),
+  **{k: v for k, v in _gb.items() if k not in ("name", "names", "keys", "props")})
+# Side-plank clamshell: trunk pitch per character with the bottom forearm AND the bottom knee on the mat (solved; the forearm
+# floated 5-10 cm with only the knee down).
+CLAM_T, CLAM_TF = 102.6, 94.4
+def _clk(t, legR): return P(T=t, H=t, roll=-90, armL=[0, 0, 90, -90], armR=[-10, 0, 40, 0], legL=[-60.5, 0, 0, 88, 0, 88], legR=legR)
+_t("clamshell").update(keys=_SexKeys([{**_clk(CLAM_T, L), "_f": _clk(CLAM_TF, L)} for L in ([-42.3, 0, 0, -86, 0, -86], [-90, 0, 15, -45, 15, -45])]),
+                       anchor={"x": ("knee_l", None)}, on_knees=True)   # bottom shin + knee set the height (the foot pointed slightly down and was the lowest point)

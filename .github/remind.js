@@ -1,4 +1,4 @@
-// Sends the weekday gym reminder to every subscribed phone. Run by .github/workflows/reminder.yml.
+// Sends the weekday workout reminder to every subscribed phone. Run by .github/workflows/reminder.yml.
 // SUBSCRIPTIONS: a JSON array, or reminder codes pasted one after another.
 function parseSubs(raw) {
   raw = (raw || "").trim();
@@ -11,7 +11,7 @@ async function main() {
   webpush.setVapidDetails("https://matthewarksoft.github.io/WorkoutApp/", process.env.VAPID_PUBLIC_KEY, process.env.VAPID_PRIVATE_KEY);
   const subs = parseSubs(process.env.SUBSCRIPTIONS);
   if (!subs.length) throw new Error("SUBSCRIPTIONS secret is empty");
-  const payload = JSON.stringify({ title: "Gym time 💪", body: "Today's Desk Reset session is ready. Tap to start." });
+  const payload = JSON.stringify({ title: "Workout time 💪", body: "Today's Desk Reset session is ready. Tap to start." });
   let failed = 0;
   for (const s of subs) {
     try { await webpush.sendNotification(s, payload, { TTL: 3600 }); console.log("sent", s.endpoint.slice(0, 50)); }

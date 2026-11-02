@@ -26,6 +26,10 @@ assert.strictEqual(streak(log4, wed), 2);
 
 assert.deepStrictEqual(week({ ...log, "2026-10-14": half }, wed).map(x => x.state), ["done", "done", "partial", "", ""]);
 assert.ok(shareText("Matt", log, wed).includes("(2/5)"));
+// weekend activities (Sat 10-17, wed's week) add a line; none -> no line
+const wkend = { ...log, "2026-10-17": { d: "sat", n: 2, t: 2, items: [{ n: "Bike ride" }, { n: "Band-bar squat", x: "3 × 12" }] } };
+assert.ok(shareText("Matt", wkend, wed).includes("Weekend: 2 extra activities"));
+assert.ok(!shareText("Matt", log, wed).includes("Weekend"));
 
 // logSession: a workout is credited to its planned weekday of the week it's done in, not the calendar date.
 // Two workouts logged the same real day (Mon then Tue) land at different keys and both count.

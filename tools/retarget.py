@@ -149,7 +149,7 @@ def apply_landmarks(L, P):
     curve = P.get("curve", 0.0)
     side_ax = hipl.normalized()
     for b, k in (("spine_01", -0.5), ("spine_02", 0.0), ("spine_03", 0.5)):
-        aim(b, (Matrix.Rotation(math.radians(curve * k), 3, side_ax) @ trunk))
+        aim(b, (Matrix.Rotation(math.radians(curve * k - (spine3_rest(fwd.normalized().z) if b == "spine_03" else 0)), 3, side_ax) @ trunk))
     shl = L["sh_l"] - L["sh_r"]
     cur = jw("upperarm_l") - jw("upperarm_r")
     a_ = trunk
@@ -317,6 +317,21 @@ def apply_landmarks(L, P):
         flatten_foot(L, s, sg, force=stance in ("stand", "seated"))
     if P.get("fk_N") is not None: aim("neck_01", d(P["fk_N"]))
     if P.get("fk_H") is not None: aim("Head", d(P["fk_H"]))
+    neutral_head()
+
+def neutral_head():
+    """Neck and head stay in the chest's mid-plane, facing straight ahead (nod only): the reference photos tilt and
+    turn the head toward the camera, which reads as a crooked neck on exercises that have nothing to do with it."""
+    l = (jw("clavicle_l") - jw("clavicle_r")).normalized()
+    for b in ("neck_01", "Head"):
+        v = bone_dir(b); v = v - l * v.dot(l)
+        if v.length > 1e-4: aim(b, v.normalized())
+    if HEAD_FWD_AXIS is None: return           # calibrate_head() not run yet
+    ax = bone_dir("Head"); f_now = bone_axis_world("Head", HEAD_FWD_AXIS); f_now = f_now - ax * f_now.dot(ax)
+    f_want = l.cross(ax)
+    if f_now.length > 1e-4 and f_want.length > 1e-4:
+        f_now.normalize(); f_want.normalize()
+        tilt("Head", tuple(ax), math.degrees(math.atan2(ax.dot(f_now.cross(f_want)), f_now.dot(f_want))))
 
 _lerp_hybrid = lerp_pose
 def lerp_pose(A, B, t):

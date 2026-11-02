@@ -98,6 +98,11 @@ def bent(upper, lower_dir, deg=4.0):
     if b.length < 1e-4: return lower_dir
     a = math.radians(deg); return (ud * math.cos(a) + b.normalized() * math.sin(a)).normalized()
 
+SPINE3_REST = 12   # upper-spine bone leans back ~12 deg at rest (natural curve); aiming it along the trunk hunches the upper back
+def spine3_rest(face_up):
+    """Natural upper-back curve, faded out as the back comes to rest on the floor or a bench (face_up: chest normal z)."""
+    return SPINE3_REST * min(1.0, max(0.0, (0.6 - face_up) / 0.4))
+
 def apply_pose(P):
     """T trunk pitch (180 upright, 90 prone head +X, 270 supine head -X). roll: trunk roll about its axis.
     S upper-spine pitch (S1/S2/S3 override individual spine bones), twist: upper-body rotation about trunk.
@@ -106,10 +111,11 @@ def apply_pose(P):
     T = P["T"]; S = P.get("S", T)
     tilt("pelvis", (0, 1, 0), 180 - T)   # +Y rotation tips the body's up-axis toward +X
     if P.get("roll"): tilt("pelvis", tuple(d(T)), P["roll"])
-    aim("spine_01", d(P.get("S1", (T + S) / 2))); aim("spine_02", d(P.get("S2", S))); aim("spine_03", d(P.get("S3", S)))
+    aim("spine_01", d(P.get("S1", (T + S) / 2))); aim("spine_02", d(P.get("S2", S))); aim("spine_03", d(P.get("S3", S) + spine3_rest(math.sin(math.radians(T - 180)))))
     if P.get("twist"): tilt("spine_02", tuple(d(P.get("S2", S))), P["twist"])
     H = P.get("H", P.get("S3", S))
     aim("neck_01", d(P.get("N", H))); aim("Head", d(H))
+    neutral_head()
     for s in "lr":
         sg = SIDE[s]
         if P.get("clav" + s.upper()): tilt("clavicle_" + s, tuple(d(P.get("S3", S))), sg * P["clav" + s.upper()])
@@ -227,7 +233,8 @@ def reach_targets(R, J):
 def reach_lerp(spec, keys, i, t, J):
     ra = keys[i].get("reach", spec.get("reach")); rb = keys[(i + 1) % len(keys)].get("reach", spec.get("reach"))
     A, B = reach_targets(ra, J), reach_targets(rb, J)
-    return {l: A[l].lerp(B.get(l, A[l]), t) for l in A}
+    fk = lambda l: jw(EFF[l], True)          # a key without a target for this limb lets it follow its FK pose (no hold-then-snap)
+    return {l: A.get(l, fk(l)).lerp(B.get(l, fk(l)), t) for l in set(A) | set(B)}
 
 def drive(spec, keys, states, i, t, ctx):
     """Driven contacts: spec["slide"] = {limb: z} keeps a hand/foot on a line at height z (ab wheel);
@@ -259,8 +266,10 @@ def limb_low(l):
     return float(co[_LIMB_IDX[key], 2].min())
 
 def support_z():
-    """Top of whatever the body rests on at floor level: the exercise mat if one is out, else the floor."""
+    """Top of whatever the body rests on at floor level: a band-bar platform (stood on), the exercise mat, else the floor."""
+    if any(n.startswith("DR_p_plat") for n in USED): return BB_PLAT_H
     return 0.012 if any(n.startswith("DR_p_mat") for n in USED) else 0.0
+BB_PLAT_H = 0.03
 
 def _plant(spec, keys, locs):
     fwd = d(keys[0]["T"] - 90) if keys[0]["T"] != 180 else Vector((1, 0, 0))
@@ -762,6 +771,7 @@ def simulate(spec, preview=False):
     J0 = None
     for i, P in enumerate(keys):
         loc = place(P, P.get("anchor", anchor), J0); loc = arm.location.copy() if spec.get("nolift") else settle()   # nolift (opt-in, default off): keep the anchored pose, contact IK holds hands/feet
+        if spec.get("on_knees"): loc = kneel_ground()
         caps.append(capture())
         J = joints()
         if J0 is None: J0 = J
@@ -774,6 +784,11 @@ def simulate(spec, preview=False):
             lo = Vector((min(p.x for p in bb) - 0.45, min(p.y for p in bb) - 0.45, 0.0))
             hi = Vector((max(p.x for p in bb) + 0.45, max(p.y for p in bb) + 0.45, max(p.z for p in bb) + spec.get("prop_headroom", 0.3)))
             pts += bb + [Vector((min(max(p.x, lo.x), hi.x), min(max(p.y, lo.y), hi.y), min(max(p.z, lo.z), hi.z))) for p in prop_points()]
+    # floor-grounded keys rest ON the exercise mat, not 1.2 cm into it (the mat only exists once props() has run)
+    az0 = keys[0].get("anchor", anchor).get("z", "ground")
+    for i, P in enumerate(keys):   # (keys pinned to key 0's height follow it)
+        az = P.get("anchor", anchor).get("z", "ground")
+        if not spec.get("on_knees") and (az == "ground" or (az0 == "ground" and isinstance(az, tuple) and az[1] is None)): locs[i].z += support_z()
     # contacts: a hand/foot that barely moves across the key poses is planted (IK-pinned at its mean position)
     states, PLANT = _plant(spec, keys, locs)
     c = spec.get("cam", {})
@@ -791,7 +806,8 @@ def simulate(spec, preview=False):
             if not spec.get("linear"): t = t * t * (3 - 2 * t)
             blend(caps[i], caps[(i + 1) % len(keys)], t)
             arm.location = la.lerp(lb, t); vl.update()
-            if not PLANT:      # planted hands/feet already hold the body on the floor; re-grounding would fight them
+            if spec.get("on_knees"): kneel_ground()
+            elif not PLANT:    # planted hands/feet already hold the body on the floor; re-grounding would fight them
                 frame_ground(keys, i, lambda P: P.get("anchor", anchor), arm.location.copy())
             for l, (tip, toe) in PLANT.items():                # posed exactly on its pin already: leave it (pole-less IK drifts)
                 if (jw(EFF[l], True) - tip).length > 0.01:
@@ -809,6 +825,19 @@ def simulate(spec, preview=False):
                 if lo > -0.008 or spec.get("nolift"): break
                 arm.location.z -= lo; vl.update()
             fz = support_z()
+            for l in ("hand_l", "hand_r") if spec.get("on_knees") else ():   # kneeling: a flat hand near the floor rests on it
+                if l in held or HAND_MODE.get(l[-1]) != "flat": continue
+                dip = limb_low(l) - fz
+                if -0.06 < dip < 0.06: tip = jw(EFF[l], True) - Vector((0, 0, dip)); ik_on(l, tip, tip); vl.update()
+            for l in ("hand_l", "hand_r") if spec.get("floor_palms") else ():   # a flat hand resting on the floor/mat lies flat ON it
+                s_, sg = l[-1], SIDE[l[-1]]
+                if l in PLANT or HAND_MODE.get(s_) != "flat": continue
+                for _ in range(2):
+                    dip = limb_low(l) - fz
+                    if not -0.06 < dip < 0.07 or abs(dip) < 0.004: break
+                    ik_on(l, jw(EFF[l], True) - Vector((0, 0, dip)), jw("lowerarm_" + s_)); vl.update()
+                    fd = bone_dir("lowerarm_" + s_); hd = bone_dir("hand_" + s_); hd = Vector((hd.x, hd.y, 0)).normalized() if hd.xy.length > 0.2 else Vector((fd.x, fd.y, 0)).normalized()
+                    set_palm(s_, fd, hd, Vector((0, 0, -1))); aim("hand_" + s_, hd); vl.update()
             for l in ("foot_l", "foot_r"):                       # a swinging foot never scuffs through the floor
                 if l in held: continue
                 s_ = l[-1]; th, sh = bone_dir("thigh_" + s_), bone_dir("calf_" + s_)
@@ -819,6 +848,16 @@ def simulate(spec, preview=False):
             if props: props(joints(), J0, ctx)
             yield n; n += 1
     ik_off()
+
+def kneel_ground():
+    """on_knees templates (quadruped, half-kneeling): knees/shins rest exactly on the mat; hands are fitted to the floor
+    afterwards instead of lifting the body (arm length vs thigh length differs per character)."""
+    key = (body.name, "shins")
+    if key not in _LIMB_IDX:                          # knees + shins only: a flat hand's wrist can sit lower than the kneecap
+        names = {g.index: g.name for g in body.vertex_groups}
+        _LIMB_IDX[key] = [v.index for v in body.data.vertices if v.groups and names[max(v.groups, key=lambda g: g.weight).group].startswith("calf_")]
+    arm.location.z += support_z() - float(body_coords()[_LIMB_IDX[key], 2].min()); vl.update()
+    return arm.location.copy()
 
 def settle():
     """Lift a placed key pose out of the floor (same rule as the per-frame guard), so contacts are pinned where the
@@ -850,7 +889,7 @@ def frame_ground(keys, i, anchor_of, loc):
     """Re-ground every interpolated frame when both neighbouring keys are floor-grounded (stops the body dipping into the floor)."""
     a, b = anchor_of(keys[i]), anchor_of(keys[(i + 1) % len(keys)])
     if a.get("z", "ground") == "ground" and b.get("z", "ground") == "ground":
-        loc.z = arm.location.z - float(body_coords()[:, 2].min())
+        loc.z = arm.location.z - float(body_coords()[:, 2].min()) + support_z()
         arm.location = loc; vl.update()
 
 def audit(spec, samples=4):

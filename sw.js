@@ -1,6 +1,6 @@
 // Bump VERSION after editing any (non-demo) file; it derives the precached track.js?v= below too, so
 // also bump the matching <script src="track.js?v="> in index.html to the same number.
-const VERSION = "v18";
+const VERSION = "v19";
 const TRACKJS = "track.js?v=" + VERSION.slice(1);
 const CORE = ["./", "index.html", TRACKJS, "manifest.webmanifest", "icon.svg", "icon-192.png", "icon-512.png"];
 
@@ -51,11 +51,11 @@ self.addEventListener("fetch", e => {
   }).catch(() => {}));
 });
 
-// Gym reminder push (sent by .github/workflows/reminder.yml). Tapping it opens today's workout.
+// Workout reminder push (sent by .github/workflows/reminder.yml). Tapping it opens today's workout.
 self.addEventListener("push", e => {
   const d = e.data ? e.data.json() : {};
-  e.waitUntil(self.registration.showNotification(d.title || "Gym time", {
-    body: d.body || "Today's Desk Reset session is ready.", icon: "icon-192.png", badge: "icon-192.png", tag: "gym-reminder"
+  e.waitUntil(self.registration.showNotification(d.title || "Workout time", {
+    body: d.body || "Today's Desk Reset session is ready.", icon: "icon-192.png", badge: "icon-192.png", tag: "workout-reminder"
   }));
 });
 self.addEventListener("notificationclick", e => {
