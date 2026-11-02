@@ -446,7 +446,7 @@
 },
 "landmine-rainbow": {
 "cyclic": false,
-"keys": 2,
+"keys": 3,
 "steps": 6
 },
 "landmine-row": {

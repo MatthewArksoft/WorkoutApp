@@ -1673,3 +1673,55 @@ _t("cable-crunch").update(prop_headroom=1.5, cam=dict(az=-70, el=8, margin=1.3))
 # same N/H reads ~25 deg more extended on the female rig (chin to the ceiling at both ends): tuck hers to match; male top gets a slight extra tuck (gaze toward the knees)
 _t("glute-drive")["keys"] = _SexKeys([{**k, **({"N": k["N"] - 4, "H": k["H"] - 8} if i else {}), "_f": {"N": k["N"] - 12, "H": k["H"] - 26}}
                                       for i, k in enumerate(_t("glute-drive")["keys"])])
+
+# ---------- live-site sweep fixes (checked against the original free-exercise-db GIFs and the app's own cues) ----------
+_STAND = dict(T=180, N=180, H=180, legL=[0, 5, 0, 5], legR=[0, 5, 0, 5])
+# glute squeezes: an isometric squeeze, nothing visibly moves -> a single still (PNG), standing tall
+_t("glute-squeeze").update(keys=[P(**_STAND, **both([4, 8, 4, 6])), P(**_STAND, **both([4, 8, 4, 6]))], still=True, anchor={}, cam=dict(az=-30, el=8))
+# bottoms-up kettlebell press: ONE bell, bell above the fist; rack (upper arm down-forward, forearm vertical) -> straight overhead; free arm relaxed
+_t("kb-press").update(keys=[P(**_STAND, armL=[4, 10, 4, 8], armR=[22, 28, 176, 10]), P(**_STAND, armL=[4, 10, 4, 8], armR=[172, 12, 176, 10])],
+                      props=lambda J, J0, *a: kettlebell("kb_r", J["hand_r"], up=(0, 0, -1), side=(1, 0, 0)), hands=None, handR="grip", handL="relaxed",
+                      anchor={}, cam=dict(az=-30, el=8))
+# cable Y-raise: low pulley on the left, right hand starts in front of the left hip and rises up and out to a Y (~135 deg, scapular plane)
+_t("cable-y-raise").update(keys=[P(**_STAND, armL=[4, 10, 4, 8], armR=[22, -28, 26, -26]), P(**_STAND, armL=[4, 10, 4, 8], armR=[154, 36, 156, 36])],
+                           anchor={}, cam=dict(az=-10, el=8))
+# seated hip abduction: head neutral against the back pad (photo landmarks hung the head forward and tilted it)
+for _k in _t("abductor-machine")["keys"]: _k["fk_N"], _k["fk_H"] = 186, 184
+# lying leg raise, knees bent (app cue: hold the bench behind your head; raise bent knees, lower slowly)
+LLR = dict(T=270, N=268, H=264, anchor=BENCH)
+LLR_HANDS = {"hand_l": ("head", (-0.13, 0.15, -0.11), "world"), "hand_r": ("head", (-0.13, -0.15, -0.11), "world")}
+_t("lying-leg-raise").update(keys=[P(**LLR, **both([255, 22, 330, 10]), **legs([88, 4, 72, 4])), P(**LLR, **both([255, 22, 330, 10]), **legs([176, 4, 94, 4]))],
+                             reach=LLR_HANDS, hands="grip", stance=None, cam=dict(az=-88, el=8))
+# woodchop (high -> low) / cable lift (low -> high): a real diagonal, hands together on one handle, chest rotating with the arms, hips/feet square
+def _chop(hi, lo):   # hi/lo: hands' world offset from the pelvis at the high and low end
+    rh = lambda o: {"hand_l": ("pelvis", (o[0], o[1], o[2] - 0.035), "world"), "hand_r": ("pelvis", (o[0], o[1], o[2] + 0.035), "world")}
+    sh, sl = (1 if hi[1] > 0 else -1), (1 if lo[1] > 0 else -1)
+    hi_k = P(T=180, N=180, H=180, twist=34 * sh, legL=[2, 6, 0, 5], legR=[2, 6, 0, 5],
+             armL=[145, 35 * sh, 150, 30 * sh], armR=[145, -35 * sh, 150, -30 * sh], reach=rh(hi))
+    lo_k = P(T=160, N=158, H=158, twist=38 * sl, legL=[30, 6, -24, 5], legR=[30, 6, -24, 5],
+             armL=[30, 30 * sl, 25, 30 * sl], armR=[30, -30 * sl, 25, -30 * sl], reach=rh(lo))
+    return hi_k, lo_k
+_hi, _lo = _chop((0.28, -0.46, 0.92), (0.40, 0.44, -0.55))
+_t("woodchop").update(keys=[_hi, _lo], anchor={"x": ("ankle_r", None)}, stance=None, cam=dict(az=-12, el=8))
+_hi, _lo = _chop((0.28, -0.46, 0.92), (0.40, 0.44, -0.55))
+_t("cable-lift").update(keys=[_lo, _hi], anchor={"x": ("ankle_r", None)}, stance=None, cam=dict(az=-12, el=8))
+_t("cable-lift")["props"] = COL_SIDE(0.95, pz=0.25)
+# landmine rainbow: arms long, the sleeve end sweeps an arc hip -> over the forehead -> other hip; pelvis square, chest turns with the bar
+def _rb(o, tw, arm_l, arm_r):
+    return P(T=176, N=178, H=178, twist=tw, legL=[8, 8, -6, 6], legR=[8, 8, -6, 6], armL=arm_l, armR=arm_r,
+             reach={"hand_l": ("pelvis", (o[0], o[1], o[2] - 0.035), "world"), "hand_r": ("pelvis", (o[0], o[1], o[2] + 0.035), "world")})
+_t("landmine-rainbow").update(keys=[_rb((0.42, 0.40, 0.02), 25, [40, 30, 40, 30], [40, -10, 40, -10]), _rb((0.50, 0.0, 0.80), 0, [125, 6, 130, 6], [125, 6, 130, 6]),
+                                    _rb((0.42, -0.40, 0.02), -25, [40, -10, 40, -10], [40, 30, 40, 30])],
+                              pingpong=True, steps=6, anchor={"x": ("ankle_r", None)}, stance=None, cam=dict(az=-20, el=10))
+_t("landmine-rainbow")["props"] = lambda J, J0, *a: landmine("lm", V((J0["pelvis"].x + 1.45, 0, 0)), J["hands"], end=True)
+# elliptical: hands stay on the moving handles at chest height (one pushes while the other pulls), head up
+_EP, _EL = [55, 14, 100, 10], [12, 14, 95, 10]
+_EF, _EB = [30, 5, 0, 5], [-12, 5, -38, 5]   # front leg / rear leg (both feet on the pedals); torso tall, arms opposite the legs
+_t("elliptical").update(keys=[P(T=178, N=182, H=182, legL=_EF, legR=_EB, armL=_EL, armR=_EP), P(T=178, N=182, H=182, legL=_EB, legR=_EF, armL=_EP, armR=_EL)],
+                        anchor={}, stance=None)
+# hip hinge to wall: hips travel straight back to the wall with a FLAT back and neutral neck, shins near vertical, arms hang
+def _hinge(t): return P(T=t, S1=t, S2=t, S3=t, N=t + 4, H=t + 6, **both([0, 8, 0, 6]), **legs([15 if t < 170 else 2, 5, -4 if t < 170 else 0, 5]))
+for _n in ("hip-hinge-wall", "loaded-hinge-wall"):
+    _t(_n).update(keys=[_hinge(180), _hinge(118)], anchor={"x": ("ankle_r", None)}, stance=None, cam=dict(az=-70, el=8))
+# 90/90 hip switch: front-high camera so the knees visibly drop to one side, then the other
+_t("hip-switch")["cam"] = dict(az=-8, el=30)
