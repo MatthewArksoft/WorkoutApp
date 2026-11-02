@@ -60,8 +60,10 @@ h1{font-family:var(--f-display);font-weight:700;font-size:clamp(34px,8vw,48px);l
 .menubtn:hover,.menubtn[aria-expanded="true"]{background:var(--hero-btn-hover)}
 .menupanel{position:absolute;right:0;top:52px;z-index:10;outline:1px solid rgb(255 255 255 / .04);width:min(288px,calc(100vw - 32px));background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:var(--r);padding:16px;display:grid;gap:12px;box-shadow:0 16px 40px rgb(2 6 23 / .28)}
 
-/* Sticky controls */
-.bar{position:sticky;top:0;z-index:5;margin-inline:-16px;padding:calc(env(safe-area-inset-top,0px) + 10px) 16px 10px;display:grid;gap:10px;border-bottom:1px solid var(--line);
+/* Equipment picker: scrolls away with the page; only the day tabs below stay pinned */
+.eqbar{margin-top:14px}
+/* Sticky controls: day tabs only (bug 9: keeping the equipment picker out of here roughly halves pinned chrome) */
+.bar{position:sticky;top:0;z-index:5;margin-inline:-16px;padding:calc(env(safe-area-inset-top,0px) + 8px) 16px 8px;display:grid;gap:10px;border-bottom:1px solid var(--line);
   background:var(--bg);background:color-mix(in srgb,var(--bg) 92%,transparent);-webkit-backdrop-filter:saturate(1.6) blur(14px);backdrop-filter:saturate(1.6) blur(14px)}
 .bar>*{max-width:720px;width:100%;margin-inline:auto}
 .label{font:700 12px var(--f-body);text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:6px}
@@ -285,15 +287,15 @@ td:first-child{font:700 15px var(--f-display);white-space:nowrap;color:var(--acc
     </div>
   </header>
 
-  <div class="bar">
-    <div>
-      <div class="label" id="eqlabel">Equipment</div>
-      <div class="seg" role="group" aria-labelledby="eqlabel" id="eq">
-        <button type="button" data-eq="machine">Machines</button>
-        <button type="button" data-eq="free">Free weights</button>
-        <button type="button" data-eq="body">Home workout</button>
-      </div>
+  <div class="eqbar">
+    <div class="label" id="eqlabel">Equipment</div>
+    <div class="seg" role="group" aria-labelledby="eqlabel" id="eq">
+      <button type="button" data-eq="machine">Machines</button>
+      <button type="button" data-eq="free">Free weights</button>
+      <button type="button" data-eq="body">Home workout</button>
     </div>
+  </div>
+  <div class="bar">
     <div class="tabs" role="tablist" id="tabs"></div>
   </div>
 
@@ -309,8 +311,16 @@ td:first-child{font:700 15px var(--f-display);white-space:nowrap;color:var(--acc
     <button class="btn2" value="close">Close</button>
   </form>
 </dialog>
+<dialog class="gifdlg" id="resetdlg" aria-labelledby="resetdlg-t" aria-describedby="resetdlg-p">
+  <form method="dialog">
+    <h3 id="resetdlg-t">Reset day</h3>
+    <p class="vnote" id="resetdlg-p">Clear all ticks for this day? This can't be undone.</p>
+    <button class="btn2" value="cancel">Cancel</button>
+    <button class="share" value="clear">Clear</button>
+  </form>
+</dialog>
 
-<script src="track.js?v=15"></script><!-- ?v= forces a fresh copy past old service workers / HTTP cache; match sw.js VERSION -->
+<script src="track.js?v=17"></script><!-- ?v= forces a fresh copy past old service workers / HTTP cache; match sw.js VERSION -->
 <script>
 const ICONS = {
   play:'<polygon points="6 3 20 12 6 21 6 3"/>',
@@ -340,8 +350,8 @@ const demoLink = n => DEMO[n]
   ? `<button type="button" class="iconlink" data-gif="${esc(n)}" aria-label="Show ${esc(n)} demo">${ic("play")}</button>`
   : `<a class="iconlink" href="${yt(n)}" target="_blank" rel="noopener" aria-label="Watch ${esc(n)} demo (opens YouTube)">${ic("ext")}</a>`;
 // Exercise name -> demo template (demos/m|f/<template>.webp): Blender renders posed from reference-photo pose estimation (tools/).
-const DEMO = {"45° back extension (glute bias)":"back-extension","45° back extension (glute-focused)":"back-extension","90/90 hip switches":"hip-switch","Ab crunch machine":"machine-crunch","Ab roller":"ab-wheel","Ab wheel rollout (from knees)":"ab-wheel","Air bike or rower intervals":"air-bike","Assisted pull-up machine":"assisted-pullup","Band Pallof press":"pallof-press","Banded glute bridge, feet on couch":"band-bridge-couch","Banded lateral walk":"lateral-walk","Barbell RDL (light)":"bb-rdl","Barbell or dumbbell hip thrust":"hip-thrust","Barbell rollout (from knees)":"bb-rollout","Battle rope intervals":"battle-ropes","Bear plank shoulder taps":"bear-taps","Bench lat stretch":"childs-pose","Bench leg pull-in":"bench-pull-in","Bench pigeon stretch":"pigeon-bench","Bent-over rear-delt raise":"bentover-rear-delt","Bird dog":"bird-dog","Bird dog with light ankle weight":"bird-dog","Bodyweight tempo circuit":"mountain-climbers","Bottoms-up kettlebell press (light)":"kb-press","Brisk outdoor walk":"walk","Cable Pallof press":"pallof-press","Cable Y-raise (low pulley, single arm)":"cable-y-raise","Cable Y-raise, both arms":"cable-y-raise","Cable bird dog (ankle strap)":"cable-bird-dog","Cable dead bug":"cable-dead-bug","Cable external rotation":"cable-er","Cable face pull":"face-pull","Cable face pull (rope)":"face-pull","Cable face pull (rope, eye height)":"face-pull","Cable lat stretch":"cable-lat-stretch","Cable lift (low to high)":"cable-lift","Cable pec stretch":"cable-pec-stretch","Cable pull-through":"pull-through","Cable rear-delt fly":"cable-rear-delt-fly","Cable serratus punch":"cable-serratus","Cable standing hip abduction":"cable-hip-abd","Cable straight-arm pulldown":"straight-arm-pulldown","Cable woodchop (high to low)":"woodchop","Captain's chair knee raise":"captains-chair","Cat-cow + thread the needle":"cat-cow","Cat–cow":"cat-cow","Chair T-spine extension + world's greatest stretch + child's pose lat stretch":"t-spine-chair","Chest press machine (neutral grip)":"chest-press-machine","Chest-supported T-bar row":"tbar-row","Chest-supported dumbbell lat row":"db-incline-row","Chest-supported dumbbell row":"db-incline-row","Chest-supported machine row":"machine-row","Chest-supported machine row / T-bar row":"machine-row","Chest-supported rear-delt fly":"incline-rear-delt","Child's pose with side reach":"childs-pose","Chin tucks":"chin-tuck","Couch stretch":"couch-stretch","Couch stretch (bench version)":"couch-stretch-bench","Cross-body crunch":"cross-crunch","Crunch (small range)":"crunch","Dead bug":"dead-bug","Dead bug (slow)":"dead-bug","Door towel row":"door-towel-row","Door towel row (both hands)":"door-towel-row","Doorway or seated pec stretch":"pec-stretch","Doorway pec stretch":"pec-stretch","Dumbbell / kettlebell complex":"kb-complex","Dumbbell RDL":"db-rdl","Dumbbell Romanian deadlift":"db-rdl","Dumbbell dead bug":"db-dead-bug","Dumbbell farmer carry":"farmer-carry","Dumbbell floor press":"floor-press","Dumbbell glute bridge":"db-glute-bridge","Dumbbell or kettlebell farmer carry":"farmer-carry","Dumbbell pullover (bench)":"db-pullover","Dumbbell pullover (on bench)":"db-pullover","Dumbbell reverse lunge":"db-rev-lunge","Dumbbell step-down (low step)":"stair-step","Dumbbell step-up (box knee-height or lower)":"step-up","Elliptical or bike":"elliptical","Elliptical or incline treadmill":"elliptical","Elliptical or stationary bike":"bike","Figure-4 stretch + hip flexor stretch":"figure-4","Floor Y-T-W, no weight":"floor-ytw","Floor snow angels":"snow-angel","Foam roller T-spine + world's greatest stretch + child's pose lat stretch":"t-spine-roller","Foam roller pec opener":"pec-opener","Front plank":"front-plank","Glute bridge":"glute-bridge","Glute squeezes":"glute-squeeze","Goblet box squat":"goblet-box-squat","Goblet reverse lunge":"goblet-rev-lunge","Goblet split squat":"goblet-split","Hack or pendulum squat (feet high)":"hack-squat","Half-kneeling cable Pallof press":"hk-pallof","Half-kneeling hip flexor stretch":"hk-hip-flexor","Half-kneeling landmine press":"landmine-press","Half-kneeling single-arm dumbbell press":"hk-db-press","Hamstring stretch on bench + couch stretch":"bench-ham","Heavy cable pull-through":"pull-through","Heels-elevated goblet squat to box":"heels-up-goblet","High-incline Smith press":"smith-incline","Hip hinge to wall":"hip-hinge-wall","Hip thrust / glute drive machine":"glute-drive","Incline dumbbell Y-raise":"incline-y-raise","Incline prone Y-T-W":"incline-ytw","Incline prone rear-delt raise":"incline-rear-delt","Incline treadmill intervals":"treadmill","Incline treadmill walk":"treadmill","Incline treadmill walk (5–10%)":"treadmill","Kettlebell deadlift":"kb-deadlift","Kettlebell pullover":"kb-pullover","Kettlebell swing intervals":"kb-swing","Kettlebell tempo circuit":"kb-complex","Kneeling cable crunch":"cable-crunch","Landmine Pallof / anti-rotation":"landmine-pallof","Landmine rainbows (180s)":"landmine-rainbow","Landmine row (single arm)":"landmine-row","Lat pulldown (light, slow)":"lat-pulldown","Lat pulldown (neutral or wide grip, to chest)":"lat-pulldown","Lateral step-up (low box)":"step-up","Leg extension (partial range)":"leg-extension","Leg press (feet high)":"leg-press","Leg press (feet mid-to-high on platform)":"leg-press","Loaded backpack or shopping-bag carry":"bag-carry","Loaded hip hinge to wall":"loaded-hinge-wall","Low-impact interval circuit":"mountain-climbers","Low-incline Smith press":"smith-incline","Low-incline dumbbell press (15–30°, neutral grip)":"incline-db-press","Lying hamstring stretch (towel) + couch stretch":"lying-ham-towel","Lying leg raise on bench (knees bent)":"lying-leg-raise","Machine high row":"machine-high-row","McGill curl-up":"mcgill","Mini-band W pull-apart":"band-w","Mini-band lateral walk or clamshell":"lateral-walk","Mini-band pull-apart":"band-pull-apart","Mountain climbers (slow)":"mountain-climbers","Multi-hip machine (abduction)":"multi-hip","Neutral-grip machine shoulder press (partial)":"shoulder-press-machine","Pallof press with rotation":"pallof-rotation","Pause push-up":"push-up","Plank shoulder taps":"shoulder-taps","Plank with reach":"plank-reach","Plate crunch":"plate-crunch","Plate pinch carry":"plate-pinch","Plate-loaded low row":"machine-row","Prone T raise":"prone-t","Prone W lift":"prone-w","Prone Y-T-W on incline bench (1–2 kg)":"incline-ytw","Prone floor row":"prone-row","Prone swimmers":"swimmers","Prone towel pulldown":"prone-towel-pulldown","Pull-up bar negatives":"pullup-negative","Push-up (hands elevated if needed)":"incline-push-up","Push-up on dumbbell handles":"push-up-db","Push-up plus":"push-up","Push-up to side plank":"push-up-side-plank","Rear-foot-elevated split squat":"rfess","Reverse crunch":"reverse-crunch","Reverse lunge":"rev-lunge","Reverse pec deck":"reverse-pec-deck","Reverse pec deck (light)":"reverse-pec-deck","Rower (easy)":"rower","Rower, bike or elliptical tempo":"rower","Ruck walk (backpack 5–10 kg)":"ruck-walk","Seal row":"seal-row","Seated cable chin tuck (light)":"cable-chin-tuck","Seated cable row (neutral grip)":"seated-cable-row","Seated cable row (wide grip)":"seated-cable-row","Seated hip abduction machine":"abductor-machine","Seated leg pull-in":"seated-pull-in","Shoulder blade squeezes":"scap-squeeze","Side hold on 45° back-extension bench":"side-plank","Side plank (knees or feet)":"side-plank","Side plank clamshell":"clamshell","Side-lying dumbbell external rotation":"side-lying-er","Side-lying hip abduction (ankle weight)":"side-lying-abd","Single-arm cable hold":"cable-hold","Single-arm cable press (low-to-high)":"single-arm-cable-press","Single-arm cable row":"single-arm-cable-row","Single-arm door towel row":"door-towel-row-1arm","Single-arm dumbbell bench press":"db-bench-1arm","Single-arm dumbbell row":"one-arm-db-row","Single-arm dumbbell row (bench-supported)":"one-arm-db-row","Single-arm farmer carry":"suitcase","Single-arm kneeling cable pulldown":"kneel-cable-pulldown","Single-leg RDL":"single-leg-rdl","Single-leg RDL (hold a support)":"single-leg-rdl-support","Single-leg glute bridge":"single-leg-bridge","Single-leg hip thrust":"single-leg-hip-thrust","Single-leg leg press":"leg-press","Ski erg or elliptical intervals":"elliptical","Ski erg or incline treadmill tempo":"treadmill","Slow reverse lunge":"rev-lunge","Slow step-down from stairs":"stair-step","Smith machine RDL":"smith-rdl","Smith machine hip thrust":"smith-hip-thrust","Smith machine split squat":"smith-split","Stair climber (slow)":"stair-climber","Stair intervals":"step-mill","Stair step-up":"stair-step","Standing cable chest press":"standing-cable-press","Standing hip flexor stretch":"standing-hip-flexor","Stationary bike or rower":"bike","Suitcase carry":"suitcase","Suitcase hold":"suitcase","Supine chin tuck + head lift":"supine-chin-tuck","Supine dumbbell punch":"supine-punch","Supported split squat":"supported-split","Swiss-ball crunch":"ball-crunch","Swiss-ball dead bug":"ball-dead-bug","Thoracic extension over chair":"t-spine-chair","Thoracic open book":"open-book","Trap-bar carry":"trap-bar-carry","Trap-bar deadlift (or kettlebell deadlift)":"trap-bar-deadlift","Tucked hollow hold":"tuck-hollow","Wall Y-slide with lift-off":"wall-slides","Wall chin tuck":"wall-chin-tuck","Wall sit or slow squat to a chair":"chair-squat","Wall slide with lift-off":"wall-slides","Wall slide with reach":"wall-slides","Wall slides":"wall-slides"};
-const DM = {"ab-wheel":[12,6,0],"abductor-machine":[12,6,0],"air-bike":[20,10,1],"assisted-pullup":[12,6,0],"back-extension":[12,6,0],"bag-carry":[20,5,1],"ball-crunch":[12,6,0],"ball-dead-bug":[12,6,0],"band-bridge-couch":[12,6,0],"band-pull-apart":[12,6,0],"band-w":[12,6,0],"battle-ropes":[10,5,1],"bb-rdl":[12,6,0],"bb-rollout":[12,6,0],"bear-taps":[24,6,0],"bench-ham":[12,6,0],"bench-pull-in":[12,6,0],"bentover-rear-delt":[12,6,0],"bike":[20,10,1],"bird-dog":[24,6,0],"cable-bird-dog":[12,6,0],"cable-chin-tuck":[12,6,0],"cable-crunch":[12,6,0],"cable-dead-bug":[12,6,0],"cable-er":[12,6,0],"cable-hip-abd":[12,6,0],"cable-hold":[12,6,0],"cable-lat-stretch":[12,6,0],"cable-lift":[12,6,0],"cable-pec-stretch":[12,6,0],"cable-rear-delt-fly":[12,6,0],"cable-serratus":[12,6,0],"cable-y-raise":[12,6,0],"captains-chair":[12,6,0],"cat-cow":[12,6,0],"chair-squat":[12,6,0],"chest-press-machine":[12,6,0],"childs-pose":[12,6,0],"chin-tuck":[12,6,0],"clamshell":[12,6,0],"couch-stretch":[12,6,0],"couch-stretch-bench":[12,6,0],"cross-crunch":[12,6,0],"crunch":[12,6,0],"db-bench-1arm":[12,6,0],"db-dead-bug":[12,6,0],"db-glute-bridge":[12,6,0],"db-incline-row":[12,6,0],"db-pullover":[12,6,0],"db-rdl":[12,6,0],"db-rev-lunge":[12,6,0],"dead-bug":[24,6,0],"door-towel-row":[12,6,0],"door-towel-row-1arm":[12,6,0],"elliptical":[20,10,1],"face-pull":[12,6,0],"farmer-carry":[20,5,1],"figure-4":[12,6,0],"floor-press":[12,6,0],"floor-ytw":[24,6,0],"front-plank":[12,6,0],"glute-bridge":[12,6,0],"glute-drive":[12,6,0],"glute-squeeze":[12,6,0],"goblet-box-squat":[12,6,0],"goblet-rev-lunge":[12,6,0],"goblet-split":[12,6,0],"hack-squat":[12,6,0],"heels-up-goblet":[12,6,0],"hip-hinge-wall":[12,6,0],"hip-switch":[24,6,0],"hip-thrust":[12,6,0],"hk-db-press":[12,6,0],"hk-hip-flexor":[12,6,0],"hk-pallof":[12,6,0],"incline-db-press":[12,6,0],"incline-push-up":[12,6,0],"incline-rear-delt":[12,6,0],"incline-y-raise":[12,6,0],"incline-ytw":[24,6,0],"kb-complex":[12,6,0],"kb-deadlift":[12,6,0],"kb-press":[12,6,0],"kb-pullover":[12,6,0],"kb-swing":[12,6,0],"kneel-cable-pulldown":[12,6,0],"landmine-pallof":[12,6,0],"landmine-press":[12,6,0],"landmine-rainbow":[12,6,0],"landmine-row":[12,6,0],"lat-pulldown":[12,6,0],"lateral-walk":[12,6,0],"leg-extension":[12,6,0],"leg-press":[12,6,0],"loaded-hinge-wall":[12,6,0],"lying-ham-towel":[12,6,0],"lying-leg-raise":[12,6,0],"machine-crunch":[12,6,0],"machine-high-row":[12,6,0],"machine-row":[12,6,0],"mcgill":[12,6,0],"mountain-climbers":[24,6,1],"multi-hip":[12,6,0],"one-arm-db-row":[12,6,0],"open-book":[12,6,0],"pallof-press":[12,6,0],"pallof-rotation":[12,6,0],"pec-opener":[12,6,0],"pec-stretch":[12,6,0],"pigeon-bench":[12,6,0],"plank-reach":[24,6,0],"plate-crunch":[12,6,0],"plate-pinch":[20,5,1],"prone-row":[12,6,0],"prone-t":[12,6,0],"prone-towel-pulldown":[12,6,0],"prone-w":[12,6,0],"pull-through":[12,6,0],"pullup-negative":[12,6,0],"push-up":[12,6,0],"push-up-db":[12,6,0],"push-up-side-plank":[12,6,0],"rev-lunge":[12,6,0],"reverse-crunch":[12,6,0],"reverse-pec-deck":[12,6,0],"rfess":[12,6,0],"rower":[12,6,1],"ruck-walk":[20,5,1],"scap-squeeze":[12,6,0],"seal-row":[12,6,0],"seated-cable-row":[12,6,0],"seated-pull-in":[12,6,0],"shoulder-press-machine":[12,6,0],"shoulder-taps":[24,6,0],"side-lying-abd":[12,6,0],"side-lying-er":[12,6,0],"side-plank":[12,6,0],"single-arm-cable-press":[12,6,0],"single-arm-cable-row":[12,6,0],"single-leg-bridge":[12,6,0],"single-leg-hip-thrust":[12,6,0],"single-leg-rdl":[12,6,0],"single-leg-rdl-support":[12,6,0],"smith-hip-thrust":[12,6,0],"smith-incline":[12,6,0],"smith-rdl":[12,6,0],"smith-split":[12,6,0],"snow-angel":[24,6,0],"stair-climber":[12,6,0],"stair-step":[12,6,0],"standing-cable-press":[12,6,0],"standing-hip-flexor":[12,6,0],"step-mill":[12,6,0],"step-up":[24,6,0],"straight-arm-pulldown":[12,6,0],"suitcase":[20,5,1],"supine-chin-tuck":[12,6,0],"supine-punch":[12,6,0],"supported-split":[12,6,0],"swimmers":[36,6,0],"t-spine-chair":[12,6,0],"t-spine-roller":[12,6,0],"tbar-row":[12,6,0],"trap-bar-carry":[20,5,1],"trap-bar-deadlift":[12,6,0],"treadmill":[20,5,1],"tuck-hollow":[12,6,0],"walk":[20,5,1],"wall-chin-tuck":[12,6,0],"wall-slides":[12,6,0],"woodchop":[12,6,0]}; // template -> [frames, frames per key, cyclic]
+const DEMO = {"45° back extension (glute bias)":"back-extension","45° back extension (glute-focused)":"back-extension","90/90 hip switches":"hip-switch","Ab crunch machine":"machine-crunch","Ab roller":"ab-wheel","Ab wheel rollout (from knees)":"ab-wheel","Air bike or rower intervals":"air-bike","Assisted pull-up machine":"assisted-pullup","Band Pallof press":"pallof-press","Banded glute bridge, feet on couch":"band-bridge-couch","Banded lateral walk":"lateral-walk","Barbell RDL (light)":"bb-rdl","Barbell or dumbbell hip thrust":"hip-thrust","Barbell rollout (from knees)":"bb-rollout","Battle rope intervals":"battle-ropes","Bear plank shoulder taps":"bear-taps","Bench lat stretch":"childs-pose","Bench leg pull-in":"bench-pull-in","Bench pigeon stretch":"pigeon-bench","Bent-over rear-delt raise":"bentover-rear-delt","Bird dog":"bird-dog","Bird dog with light ankle weight":"bird-dog","Bodyweight tempo circuit":"mountain-climbers","Bottoms-up kettlebell press (light)":"kb-press","Brisk outdoor walk":"walk","Cable Pallof press":"pallof-press","Cable Y-raise (low pulley, single arm)":"cable-y-raise","Cable Y-raise, both arms":"cable-y-raise","Cable bird dog (ankle strap)":"cable-bird-dog","Cable dead bug":"cable-dead-bug","Cable external rotation":"cable-er","Cable face pull":"face-pull","Cable face pull (rope)":"face-pull","Cable face pull (rope, eye height)":"face-pull","Cable lat stretch":"cable-lat-stretch","Cable lift (low to high)":"cable-lift","Cable pec stretch":"cable-pec-stretch","Cable pull-through":"pull-through","Cable rear-delt fly":"cable-rear-delt-fly","Cable serratus punch":"cable-serratus","Cable standing hip abduction":"cable-hip-abd","Cable straight-arm pulldown":"straight-arm-pulldown","Cable woodchop (high to low)":"woodchop","Captain's chair knee raise":"captains-chair","Cat-cow + thread the needle":"cat-cow","Cat–cow":"cat-cow","Chair T-spine extension + world's greatest stretch + child's pose lat stretch":"t-spine-chair","Chest press machine (neutral grip)":"chest-press-machine","Chest-supported T-bar row":"tbar-row","Chest-supported dumbbell lat row":"db-incline-row","Chest-supported dumbbell row":"db-incline-row","Chest-supported machine row":"machine-row","Chest-supported machine row / T-bar row":"machine-row","Chest-supported rear-delt fly":"incline-rear-delt","Child's pose with side reach":"childs-pose","Chin tucks":"chin-tuck","Couch stretch":"couch-stretch","Couch stretch (bench version)":"couch-stretch-bench","Cross-body crunch":"cross-crunch","Crunch (small range)":"crunch","Dead bug":"dead-bug","Dead bug (slow)":"dead-bug","Door towel row":"door-towel-row","Door towel row (both hands)":"door-towel-row","Doorway or seated pec stretch":"pec-stretch","Doorway pec stretch":"pec-stretch","Dumbbell / kettlebell complex":"kb-complex","Dumbbell RDL":"db-rdl","Dumbbell Romanian deadlift":"db-rdl","Dumbbell dead bug":"db-dead-bug","Dumbbell farmer carry":"farmer-carry","Dumbbell floor press":"floor-press","Dumbbell glute bridge":"db-glute-bridge","Dumbbell or kettlebell farmer carry":"farmer-carry","Dumbbell pullover (bench)":"db-pullover","Dumbbell pullover (on bench)":"db-pullover","Dumbbell reverse lunge":"db-rev-lunge","Dumbbell step-down (low step)":"db-step-down","Dumbbell step-up (box knee-height or lower)":"step-up","Elliptical or bike":"elliptical","Elliptical or incline treadmill":"elliptical","Elliptical or stationary bike":"bike","Figure-4 stretch + hip flexor stretch":"figure-4","Floor Y-T-W, no weight":"floor-ytw","Floor snow angels":"snow-angel","Foam roller T-spine + world's greatest stretch + child's pose lat stretch":"t-spine-roller","Foam roller pec opener":"pec-opener","Front plank":"front-plank","Glute bridge":"glute-bridge","Glute squeezes":"glute-squeeze","Goblet box squat":"goblet-box-squat","Goblet reverse lunge":"goblet-rev-lunge","Goblet split squat":"goblet-split","Hack or pendulum squat (feet high)":"hack-squat","Half-kneeling cable Pallof press":"hk-pallof","Half-kneeling hip flexor stretch":"hk-hip-flexor","Half-kneeling landmine press":"landmine-press","Half-kneeling single-arm dumbbell press":"hk-db-press","Hamstring stretch on bench + couch stretch":"bench-ham","Heavy cable pull-through":"pull-through","Heels-elevated goblet squat to box":"heels-up-goblet","High-incline Smith press":"smith-incline-high","Hip hinge to wall":"hip-hinge-wall","Hip thrust / glute drive machine":"glute-drive","Incline dumbbell Y-raise":"incline-y-raise","Incline prone Y-T-W":"incline-ytw","Incline prone rear-delt raise":"incline-rear-delt","Incline treadmill intervals":"treadmill","Incline treadmill walk":"treadmill","Incline treadmill walk (5–10%)":"treadmill","Kettlebell deadlift":"kb-deadlift","Kettlebell pullover":"kb-pullover","Kettlebell swing intervals":"kb-swing","Kettlebell tempo circuit":"kb-complex","Kneeling cable crunch":"cable-crunch","Landmine Pallof / anti-rotation":"landmine-pallof","Landmine rainbows (180s)":"landmine-rainbow","Landmine row (single arm)":"landmine-row","Lat pulldown (light, slow)":"lat-pulldown","Lat pulldown (neutral or wide grip, to chest)":"lat-pulldown","Lateral step-up (low box)":"lateral-step-up","Leg extension (partial range)":"leg-extension","Leg press (feet high)":"leg-press","Leg press (feet mid-to-high on platform)":"leg-press","Loaded backpack or shopping-bag carry":"bag-carry","Loaded hip hinge to wall":"loaded-hinge-wall","Low-impact interval circuit":"mountain-climbers","Low-incline Smith press":"smith-incline-low","Low-incline dumbbell press (15–30°, neutral grip)":"incline-db-press","Lying hamstring stretch (towel) + couch stretch":"lying-ham-towel","Lying leg raise on bench (knees bent)":"lying-leg-raise","Machine high row":"machine-high-row","McGill curl-up":"mcgill","Mini-band W pull-apart":"band-w","Mini-band lateral walk or clamshell":"lateral-walk","Mini-band pull-apart":"band-pull-apart","Mountain climbers (slow)":"mountain-climbers","Multi-hip machine (abduction)":"multi-hip","Neutral-grip machine shoulder press (partial)":"shoulder-press-machine","Pallof press with rotation":"pallof-rotation","Pause push-up":"push-up","Plank shoulder taps":"shoulder-taps","Plank with reach":"plank-reach","Plate crunch":"plate-crunch","Plate pinch carry":"plate-pinch","Plate-loaded low row":"machine-row","Prone T raise":"prone-t","Prone W lift":"prone-w","Prone Y-T-W on incline bench (1–2 kg)":"incline-ytw","Prone floor row":"prone-row","Prone swimmers":"swimmers","Prone towel pulldown":"prone-towel-pulldown","Pull-up bar negatives":"pullup-negative","Push-up (hands elevated if needed)":"incline-push-up","Push-up on dumbbell handles":"push-up-db","Push-up plus":"push-up-plus","Push-up to side plank":"push-up-side-plank","Rear-foot-elevated split squat":"rfess","Reverse crunch":"reverse-crunch","Reverse lunge":"rev-lunge","Reverse pec deck":"reverse-pec-deck","Reverse pec deck (light)":"reverse-pec-deck","Rower (easy)":"rower","Rower, bike or elliptical tempo":"rower","Ruck walk (backpack 5–10 kg)":"ruck-walk","Seal row":"seal-row","Seated cable chin tuck (light)":"cable-chin-tuck","Seated cable row (neutral grip)":"seated-cable-row","Seated cable row (wide grip)":"seated-cable-row-wide","Seated hip abduction machine":"abductor-machine","Seated leg pull-in":"seated-pull-in","Shoulder blade squeezes":"scap-squeeze","Side hold on 45° back-extension bench":"side-hold-bench","Side plank (knees or feet)":"side-plank","Side plank clamshell":"clamshell","Side-lying dumbbell external rotation":"side-lying-er","Side-lying hip abduction (ankle weight)":"side-lying-abd","Single-arm cable hold":"cable-hold","Single-arm cable press (low-to-high)":"single-arm-cable-press","Single-arm cable row":"single-arm-cable-row","Single-arm door towel row":"door-towel-row-1arm","Single-arm dumbbell bench press":"db-bench-1arm","Single-arm dumbbell row":"one-arm-db-row","Single-arm dumbbell row (bench-supported)":"one-arm-db-row","Single-arm farmer carry":"suitcase","Single-arm kneeling cable pulldown":"kneel-cable-pulldown","Single-leg RDL":"single-leg-rdl","Single-leg RDL (hold a support)":"single-leg-rdl-support","Single-leg glute bridge":"single-leg-bridge","Single-leg hip thrust":"single-leg-hip-thrust","Single-leg leg press":"leg-press-single","Ski erg or elliptical intervals":"ski-erg","Ski erg or incline treadmill tempo":"ski-erg","Slow reverse lunge":"rev-lunge","Slow step-down from stairs":"stair-step-down","Smith machine RDL":"smith-rdl","Smith machine hip thrust":"smith-hip-thrust","Smith machine split squat":"smith-split","Stair climber (slow)":"stair-climber","Stair intervals":"step-mill","Stair step-up":"stair-step","Standing cable chest press":"standing-cable-press","Standing hip flexor stretch":"standing-hip-flexor","Stationary bike or rower":"bike","Suitcase carry":"suitcase","Suitcase hold":"suitcase-hold","Supine chin tuck + head lift":"supine-chin-tuck","Supine dumbbell punch":"supine-punch","Supported split squat":"supported-split","Swiss-ball crunch":"ball-crunch","Swiss-ball dead bug":"ball-dead-bug","Thoracic extension over chair":"t-spine-chair","Thoracic open book":"open-book","Trap-bar carry":"trap-bar-carry","Trap-bar deadlift (or kettlebell deadlift)":"trap-bar-deadlift","Tucked hollow hold":"tuck-hollow","Wall Y-slide with lift-off":"wall-slide-liftoff","Wall chin tuck":"wall-chin-tuck","Wall sit or slow squat to a chair":"chair-squat","Wall slide with lift-off":"wall-slide-liftoff","Wall slide with reach":"wall-slides","Wall slides":"wall-slides"};
+const DM = {"ab-wheel":[12,6,0,"04157d63"],"abductor-machine":[12,6,0,"08dbeee8"],"air-bike":[20,10,1,"ef8da77a"],"assisted-pullup":[12,3,0,"d32e5da4"],"back-extension":[12,6,0,"2baed2c1"],"bag-carry":[20,5,1,"649752aa"],"ball-crunch":[12,6,0,"6082cba6"],"ball-dead-bug":[12,6,0,"13aa9823"],"band-bridge-couch":[12,6,0,"3aa403e6"],"band-pull-apart":[12,6,0,"a747c2ea"],"band-w":[12,6,0,"419d34d5"],"battle-ropes":[16,8,1,"e16ce9a7"],"bb-rdl":[12,6,0,"cd48ec74"],"bb-rollout":[12,6,0,"61dc7bcc"],"bear-taps":[24,6,0,"023226e5"],"bench-ham":[12,6,0,"84fd7fd6"],"bench-pull-in":[12,6,0,"d61e423b"],"bentover-rear-delt":[12,6,0,"af45bcfa"],"bike":[20,10,1,"4a4b0d1c"],"bird-dog":[24,6,0,"4790b508"],"cable-bird-dog":[12,6,0,"3b47f4b5"],"cable-chin-tuck":[12,6,0,"78b33fec"],"cable-crunch":[12,6,0,"d258c78b"],"cable-dead-bug":[12,6,0,"5bc3c6b1"],"cable-er":[12,6,0,"7570c8d7"],"cable-hip-abd":[12,6,0,"f1487655"],"cable-hold":[1,1,0,"9ea8719c"],"cable-lat-stretch":[1,1,0,"fd498a4e"],"cable-lift":[12,6,0,"c0871748"],"cable-pec-stretch":[1,1,0,"3d273366"],"cable-rear-delt-fly":[12,6,0,"8b43968a"],"cable-serratus":[12,6,0,"4b46eb96"],"cable-y-raise":[12,6,0,"31daa8d9"],"captains-chair":[12,6,0,"423697fc"],"cat-cow":[12,6,0,"32bfec7b"],"chair-squat":[12,6,0,"e553b6c4"],"chest-press-machine":[12,6,0,"ad7b5b66"],"childs-pose":[1,1,0,"2263ab22"],"chin-tuck":[12,6,0,"7b145f5b"],"clamshell":[12,6,0,"fe9556bf"],"couch-stretch":[1,1,0,"8995c743"],"couch-stretch-bench":[1,1,0,"9b0b6989"],"cross-crunch":[12,6,0,"9557d70e"],"crunch":[12,6,0,"04d2424b"],"db-bench-1arm":[12,6,0,"1038689d"],"db-dead-bug":[12,6,0,"be987f25"],"db-glute-bridge":[12,6,0,"962c2a43"],"db-incline-row":[12,6,0,"4c02fd8b"],"db-pullover":[12,6,0,"429122db"],"db-rdl":[12,6,0,"c226ed4d"],"db-rev-lunge":[12,6,0,"d279467c"],"db-step-down":[24,6,0,"602ce235"],"dead-bug":[24,6,0,"01f9ab5c"],"door-towel-row":[12,6,0,"7fedc8b3"],"door-towel-row-1arm":[12,6,0,"02e25d63"],"elliptical":[20,10,1,"df1e8f9e"],"face-pull":[12,6,0,"cc5821ed"],"farmer-carry":[20,5,1,"fa7da248"],"figure-4":[12,6,0,"984f3c10"],"floor-press":[12,6,0,"c222efea"],"floor-ytw":[24,6,0,"11c3e7f1"],"front-plank":[1,1,0,"12f0dce8"],"glute-bridge":[12,6,0,"df6e36a9"],"glute-drive":[12,6,0,"0d368994"],"glute-squeeze":[12,6,0,"f8eb89ba"],"goblet-box-squat":[12,6,0,"b054e9f8"],"goblet-rev-lunge":[12,6,0,"570ecb92"],"goblet-split":[12,6,0,"c360b8bd"],"hack-squat":[12,6,0,"959d14dd"],"heels-up-goblet":[12,6,0,"e1c172cb"],"hip-hinge-wall":[12,6,0,"25cbee79"],"hip-switch":[24,1,0,"7a0166cd"],"hip-thrust":[12,6,0,"d7341657"],"hk-db-press":[12,6,0,"dfbd5065"],"hk-hip-flexor":[1,1,0,"a4e17236"],"hk-pallof":[12,6,0,"fd233b3b"],"incline-db-press":[12,6,0,"0e6e58e2"],"incline-push-up":[12,6,0,"9ac56b66"],"incline-rear-delt":[12,6,0,"bdd3b4e5"],"incline-y-raise":[12,6,0,"e527a8a6"],"incline-ytw":[24,6,0,"a282a12a"],"kb-complex":[12,6,0,"abcbcdf8"],"kb-deadlift":[12,6,0,"82306df7"],"kb-press":[12,6,0,"373a0bc0"],"kb-pullover":[12,6,0,"09c04342"],"kb-swing":[12,6,0,"1b7d38bf"],"kneel-cable-pulldown":[12,6,0,"3c515109"],"landmine-pallof":[12,6,0,"a0bf552e"],"landmine-press":[12,6,0,"bfd72fc7"],"landmine-rainbow":[12,6,0,"c9af957f"],"landmine-row":[12,6,0,"3efebed3"],"lat-pulldown":[12,6,0,"370de8bf"],"lateral-step-up":[16,4,0,"03e78709"],"lateral-walk":[12,6,0,"ae04784c"],"leg-extension":[12,6,0,"c9fe5c4d"],"leg-press":[12,6,0,"d582e981"],"leg-press-single":[12,6,0,"ff902e9a"],"loaded-hinge-wall":[12,6,0,"38b005b0"],"lying-ham-towel":[12,6,0,"9e760b55"],"lying-leg-raise":[12,6,0,"314c45aa"],"machine-crunch":[12,6,0,"e8840d5a"],"machine-high-row":[12,3,0,"261b8353"],"machine-row":[12,6,0,"e36314d3"],"mcgill":[12,6,0,"f26c6db4"],"mountain-climbers":[24,6,1,"e07eaf0f"],"multi-hip":[12,6,0,"a7724a08"],"one-arm-db-row":[12,6,0,"9ee4d7f9"],"open-book":[24,6,0,"86cce6dd"],"pallof-press":[12,6,0,"f22becdc"],"pallof-rotation":[12,6,0,"d9b7b69c"],"pec-opener":[1,1,0,"fc62384b"],"pec-stretch":[1,1,0,"b4a8e046"],"pigeon-bench":[1,1,0,"1fbd36f4"],"plank-reach":[24,6,0,"ba8d5c79"],"plate-crunch":[12,6,0,"c7b36e64"],"plate-pinch":[20,5,1,"9bdad260"],"prone-row":[36,6,0,"1db5cf0e"],"prone-t":[12,6,0,"a7b8d4f2"],"prone-towel-pulldown":[12,6,0,"51333755"],"prone-w":[12,6,0,"f5db5aff"],"pull-through":[12,6,0,"4ddef46e"],"pullup-negative":[12,6,0,"d0729676"],"push-up":[12,6,0,"908bcf9f"],"push-up-db":[12,6,0,"408c3277"],"push-up-plus":[12,6,0,"2328b5e1"],"push-up-side-plank":[12,6,0,"a467657b"],"rev-lunge":[12,6,0,"dcb1dc80"],"reverse-crunch":[12,6,0,"09cdebb5"],"reverse-pec-deck":[12,6,0,"52e2f9e0"],"rfess":[12,6,0,"d13f2876"],"rower":[12,6,1,"b6f84e14"],"ruck-walk":[20,5,1,"5fe6ab90"],"scap-squeeze":[12,6,0,"a44d7e12"],"seal-row":[12,6,0,"f68e6b1f"],"seated-cable-row":[12,6,0,"945d9e71"],"seated-cable-row-wide":[12,6,0,"fdd08582"],"seated-pull-in":[12,6,0,"143993cd"],"shoulder-press-machine":[12,6,0,"27937f00"],"shoulder-taps":[24,6,0,"4958ac50"],"side-hold-bench":[1,1,0,"ac5294bf"],"side-lying-abd":[12,6,0,"23814436"],"side-lying-er":[12,6,0,"5fce7b84"],"side-plank":[1,1,0,"d21e6c03"],"single-arm-cable-press":[12,6,0,"fffff457"],"single-arm-cable-row":[12,6,0,"b27fa4a8"],"single-leg-bridge":[12,6,0,"478a11f8"],"single-leg-hip-thrust":[12,6,0,"1721f624"],"single-leg-rdl":[12,6,0,"8a527c5b"],"single-leg-rdl-support":[12,6,0,"bc8f7cfe"],"ski-erg":[12,6,1,"feda9ea2"],"smith-hip-thrust":[12,6,0,"8c52f3b4"],"smith-incline-high":[12,6,0,"36252a0f"],"smith-incline-low":[12,6,0,"c27a6fe0"],"smith-rdl":[12,6,0,"c1dc5bf6"],"smith-split":[12,6,0,"bdd9bcc2"],"snow-angel":[24,6,0,"69ba30f7"],"stair-climber":[12,6,0,"19234995"],"stair-step":[12,6,0,"04731b4c"],"stair-step-down":[24,6,0,"b4c5b9f4"],"standing-cable-press":[12,6,0,"5207215b"],"standing-hip-flexor":[12,6,0,"46cc2da7"],"step-mill":[16,8,1,"6cecf742"],"step-up":[24,6,0,"de7da4f5"],"straight-arm-pulldown":[12,6,0,"38937455"],"suitcase":[20,5,1,"bcbfff31"],"suitcase-hold":[1,1,0,"756bca6b"],"supine-chin-tuck":[12,6,0,"e340a879"],"supine-punch":[12,6,0,"f57860fe"],"supported-split":[12,6,0,"48d813f9"],"swimmers":[36,6,0,"d6e8a2ee"],"t-spine-chair":[12,6,0,"96c84926"],"t-spine-roller":[12,6,0,"d0429058"],"tbar-row":[12,3,0,"def05b7f"],"trap-bar-carry":[20,5,1,"95fa36cc"],"trap-bar-deadlift":[12,6,0,"4d2c6c25"],"treadmill":[20,5,1,"d4b882ef"],"tuck-hollow":[1,1,0,"c7b6b33a"],"walk":[20,5,1,"4bed2087"],"wall-chin-tuck":[12,6,0,"0a9dcbc1"],"wall-slide-liftoff":[24,6,0,"f1c28682"],"wall-slides":[12,6,0,"fd9106fa"],"woodchop":[12,6,0,"e68698f7"]}; // template -> [frames, frames per key, cyclic, sprite hash]
 const demoCanvas = n => `<canvas data-demo="${DEMO[n]}" width="480" height="320" role="img" aria-label="${esc(n)} demonstration"></canvas>`;
 const yt = q => "https://www.youtube.com/results?search_query=" + encodeURIComponent(q + " proper form");
 
@@ -363,7 +373,7 @@ const DAYS = [
    {slot:"Horizontal row", dose:"4 × 10–12", rest:"90 s",
     o:{machine:["Seated cable row (neutral grip)","Use the V-handle. Sit tall, don't rock."],
        free:["Chest-supported dumbbell row","Lie face-down on a 30–45° incline bench. Takes all load off your lower back."],
-       body:["Door towel row","Loop a towel round both handles of a sturdy, closed door. Stand on the side it opens away from you, lean back with straight arms, then row your chest to the door. Feet closer = easier."]},
+       body:["Door towel row","Throw a towel over the top of a sturdy door and close it so the towel is trapped. Stand on the side it opens away from you, hold an end in each hand, lean back with straight arms, then row your chest to the door. Feet closer = easier."]},
     cues:["Chest up, neck long (slight chin tuck)","Drive elbows toward your back pockets","Pause 1 s with shoulder blades squeezed"],
     avoid:"Shrugging toward your ears or yanking with the lower back.",
     pain:"Neck tightens up? Lighten the load and keep the chin tucked for the whole set."},
@@ -513,7 +523,7 @@ const DAYS = [
    {slot:"Row", dose:"4 × 10", rest:"90 s",
     o:{machine:["Chest-supported machine row / T-bar row","Chest on the pad; pull with elbows."],
        free:["Single-arm dumbbell row (bench-supported)","Hand and knee on the bench, flat back."],
-       body:["Single-arm door towel row","Towel round both handles of a sturdy, closed door; stand on the side it opens away from you. One hand on the towel, lean back and row."]},
+       body:["Single-arm door towel row","Throw a towel over the top of a sturdy door and close it so the towel is trapped. Stand on the side it opens away from you, hold one end in one hand, lean back and row."]},
     cues:["Pull the elbow to the hip","Pause and squeeze 1 s","Neck long, eyes down"],
     avoid:"Twisting the torso to move the weight."},
    {slot:"Angled press", dose:"3 × 8 / side", rest:"75 s",
@@ -602,8 +612,8 @@ const DAYS = [
 
 const Z2_CUES = ["You can talk in full sentences but couldn't sing","Roughly 60–70% of max heart rate, effort 5/10","Tall posture, arms swinging, hands off the rails"];
 const CARDIO = {
- mon:{slot:"Cardio · Intervals", dose:"~20 min", rest:null,
-  plan:"5 min easy → 6 × (30 s hard / 90 s easy) → 3 min easy",
+ mon:{slot:"Cardio · Intervals", dose:"16–24 min", rest:null,
+  plan:"5 min easy → 4 × (30 s hard / 90 s easy) → 3 min easy. Weeks 3–5: work up to 8 rounds.",
   o:{machine:["Air bike or rower intervals","Bike: seat high, sit upright, push and pull the arms. Rower: legs, then hips, then arms; finish tall."],
      free:["Kettlebell swing intervals","Swing for 30 s, walk for 90 s. Hinge at the hips; don't squat it up."],
      body:["Low-impact interval circuit","30 s fast, rotating stair step-ups, skater steps and hands-on-couch mountain climbers. 90 s walking or marching between."]},
@@ -699,7 +709,7 @@ const EXTRA = {
           body:[["Pause push-up","1 s pause just above the floor. Hands elevated if needed."]]},
  "thu:1":{machine:[["Seated cable row (wide grip)","Elbows a little wider for the upper back; no shrugging."],["Plate-loaded low row","Chest on the pad; drive the elbows back."]],
           free:[["Chest-supported dumbbell row","Face-down on a 30–45° incline."],["Landmine row (single arm)","Bar in a landmine or corner; row the bar end to your hip."]],
-          body:[["Door towel row (both hands)","Towel round both handles of a sturdy closed door; stand on the side it opens away from you."]]},
+          body:[["Door towel row (both hands)","Throw a towel over the top of a sturdy door and close it so the towel is trapped; stand on the side it opens away from you, an end in each hand."]]},
  "thu:2":{machine:[["Neutral-grip machine shoulder press (partial)","Stop just below where the shoulder pinches."],["High-incline Smith press","Bench at about 60°, lighter, elbows slightly forward."]],
           free:[["Half-kneeling single-arm dumbbell press","Neutral grip; press up and slightly forward, ribs down."],["Bottoms-up kettlebell press (light)","Bell upside down; forces a stable shoulder."]]},
  "thu:3":{machine:[["Cable rear-delt fly","Hold opposite cables at shoulder height; pull out wide."],["Cable face pull","Rope at eye height; hands finish beside your ears."]],
@@ -748,6 +758,7 @@ const EXTRA = {
 DAYS.forEach(d => d.ex.forEach((e,i) => e.extra = EXTRA[d.id+":"+i] || {}));
 Object.keys(CARDIO).forEach(id => CARDIO[id].extra = EXTRA[id+":cardio"] || {});
 const eqOpts = (e, k) => [e.o[k], ...(e.extra[k] || [])];
+const BODYNAMES = new Set(DAYS.flatMap(d=>d.ex).concat(Object.values(CARDIO)).flatMap(e=>eqOpts(e,"body").map(o=>o[0]))); // every Home/body option name in the catalogue
 
 const DESK = [
   ["Chin tucks","10 reps","Sit tall, slide the head back. Undoes forward head posture."],
@@ -759,6 +770,7 @@ const DESK = [
 ];
 
 const LABEL = {machine:"Machine", free:"Free weights", body:"Home"};
+const FULLDAY = {mon:"Monday", tue:"Tuesday", wed:"Wednesday", thu:"Thursday", fri:"Friday"};
 const S = {get(k,d){try{const v=localStorage.getItem(k);return v===null?d:JSON.parse(v)}catch(e){return d}},
            set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 
@@ -779,9 +791,16 @@ if(S.get("dr-ver",1) < 2){ // v2 inserted an abs slot before the finisher stretc
   ["mon","tue","thu","fri"].forEach(d => { if(checks[d+":5"]){ checks[d+":6"] = true; delete checks[d+":5"]; } });
   S.set("dr-checks", checks); S.set("dr-ver", 2);
 }
+if(S.get("dr-ver",1) < 3){ // v3: log keyed by planned slot, not the date touched
+  log = refile(log);
+  // refile only moves existing date keys; the old code never logged a 2nd session on the same real date, so
+  // any such sessions this week only exist in the ticks — rebuild this week's slots from them.
+  if(S.get("dr-week") === dkey(monday(new Date()))) DAYS.forEach(d => { const [n,t] = progressFor(d); if(n) logSession(log,d.id,n,t); });
+  S.set("dr-log",log); S.set("dr-ver",3);
+}
 const thisWeek = dkey(monday(new Date()));
 if(S.get("dr-week")!==thisWeek){ checks={}; S.set("dr-checks",checks); S.set("dr-week",thisWeek); } // ticks reset each Monday; history lives in log
-let overrides = {}; // per-exercise equipment override, session only
+let overrides = S.get("dr-swaps", {}); // per-equipment, per-exercise swap: {eq: {cardKey: {k, i}}}, persists
 
 const tabsEl = document.getElementById("tabs");
 const view = document.getElementById("view");
@@ -796,7 +815,7 @@ function renderTabs(){
   tabsEl.innerHTML = `<div class="tabrow days">${DAYS.map(d=>btn([d.id, d.tab])).join("")}</div>`;
 }
 const SECTIONS = [["workout","Workout","dumbbell"],["stats","Progress","trend"],["desk","Desk breaks","monitor"],["rules","Rules","book"]];
-const navEl = document.getElementById("nav"), bar = document.querySelector(".bar");
+const navEl = document.getElementById("nav"), bar = document.querySelector(".bar"), eqbar = document.querySelector(".eqbar");
 const section = () => DAYS.some(x=>x.id===day) ? "workout" : day;
 function renderNav(){
   navEl.innerHTML = SECTIONS.map(([id,t,i])=>`<button type="button" data-nav="${id}"${section()===id?' aria-current="page"':''}><span class="ind">${ic(i)}</span>${t}</button>`).join("");
@@ -841,8 +860,15 @@ function renderDay(d){
   h += `</div>`;
   return h;
 }
+// A move labelled with equipment k really has none when its name is ANY home option in the whole catalogue: call it Bodyweight.
+const eqLabel = (e, k, name) => k!=="body" && BODYNAMES.has(name) ? "Bodyweight" : LABEL[k];
 function cardHTML(key, letter, e, cls){
-    const sel = overrides[key] || {k: eq, i: 0}, k = sel.k;
+    const saved = (overrides[eq] || {})[key];
+    // swaps save by option NAME (survives catalogue reordering); legacy {k,i} entries resolve once by index.
+    const byName = saved && "n" in saved ? eqOpts(e, saved.k).findIndex(o=>o[0]===saved.n) : -1;
+    const sel = saved && "n" in saved ? (byName>=0 ? {k:saved.k, i:byName} : {k:eq, i:0})
+      : saved && eqOpts(e, saved.k)[saved.i] ? saved : {k:eq, i:0}; // fall back to the planned option if the saved swap is gone
+    const k = sel.k;
     const [vn, vnote, vcues] = eqOpts(e, k)[sel.i];
     // Alternatives: current equipment first, then the others; skip duplicates by name
     const alts = [];
@@ -857,15 +883,16 @@ function cardHTML(key, letter, e, cls){
         <label class="chk"><input type="checkbox" id="chk-${key.replace(':','-')}" data-key="${key}"${isDone?' checked':''}> Done</label>
       </div>
       ${DEMO[vn]?`<figure class="gif">${demoCanvas(vn)}</figure>`:''}
-      <div class="row"><span class="pill">${esc(e.dose)}</span>${e.rest?`<span class="pill rest">Rest ${esc(e.rest)}</span>`:''}<span class="chip">${LABEL[k]}</span></div>
+      <div class="row"><span class="pill">${esc(e.dose)}</span>${e.rest?`<span class="pill rest">Rest ${esc(e.rest)}</span>`:''}<span class="chip">${eqLabel(e,k,vn)}</span></div>
       ${e.plan?`<p class="plan">${esc(e.plan)}</p>`:''}
       <p class="vnote">${esc(vnote)}</p>
-      <ul class="cues">${(vcues || e.cues).map(c=>`<li>${ic("check")}<span>${esc(c)}</span></li>`).join("")}</ul>
+      ${(() => { const cs = vcues || (sel.i === 0 ? e.cues : []); // slot cues describe the planned move: a swapped-in alternative keeps only its own note
+        return cs.length ? `<ul class="cues">${cs.map(c=>`<li>${ic("check")}<span>${esc(c)}</span></li>`).join("")}</ul>` : ""; })()}
       <p class="avoid">${ic("ban")}<span><b>Avoid:</b> ${esc(e.avoid)}</span></p>
       ${e.pain?`<p class="pain">${ic("alert")}<span><b>If it hurts:</b> ${esc(e.pain)}</span></p>`:''}
       <div class="actions">
         ${DEMO[vn]?'':`<a class="demo" href="${yt(vn)}" target="_blank" rel="noopener">${ic("play")}Watch video</a>`}
-        ${alts.length?`<details class="alts"><summary>${ic("swap")}Busy? ${alts.length} alternative${alts.length===1?"":"s"}${ic("chevron")}</summary><div class="altlist">${alts.map(a=>`<button type="button" data-swap="${key}" data-k="${a.k}" data-i="${a.i}"><span class="k">${LABEL[a.k]}</span>${esc(a.o[0])}</button>`).join("")}</div></details>`:''}
+        ${alts.length?`<details class="alts"><summary>${ic("swap")}Busy? ${alts.length} alternative${alts.length===1?"":"s"}${ic("chevron")}</summary><div class="altlist">${alts.map(a=>`<button type="button" data-swap="${key}" data-k="${a.k}" data-n="${esc(a.o[0])}"><span class="k">${eqLabel(e,a.k,a.o[0])}</span>${esc(a.o[0])}</button>`).join("")}</div></details>`:''}
       </div>
     </article>`;
 }
@@ -931,10 +958,10 @@ function renderStats(){
   <div class="panel"><button type="button" class="share" data-share>${ic("share")}Share my week</button></div>
   ${recent.length?`<div class="panel recent"><h3>Recent</h3><ul class="wlist" style="padding:0">${recent.map(([k,e])=>`<li><span class="dose">${new Date(k+"T00:00").toLocaleDateString(undefined,{weekday:"short",day:"numeric",month:"short"})}</span><div class="wn">${esc(title(e.d))}</div><span class="dose${isDone(e)?' ok':''}">${isDone(e)?'Done':e.n+'/'+e.t}</span></li>`).join("")}</ul></div>`:''}`;
 }
-function record(){
-  const d = DAYS.find(x=>x.id===day); if(!d) return;
-  const [n,t] = progressFor(d), k = dkey(new Date());
-  logSession(log, k, d.id, n, t);
+function record(id = day){
+  const d = DAYS.find(x=>x.id===id); if(!d) return;
+  const [n,t] = progressFor(d);
+  logSession(log, d.id, n, t, new Date(thisWeek + "T12:00")); // file under the loaded week, not the clock: a session finished past Sunday midnight still credits this week
   S.set("dr-log",log);
 }
 async function share(){
@@ -949,13 +976,13 @@ function render(){
   renderEq(); renderTabs();
   const d = DAYS.find(x=>x.id===day);
   view.innerHTML = d ? renderDay(d) : day==="desk" ? renderDesk() : day==="stats" ? renderStats() : renderRules();
-  bar.hidden = !d; renderNav(); mountDemos();
+  bar.hidden = eqbar.hidden = !d; renderNav(); mountDemos();
   if(sel){ const el = document.querySelector(sel); if(el) el.focus({preventScroll:true}); }
 }
 
 document.getElementById("eq").addEventListener("click",e=>{
   const b=e.target.closest("button[data-eq]"); if(!b) return;
-  eq=b.dataset.eq; overrides={}; S.set("dr-eq",eq); render();
+  eq=b.dataset.eq; S.set("dr-eq",eq); render(); // swaps are per-equipment and persist across this switch
 });
 tabsEl.addEventListener("click",e=>{
   const b=e.target.closest("button[data-day]"); if(!b) return;
@@ -978,34 +1005,53 @@ view.addEventListener("toggle",e=>{ if(e.target.matches("details.warm")) warmOpe
 const FW = 480, FH = 320, COLS = 4, REF = 190;   // REF: the neutral render skin's typical lit value
 const TONES = [[247,219,197],[236,192,158],[219,166,124],[192,135,95],[156,102,68],[114,74,50],[78,51,36]];
 let look = S.get("dr-look", {sex: "m", tone: 45});
-const toneRGB = () => { const x = look.tone / 100 * (TONES.length - 1), i = Math.min(TONES.length - 2, Math.floor(x)), f = x - i;
+const toneRGB = (tone = look.tone) => { const x = tone / 100 * (TONES.length - 1), i = Math.min(TONES.length - 2, Math.floor(x)), f = x - i;
   return TONES[i].map((c, k) => Math.round(c + (TONES[i + 1][k] - c) * f)); };
 const keep = (m, k, v, max) => { m.delete(k); m.set(k, v); while(m.size > max) m.delete(m.keys().next().value); return v; };
 const sheets = new Map(), layers = new Map(), phase = {};   // small LRU caches: a decoded sheet can be ~40 MB (phones!)
-const sheet = t => { const k = look.sex + "/" + t;
-  return keep(sheets, k, sheets.get(k) || new Promise((ok, no) => { const im = new Image(); im.onload = () => ok(im); im.onerror = no; im.src = `demos/${k}.webp`; }), 3); };
+const demoUrl = (sex, t) => `demos/${sex}/${t}.${DM[t] && DM[t][0] === 1 ? "png" : "webp"}` + (DM[t] && DM[t][3] ? `?v=${DM[t][3]}` : ""); // DM[t][3]: per-render content hash, absent on older entries
+const sheet = (t, sex = look.sex) => { const k = sex + "/" + t;
+  return keep(sheets, k, sheets.get(k) || new Promise((ok, no) => { const im = new Image();
+    im.onload = () => ok(im); im.onerror = () => { sheets.delete(k); no(); }; im.src = demoUrl(sex, t); // drop a failed load so it retries later
+  }), 3); };
 const layerKey = t => `${look.sex}/${t}/${look.tone}`;
 const lin = v => (v /= 255) <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
 const enc = v => 255 * (v <= 0.0031308 ? v * 12.92 : 1.055 * v ** (1 / 2.4) - 0.055);
-const luts = () => toneRGB().map(c => { const g = lin(c) / lin(REF), t = new Uint8ClampedArray(256);
+const luts = (tone = look.tone) => toneRGB(tone).map(c => { const g = lin(c) / lin(REF), t = new Uint8ClampedArray(256);
   for(let v = 0; v < 256; v++) t[v] = enc(Math.min(1, lin(v) * g)); return t; });
 async function layer(t){
-  const k = layerKey(t); if(layers.has(k)) return keep(layers, k, layers.get(k), 4);
-  const im = await sheet(t), w = COLS * FW, h = Math.ceil(DM[t][0] / COLS) * FH;
-  const c = document.createElement("canvas"); c.width = w; c.height = 2 * h;
-  const x = c.getContext("2d", {willReadFrequently: true}); x.drawImage(im, 0, 0);
-  const img = x.getImageData(0, 0, w, 2 * h), px = img.data, n = w * h * 4, [R, G, B] = luts();
-  for(let i = 0; i < n; i += 4){
-    const m = px[n + i]; if(m < 3) continue;
-    const f = m / 255, r = px[i], g = px[i + 1], b = px[i + 2];
-    px[i] = r + (R[r] - r) * f; px[i + 1] = g + (G[g] - g) * f; px[i + 2] = b + (B[b] - b) * f;
-  }
-  c.height = h; c.getContext("2d").putImageData(img, 0, 0);     // keep only the toned frames
-  return keep(layers, k, {c}, 4);
+  const sex = look.sex, tone = look.tone, k = layerKey(t); // capture now: a sex/tone change mid-flight must not corrupt this entry
+  if(layers.has(k)) return keep(layers, k, layers.get(k), 4);
+  const p = (async () => {
+    await new Promise(r => setTimeout(r));   // yield: re-toning many visible sheets shares the main thread instead of blocking it in one go
+    if(layerKey(t) !== k) throw new Error("stale");   // sex/tone moved on while we yielded: bail, don't do the work or store it under this key
+    const im = await sheet(t, sex), n = DM[t][0], w = Math.min(COLS, n) * FW, h = Math.ceil(n / COLS) * FH;
+    const c = document.createElement("canvas"); c.width = w; c.height = 2 * h;
+    const x = c.getContext("2d", {willReadFrequently: true}); x.drawImage(im, 0, 0);
+    const img = x.getImageData(0, 0, w, 2 * h), px = img.data, sz = w * h * 4, [R, G, B] = luts(tone);
+    for(let i = 0; i < sz; i += 4){
+      const m = px[sz + i]; if(m < 3) continue;
+      const f = m / 255, r = px[i], g = px[i + 1], b = px[i + 2];
+      px[i] = r + (R[r] - r) * f; px[i + 1] = g + (G[g] - g) * f; px[i + 2] = b + (B[b] - b) * f;
+    }
+    c.height = h; c.getContext("2d").putImageData(img, 0, 0);     // keep only the toned frames
+    return {c};
+  })();
+  keep(layers, k, p, 4);   // in-flight promise: concurrent calls for the same tone+template share this one
+  try { const L = await p; keep(layers, k, L, 4); return L; }   // resolved: replace with the plain {c} buffer mountDemos reads synchronously
+  catch(e){ layers.delete(k); throw e; }   // failed or stale: don't poison the cache, let the next mount retry
 }
 function frame(cv, s){
-  cv.getContext("2d").drawImage(s.L.c, (s.i % COLS) * FW, Math.floor(s.i / COLS) * FH, FW, FH, 0, 0, FW, FH);
+  const x = cv.getContext("2d"); x.clearRect(0, 0, cv.width, cv.height);   // sprites have alpha now: always clear first
+  x.drawImage(s.L.c, (s.i % COLS) * FW, Math.floor(s.i / COLS) * FH, FW, FH, 0, 0, FW, FH);
 }
+function message(cv, text){   // shared canvas-text styling for the loading/unavailable states
+  const x = cv.getContext("2d"); x.clearRect(0, 0, cv.width, cv.height);
+  x.fillStyle = getComputedStyle(document.documentElement).getPropertyValue("--muted").trim() || "#888";
+  x.font = "22px " + getComputedStyle(document.body).fontFamily; x.textAlign = "center"; x.textBaseline = "middle";
+  x.fillText(text, cv.width / 2, cv.height / 2);
+}
+const unavailable = cv => message(cv, navigator.onLine ? "Couldn't load this demo" : "Demo unavailable offline"); // never cached (or a real failure): say so instead of leaving a stale or blank canvas
 const live = new Map(), still = matchMedia("(prefers-reduced-motion: reduce)");
 let raf = 0;
 function tick(now){
@@ -1018,18 +1064,21 @@ function tick(now){
 }
 async function play(cv){
   const t = cv.dataset.demo; if(!DM[t]) return;
-  const s = {t, i: still.matches ? DM[t][1] % DM[t][0] : phase[t] || 0, next: 0}; live.set(cv, s);
-  try { s.L = await layer(t); } catch(e){ live.delete(cv); return; }
+  const n = DM[t][0];
+  const s = {t, i: still.matches ? DM[t][1] % n : phase[t] || 0, next: 0}; live.set(cv, s);
+  const cached = layers.get(layerKey(t));
+  if(!cached || cached.then) message(cv, "Loading…");   // not ready yet: show a loading state until the frame draws over it
+  try { s.L = await layer(t); } catch(e){ if(live.get(cv)===s){ live.delete(cv); unavailable(cv); } return; }   // a stale/older failure must not wipe a newer demo
   if(live.get(cv) !== s) return;                       // scrolled away or re-rendered meanwhile
-  if(still.matches){ frame(cv, s); live.delete(cv); return; }   // reduced motion: one still key pose
+  if(still.matches || n === 1){ frame(cv, s); live.delete(cv); return; }   // reduced motion or a one-frame still: draw once
   if(!raf) raf = requestAnimationFrame(tick);
 }
 const seen = new IntersectionObserver(es => es.forEach(e => e.isIntersecting ? play(e.target) : live.delete(e.target)), {rootMargin: "200px"});
 function mountDemos(){
   seen.disconnect(); live.clear();
   document.querySelectorAll("canvas[data-demo]").forEach(cv => {
-    const L = layers.get(layerKey(cv.dataset.demo));    // already toned: draw now so a re-render doesn't flash empty
-    if(L && DM[cv.dataset.demo]) frame(cv, {L, i: phase[cv.dataset.demo] || 0});
+    const L = layers.get(layerKey(cv.dataset.demo));    // already toned (not still an in-flight promise): draw now so a re-render doesn't flash empty
+    if(L && L.c && DM[cv.dataset.demo]) frame(cv, {L, i: phase[cv.dataset.demo] || 0});
     seen.observe(cv);
   });
 }
@@ -1041,24 +1090,51 @@ function renderLook(){
 }
 document.getElementById("sex").addEventListener("click", e => {
   const b = e.target.closest("button[data-sex]"); if(!b) return;
-  look = {...look, sex: b.dataset.sex}; S.set("dr-look", look); renderLook(); mountDemos();
+  look = {...look, sex: b.dataset.sex}; S.set("dr-look", look); renderLook(); mountDemos(); precacheDemos();
 });
-let toneT = 0;   // re-toning is per-pixel work: follow the slider, but at most every 120 ms
-document.getElementById("tone").addEventListener("input", e => { look = {...look, tone: +e.target.value}; renderLook();
-  clearTimeout(toneT); toneT = setTimeout(mountDemos, 120); });
-document.getElementById("tone").addEventListener("change", () => S.set("dr-look", look));
+// Background-download every demo for the selected model so the gym (often offline/poor signal) still has them.
+let demoGen = 0;   // bumped on every call; a model switch mid-run makes the old loop see it's stale and stop (no double downloads)
+async function precacheDemos(){
+  if(!("caches" in window) || (navigator.connection && navigator.connection.saveData)) return;
+  const sex = look.sex, gen = ++demoGen;
+  try{
+    const c = await caches.open("demos");
+    const urls = new Set(); for(const t in DM) for(const s of "mf") urls.add(new URL(demoUrl(s, t), location.href).href);
+    for(const r of await c.keys()) if(new URL(r.url).pathname.includes("/demos/") && !urls.has(r.url)) await c.delete(r); // prune old renders
+    for(const t in DM){
+      if(gen !== demoGen) return;   // a newer call (model switch) took over
+      const url = demoUrl(sex, t);
+      if(await c.match(url)) continue;
+      let r; try { r = await fetch(url); } catch(e){ return; } // offline: stop quietly, try again next load
+      if(r.ok) await c.put(url, r);
+    }
+  }catch(e){}   // Cache Storage can throw (private mode, quota, ...)
+}
+addEventListener("load", precacheDemos);
+// Dragging only updates the swatch (cheap); re-toning every visible sheet (per-pixel work) waits for release.
+document.getElementById("tone").addEventListener("input", e => { look = {...look, tone: +e.target.value}; renderLook(); });
+document.getElementById("tone").addEventListener("change", () => { S.set("dr-look", look); mountDemos(); });
 renderLook();
 const gifDlg = document.getElementById("gifdlg");
 gifDlg.addEventListener("click", e => { if(e.target === gifDlg) gifDlg.close(); }); // tap the backdrop to close
+const resetDlg = document.getElementById("resetdlg");
+let resetDay = null;
+resetDlg.addEventListener("click", e => { if(e.target === resetDlg) resetDlg.close(); });
 view.addEventListener("click",e=>{
   const g = e.target.closest("[data-gif]");
   if(g){ const n = g.dataset.gif, cv = gifDlg.querySelector("canvas"); gifDlg.querySelector("h3").textContent = n;
+    cv.getContext("2d").clearRect(0, 0, cv.width, cv.height);   // never show the previous exercise under the new title
     cv.dataset.demo = DEMO[n]; cv.setAttribute("aria-label", n + " demonstration"); gifDlg.showModal(); mountDemos(); return; }
   if(e.target.closest("[data-share]")){ share(); return; }
   const sw=e.target.closest("button[data-swap]");
-  if(sw){ overrides[sw.dataset.swap]={k: sw.dataset.k, i: +sw.dataset.i}; render(); return; }
+  if(sw){ (overrides[eq] ||= {})[sw.dataset.swap]={k: sw.dataset.k, n: sw.dataset.n}; S.set("dr-swaps",overrides); render(); return; }
   const r=e.target.closest("button[data-reset]");
-  if(r && confirm("Clear all ticks for this day?")){ Object.keys(checks).forEach(k=>{ if(k.startsWith(r.dataset.reset+":")) delete checks[k]; }); S.set("dr-checks",checks); record(); render(); }
+  if(r){ resetDay = r.dataset.reset; resetDlg.querySelector("h3").textContent = `Reset ${FULLDAY[resetDay]}?`; resetDlg.returnValue=""; resetDlg.showModal(); }
+});
+resetDlg.addEventListener("close",()=>{
+  if(resetDlg.returnValue!=="clear"||!resetDay) return;
+  Object.keys(checks).forEach(k=>{ if(k.startsWith(resetDay+":")) delete checks[k]; });
+  S.set("dr-checks",checks); record(resetDay); resetDay = null; render(); // clear resetDay so a stray close (e.g. navigating back) can't replay it
 });
 render();
 // Menu: theme + install

@@ -16,8 +16,8 @@
 },
 "assisted-pullup": {
 "cyclic": false,
-"keys": 2,
-"steps": 6
+"keys": 3,
+"steps": 3
 },
 "back-extension": {
 "cyclic": false,
@@ -57,7 +57,7 @@
 "battle-ropes": {
 "cyclic": true,
 "keys": 2,
-"steps": 5
+"steps": 8
 },
 "bb-rdl": {
 "cyclic": false,
@@ -254,6 +254,11 @@
 "keys": 2,
 "steps": 6
 },
+"db-step-down": {
+"cyclic": false,
+"keys": 4,
+"steps": 6
+},
 "dead-bug": {
 "cyclic": false,
 "keys": 4,
@@ -351,8 +356,8 @@
 },
 "hip-switch": {
 "cyclic": false,
-"keys": 2,
-"steps": 6
+"keys": 24,
+"steps": 1
 },
 "hip-thrust": {
 "cyclic": false,
@@ -454,6 +459,11 @@
 "keys": 2,
 "steps": 6
 },
+"lateral-step-up": {
+"cyclic": false,
+"keys": 4,
+"steps": 4
+},
 "lateral-walk": {
 "cyclic": false,
 "keys": 2,
@@ -465,6 +475,11 @@
 "steps": 6
 },
 "leg-press": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"leg-press-single": {
 "cyclic": false,
 "keys": 2,
 "steps": 6
@@ -491,8 +506,8 @@
 },
 "machine-high-row": {
 "cyclic": false,
-"keys": 2,
-"steps": 6
+"keys": 3,
+"steps": 3
 },
 "machine-row": {
 "cyclic": false,
@@ -521,7 +536,7 @@
 },
 "open-book": {
 "cyclic": false,
-"keys": 2,
+"keys": 4,
 "steps": 6
 },
 "pallof-press": {
@@ -566,7 +581,7 @@
 },
 "prone-row": {
 "cyclic": false,
-"keys": 2,
+"keys": 6,
 "steps": 6
 },
 "prone-t": {
@@ -600,6 +615,11 @@
 "steps": 6
 },
 "push-up-db": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"push-up-plus": {
 "cyclic": false,
 "keys": 2,
 "steps": 6
@@ -654,6 +674,11 @@
 "keys": 2,
 "steps": 6
 },
+"seated-cable-row-wide": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
 "seated-pull-in": {
 "cyclic": false,
 "keys": 2,
@@ -667,6 +692,11 @@
 "shoulder-taps": {
 "cyclic": false,
 "keys": 4,
+"steps": 6
+},
+"side-hold-bench": {
+"cyclic": false,
+"keys": 2,
 "steps": 6
 },
 "side-lying-abd": {
@@ -714,12 +744,22 @@
 "keys": 2,
 "steps": 6
 },
+"ski-erg": {
+"cyclic": true,
+"keys": 2,
+"steps": 6
+},
 "smith-hip-thrust": {
 "cyclic": false,
 "keys": 2,
 "steps": 6
 },
-"smith-incline": {
+"smith-incline-high": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
+},
+"smith-incline-low": {
 "cyclic": false,
 "keys": 2,
 "steps": 6
@@ -749,6 +789,11 @@
 "keys": 2,
 "steps": 6
 },
+"stair-step-down": {
+"cyclic": false,
+"keys": 4,
+"steps": 6
+},
 "standing-cable-press": {
 "cyclic": false,
 "keys": 2,
@@ -760,9 +805,9 @@
 "steps": 6
 },
 "step-mill": {
-"cyclic": false,
+"cyclic": true,
 "keys": 2,
-"steps": 6
+"steps": 8
 },
 "step-up": {
 "cyclic": false,
@@ -778,6 +823,11 @@
 "cyclic": true,
 "keys": 4,
 "steps": 5
+},
+"suitcase-hold": {
+"cyclic": false,
+"keys": 2,
+"steps": 6
 },
 "supine-chin-tuck": {
 "cyclic": false,
@@ -811,8 +861,8 @@
 },
 "tbar-row": {
 "cyclic": false,
-"keys": 2,
-"steps": 6
+"keys": 3,
+"steps": 3
 },
 "trap-bar-carry": {
 "cyclic": true,
@@ -842,6 +892,11 @@
 "wall-chin-tuck": {
 "cyclic": false,
 "keys": 2,
+"steps": 6
+},
+"wall-slide-liftoff": {
+"cyclic": false,
+"keys": 4,
 "steps": 6
 },
 "wall-slides": {

@@ -1,7 +1,7 @@
 # Blender script: poses the Quaternius Universal Base Character (CC0) and renders exercise demo frames.
 # Loaded inside Blender via MCP:  exec(open(r".../tools/rig.py").read(), ns)
 # Works only in scene "DeskResetDemos" (character collection DR_character, props prefixed DR_p_).
-import bpy, math, os
+import bpy, glob, itertools, math, os
 from mathutils import Vector, Matrix
 
 sc = bpy.data.scenes["DeskResetDemos"]
@@ -486,13 +486,17 @@ def place(P, anchor, J0=None):
     if ax:
         tx = ax[1] if ax[1] is not None else (J0[ax[0]].x if J0 else J[ax[0]].x)
         loc.x = tx - J[ax[0]].x
+    ay = anchor.get("y")      # optional: (joint, value|None, dy): shift the body in Y so that joint sits at value (or J0's y + dy)
+    if ay:
+        ty = ay[1] if ay[1] is not None else (J0[ay[0]].y if J0 else J[ay[0]].y) + (ay[2] if len(ay) > 2 else 0.0)
+        loc.y = ty - J[ay[0]].y
     arm.location = loc; vl.update()
     return loc
 
 # ---------- props ----------
 COLORS = {"metal": (0.13, 0.15, 0.19, 1), "pad": (0.22, 0.25, 0.31, 1), "wood": (0.78, 0.70, 0.58, 1),
           "wall": (0.88, 0.89, 0.91, 1), "cable": (0.08, 0.09, 0.11, 1), "band": (0.98, 0.45, 0.09, 1),
-          "towel": (0.93, 0.93, 0.95, 1), "ball": (0.25, 0.55, 0.95, 1), "mat": (0.35, 0.62, 0.70, 1), "plate": (0.10, 0.11, 0.13, 1),
+          "towel": (0.30, 0.45, 0.62, 1), "ball": (0.25, 0.55, 0.95, 1), "mat": (0.35, 0.62, 0.70, 1), "plate": (0.10, 0.11, 0.13, 1),
           "frame": (0.30, 0.33, 0.38, 1), "chrome": (0.80, 0.82, 0.85, 1), "uphol": (0.06, 0.065, 0.075, 1), "accent": (0.95, 0.42, 0.08, 1),
           "rubber": (0.04, 0.04, 0.045, 1), "foam": (0.14, 0.15, 0.17, 1), "steel": (0.55, 0.58, 0.62, 1),
           "pack": (0.05, 0.09, 0.19, 1), "bag": (0.72, 0.58, 0.40, 1)}
@@ -502,12 +506,20 @@ ROUGH = {"chrome": 0.18, "steel": 0.3, "frame": 0.38, "metal": 0.35, "plate": 0.
 def _mat(key):
     name = "DR_m_" + key
     m = bpy.data.materials.get(name)
-    if not m:
-        m = bpy.data.materials.new(name); m.use_nodes = True
-        b = m.node_tree.nodes["Principled BSDF"]; b.inputs["Base Color"].default_value = COLORS[key]
-        b.inputs["Roughness"].default_value = ROUGH.get(key, 0.55)
-        b.inputs["Metallic"].default_value = 0.85 if key in ("chrome", "steel") else (0.4 if key in METAL else 0.0)
+    if not m: m = bpy.data.materials.new(name); m.use_nodes = True
+    # re-synced every call (not just on first creation): the .blend persists materials by name across headless runs,
+    # so a COLORS/ROUGH edit would otherwise silently not take effect on a scene that already has this material baked in.
+    b = m.node_tree.nodes["Principled BSDF"]; b.inputs["Base Color"].default_value = COLORS[key]
+    b.inputs["Roughness"].default_value = ROUGH.get(key, 0.55)
+    b.inputs["Metallic"].default_value = 0.85 if key in ("chrome", "steel") else (0.4 if key in METAL else 0.0)
+    fig_aov(m)   # every prop is part of the figure cutout (floor/world are the only things that stay out)
     return m
+
+def fig_aov(m):
+    """Mark a material as part of the figure mask: AOV 'fig' = 1 (tools/setup_scene.mask_pass reads it per frame)."""
+    nt = m.node_tree
+    if "DR_fig" not in nt.nodes:
+        n = nt.nodes.new("ShaderNodeOutputAOV"); n.name = "DR_fig"; n.aov_name = "fig"; n.inputs["Value"].default_value = 1.0
 
 LIB = {}   # kind -> template mesh (lathe / tube shapes, real-world metres)
 
@@ -719,18 +731,23 @@ def prop_points():
     return pts
 
 # ---------- animation ----------
-def render_anim(spec, outdir, preview=False):
-    """spec: name, keys [pose], anchor, props(J, J0, i), steps, cam {az, el, margin}, focus [joint names] (zoom)."""
+def render_anim(spec, outdir, preview=False, limit=None):
+    """spec: name, keys [pose], anchor, props(J, J0, i), steps, cam {az, el, margin}, focus [joint names] (zoom).
+    limit: stop after this many frames (a `still` catalogue template passes preview=True, limit=1: the first key
+    pose, full quality, no in-between interpolation - hold() templates are two identical key poses so one is enough)."""
     os.makedirs(outdir, exist_ok=True); files = []
-    ng = sc.compositing_node_group; fo = ng.nodes.get("DR_mask") if ng else None   # skin mask (tools/setup_scene.mask_pass)
-    for n in simulate(spec, preview):
+    ng = sc.compositing_node_group; fo = ng.nodes.get("DR_mask") if ng else None   # skin + fig masks (tools/setup_scene.mask_pass)
+    seq = simulate(spec, preview)
+    if limit: seq = itertools.islice(seq, limit)
+    for n in seq:
         path = f"{outdir}/{spec['name']}_{n:03d}.png"
         sc.render.filepath = path
         if fo: fo.directory = outdir + "/_m"; fo.file_name = "m"; sc.frame_current = n + 1
         bpy.ops.render.render(write_still=True, scene=sc.name)
         if fo:
-            out = [f for f in os.listdir(outdir + "/_m") if f.endswith(".png")]
-            os.replace(max((os.path.join(outdir, "_m", f) for f in out), key=os.path.getmtime), f"{outdir}/mask_{n:03d}.png")
+            for slot, dst in (("skin", "mask"), ("fig", "fig")):   # Blender names each slot's file "<fo.file_name><slot>.png"
+                hits = glob.glob(f"{outdir}/_m/*{slot}*.png")
+                os.replace(max(hits, key=os.path.getmtime), f"{outdir}/{dst}_{n:03d}.png")
         files.append(path)
     if fo and os.path.isdir(outdir + "/_m") and not os.listdir(outdir + "/_m"): os.rmdir(outdir + "/_m")
     return files
@@ -744,7 +761,7 @@ def simulate(spec, preview=False):
     locs, Js, pts, caps = [], [], [], []
     J0 = None
     for i, P in enumerate(keys):
-        loc = place(P, P.get("anchor", anchor), J0); loc = settle()
+        loc = place(P, P.get("anchor", anchor), J0); loc = arm.location.copy() if spec.get("nolift") else settle()   # nolift (opt-in, default off): keep the anchored pose, contact IK holds hands/feet
         caps.append(capture())
         J = joints()
         if J0 is None: J0 = J
@@ -755,7 +772,7 @@ def simulate(spec, preview=False):
         else:
             bb = body_bbox()   # frame the body; equipment counts only near it (tall towers get cropped)
             lo = Vector((min(p.x for p in bb) - 0.45, min(p.y for p in bb) - 0.45, 0.0))
-            hi = Vector((max(p.x for p in bb) + 0.45, max(p.y for p in bb) + 0.45, max(p.z for p in bb) + 0.3))
+            hi = Vector((max(p.x for p in bb) + 0.45, max(p.y for p in bb) + 0.45, max(p.z for p in bb) + spec.get("prop_headroom", 0.3)))
             pts += bb + [Vector((min(max(p.x, lo.x), hi.x), min(max(p.y, lo.y), hi.y), min(max(p.z, lo.z), hi.z))) for p in prop_points()]
     # contacts: a hand/foot that barely moves across the key poses is planted (IK-pinned at its mean position)
     states, PLANT = _plant(spec, keys, locs)
@@ -789,7 +806,7 @@ def simulate(spec, preview=False):
             vl.update()
             for _ in range(3):                                   # nothing sinks through the floor between key poses
                 lo = trunk_low()
-                if lo > -0.008: break
+                if lo > -0.008 or spec.get("nolift"): break
                 arm.location.z -= lo; vl.update()
             fz = support_z()
             for l in ("foot_l", "foot_r"):                       # a swinging foot never scuffs through the floor
@@ -841,7 +858,7 @@ def audit(spec, samples=4):
     keys = loop_keys(spec); anchor = spec.get("anchor", {})
     locs, J0, caps = [], None, []
     for P in keys:
-        place(P, P.get("anchor", anchor), J0); locs.append(settle()); caps.append(capture()); J0 = J0 or joints()
+        place(P, P.get("anchor", anchor), J0); locs.append(arm.location.copy() if spec.get("nolift") else settle()); caps.append(capture()); J0 = J0 or joints()
     states, PLANT = _plant(spec, keys, locs)
     slide = {l: 0.0 for l in PLANT}; fk_slide = 0.0; lowest = 9.0
     for i in range(len(keys)):
@@ -854,7 +871,7 @@ def audit(spec, samples=4):
             vl.update()
             for _ in range(3):
                 lo_ = trunk_low()
-                if lo_ > -0.008: break
+                if lo_ > -0.008 or spec.get("nolift"): break
                 arm.location.z -= lo_; vl.update()
             for l, (tip, toe) in PLANT.items(): slide[l] = max(slide[l], (jw(EFF[l], True) - tip).length)
             lowest = min(lowest, min(p.z for p in body_bbox()))

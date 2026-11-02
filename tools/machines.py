@@ -209,7 +209,7 @@ def lat_machine(n, J0, J, bar="wide", seat_top=None):
     elif bar == "single": d_handle(n + "_h", J["hand_r"], (0, 1, 0))
     else: handle_bar(n + "_bar", J["hand_l"] + V((0, 0.05, 0)), J["hand_r"] + V((0, -0.05, 0)))
 
-def low_row_machine(n, J0, J, handle="v", single=False):
+def low_row_machine(n, J0, J, handle="v", single=False, wide=False):
     hips = J0["hips"]
     top = region_low("seat")
     pad(n + "_bench", (hips.x + 0.1, 0, top - 0.05), (1.3, 0.34, 0.1))
@@ -224,7 +224,9 @@ def low_row_machine(n, J0, J, handle="v", single=False):
     if single: d_handle(n + "_h", J["hand_r"], (0, 0, 1))
     elif handle == "v":
         rod(n + "_v1", J["hand_l"], J["hands"] + V((0.08, 0, 0)), 0.014, "chrome"); rod(n + "_v2", J["hand_r"], J["hands"] + V((0.08, 0, 0)), 0.014, "chrome")
-    else: handle_bar(n + "_bar", J["hand_l"] + V((0, 0.12, 0)), J["hand_r"] + V((0, -0.12, 0)))
+    else:
+        ext = 0.22 if wide else 0.12
+        handle_bar(n + "_bar", J["hand_l"] + V((0, ext, 0)), J["hand_r"] + V((0, -ext, 0)))
 
 def lever_machine(n, J0, J, kind="row", seat_top=None, chest_pad=True, back_pad=False, pivot_dx=0.45, pivot_z=None):
     """Lever machines. kind 'row' (iso/chest-supported row): levers hang from a pivot above-front, handles at the bottom,
@@ -483,3 +485,271 @@ def stair_climber(n, J0, J, mill=False):
         tube(n + f"_rail{s}", (hp.x + 0.25, sg * 0.36, 1.05), (hp.x - 0.35, sg * 0.36, 1.05), 0.025, "chrome")
         tube(n + f"_up{s}", (hp.x + 0.55, sg * 0.36, 0.3), (hp.x + 0.25, sg * 0.36, 1.05), 0.035)
     box(n + "_console", (hp.x + 0.6, 0, 1.3), (0.14, 0.45, 0.22), "frame", pitch=25)
+
+# ---------- QA fixes: G3 ----------
+def ski_erg(n, J0, J):
+    """Ski-erg machine (Concept2 SkiErg style): solid square-section column on a wide floor stand the lifter
+    stands right in front of, rising to a large flywheel housing (fan guard on the front) well above the raised
+    hands, a small monitor on an arm, and two cords from pulleys either side of the housing down to the hands -
+    drawn from the current J every frame so the cords stay taut through the reach and the pull."""
+    hips = J0["hips"]; x = hips.x + 0.85; h = 2.18
+    hc = h - 0.2                                         # housing centre height
+    hb = hc - 0.18                                        # housing bottom = mast top
+    px0, px1 = hips.x + 0.15, x + 0.17                    # floor plate: from near the lifter's feet to past the column
+    box(n + "_plate", ((px0 + px1) / 2, 0, 0.02), (px1 - px0, 0.42, 0.04), "frame")
+    box(n + "_mast", (x, 0, (hb - 0.05) / 2 + 0.05), (0.14, 0.14, hb - 0.05), "frame")
+    box(n + "_housing", (x - 0.02, 0, hc), (0.24, 0.5, 0.36), "frame")
+    rod(n + "_guard", (x + 0.1, 0, hc), (x + 0.16, 0, hc), 0.22, "steel")
+    rod(n + "_hub", (x + 0.09, 0, hc), (x + 0.17, 0, hc), 0.04, "chrome")
+    mz = 1.45                                             # low enough to clear the raised hands in both key poses
+    tube(n + "_arm", (x - 0.16, 0, hb + 0.02), (x - 0.28, 0, mz), 0.025, "chrome")
+    box(n + "_mon", (x - 0.31, 0, mz), (0.03, 0.16, 0.11), "frame", pitch=-15)
+    pz = hc + 0.02
+    for s, sg in (("l", 1), ("r", -1)):
+        p = pulley(n + f"_pul{s}", (x + 0.1, sg * 0.21, pz))
+        cable(n + f"_cab{s}", p, J["hand_" + s])
+        d_handle(n + f"_h{s}", J["hand_" + s], (0, 0, 1))
+
+# ---------- QA fixes: G2 ----------
+def glute_drive_machine(n, J0, J):
+    """Plate-loaded glute-drive / hip-thrust machine: a low floor platform under the feet, a flat bench-height back
+    pad the upper back lies on (tracked in X/Y every frame so it never gaps or clips as the body travels, top held
+    at a fixed ~0.42 m bench height), and a short lever pivoting near the floor at the foot end with a padded
+    roller across the hips that rises and falls with them."""
+    an0 = (J0["ankle_l"] + J0["ankle_r"]) / 2
+    foot_base(n + "_base", an0.x - 0.55, an0.x + 0.3, w=0.9)
+    box(n + "_platform", (an0.x, 0, 0.025), (0.46, 0.7, 0.05), "steel")
+    sh = J["shoulders"]
+    pad(n + "_back", (sh.x - 0.06, 0, 0.32), (0.46, 0.46, 0.09))
+    tube(n + "_backpost", (sh.x, 0, 0.04), (sh.x, 0, 0.275), 0.045)
+    piv = V((an0.x - 0.22, 0, 0.12))
+    tube(n + "_pivpost", (piv.x, 0, 0.0), piv, 0.04)
+    hips = J["hips"]
+    for s, sg in (("l", 1), ("r", -1)):
+        tube(n + f"_lever{s}", piv + V((0, sg * 0.32, 0)), hips + V((0.04, sg * 0.29, 0.12)), 0.035)
+    pad(n + "_belt", hips + V((0.04, 0, 0.12)), (0.20, 0.56, 0.06))
+    for s_, sg in (("l", 1), ("r", -1)): tube(n + f"_hp{s_}", hips + V((0.04, sg * 0.29, 0.12)), hips + V((0.0, sg * 0.29, 0.19)), 0.02); d_handle(n + f"_h{s_}", hips + V((0.0, sg * 0.29, 0.19)), (1, 0, 0))   # grips on the lever arms; hands follow via reach
+
+def box_step_at(n, p, h, d_=0.42, w=0.42):
+    """box_step centred on an (x, y) point (e.g. the foot that stays planted on it) instead of y=0."""
+    box_step(n, p.x, h, y=p.y, d_=d_, w=w)
+
+def stairs_at(n, p, rise=0.10, run=0.28, steps=2, w=0.42):
+    """stairs() centred in Y on p (e.g. the foot resting on the top step) instead of spanning the full y=0 width."""
+    x0 = p.x - run * (steps - 0.5)
+    for i in range(steps):
+        box(f"{n}_{i}", (x0 + run * (i + 0.5), p.y, rise * (i + 1) / 2), (run, w, rise * (i + 1)), "wood")
+
+# ---------- QA fix: side-hold-bench ----------
+def side_hold_bench(n, J0, J):
+    """45 deg roman chair for a side-lying hold: hip pad under the lower hip, roller pads clamping the stacked ankles."""
+    u = V((1, 0, 1)).normalized(); nn = V((-1, 0, 1)).normalized()      # up the slope, slope normal (toward the upper side)
+    hp = (J["hip_l"] + J["hip_r"]) / 2; lo, up_ = sorted((J["ankle_l"], J["ankle_r"]), key=lambda p: p.dot(nn))
+    pad(n + "_hip", hp - nn * 0.25 - u * 0.14, (0.12, 0.42, 0.26), pitch=-45)
+    a0 = (lo + up_) / 2
+    tube(n + "_frame", a0 - nn * 0.16 - u * 0.05, hp - nn * 0.26 + u * 0.05, 0.04)
+    box(n + "_footplate", lo - nn * 0.07, (0.26, 0.46, 0.05), "steel", pitch=-45)
+    for k, p in enumerate((lo - nn * 0.07, up_ + nn * 0.075)): rod(n + f"_roll{k}", p + V((0, 0.2, 0)), p + V((0, -0.2, 0)), 0.045, "uphol")
+    for k, sy in enumerate((0.22, -0.22)): tube(n + f"_post{k}", up_ + nn * 0.075 + V((0, sy, 0)), a0 - nn * 0.16 - u * 0.05 + V((0, sy, 0)), 0.02)
+    tube(n + "_leg", (hp.x - 0.05, 0, 0.05), hp - nn * 0.26, 0.04)
+    foot_base(n + "_base", a0.x - 0.25, hp.x + 0.2, w=0.6)
+
+# ---------- QA fix: air-bike ----------
+import math as _abm
+AB_C, AB_R = V((0.30, 0, -0.62)), 0.16; AB_SEAT = 0.125                 # crank centre / radius relative to the pelvis (x fwd, z up)
+AB_PIV, AB_L, AB_Y = V((0.80, 0, -0.28)), 0.48, 0.22      # handle pivot rel. pelvis, lever length, grip half-width
+def air_bike_track(ctx):
+    """Pedals circle the crank 180 deg apart; the two levers rock about their pivots, arms opposite the same-side leg."""
+    p = ctx["J0"]["pelvis"]; ph = ctx["phase"]; out = {}
+    for s, sg in (("l", 1), ("r", -1)):
+        a = 2 * _abm.pi * ph + (0 if s == "l" else _abm.pi)
+        pd = p + AB_C + V((AB_R * _abm.sin(a), sg * 0.16, AB_R * _abm.cos(a)))
+        out["foot_" + s] = (pd + V((-0.13, 0, 0.075)), pd + V((0.0, 0, 0.012)))
+        th = _abm.radians(30 + 15 * _abm.sin(a + _abm.pi))
+        out["hand_" + s] = (p + AB_PIV + V((-AB_L * _abm.sin(th), sg * AB_Y, AB_L * _abm.cos(th))), None)
+    return out
+
+def air_bike(n, J0, J):
+    """Assault/Echo-style air bike: saddle under the seat contact, crank + pedals under the knees, big fan cage in front
+    of the legs on a front post, and two long levers pivoting at the front frame to the hand grips (drawn from J every frame)."""
+    p = J0["pelvis"]; px = p.x; top = p.z - AB_SEAT; C = p + AB_C; piv = p + AB_PIV      # fixed seat height (region_low jumps with the pedalling thighs)
+    box(n + "_saddle", (px + 0.04, 0, top - 0.03), (0.30, 0.2, 0.06), "uphol")
+    box(n + "_rbase", (px - 0.5, 0, 0.035), (0.09, 0.62, 0.07), "frame"); box(n + "_fbase", (px + 1.5, 0, 0.035), (0.09, 0.7, 0.07), "frame")
+    tube(n + "_beam", (px - 0.5, 0, 0.07), (px + 1.5, 0, 0.07), 0.04)
+    tube(n + "_seatpost", (px + 0.0, 0, top - 0.05), (px - 0.3, 0, 0.07), 0.04)
+    tube(n + "_crankpost", (C.x, 0, 0.07), C, 0.04)
+    tube(n + "_post", (piv.x + 0.06, 0, 0.07), piv, 0.04)
+    tube(n + "_axle", piv + V((0, AB_Y, 0)), piv + V((0, -AB_Y, 0)), 0.025, "steel")
+    fan = V((px + 1.25, 0, 0.5))
+    plate_between(n + "_fan", fan + V((0, -0.09, 0)), fan + V((0, 0.09, 0)), 0.34); rod(n + "_hub", fan + V((0, -0.11, 0)), fan + V((0, 0.11, 0)), 0.06, "steel")
+    tube(n + "_fanstay", (px + 1.45, 0, 0.07), fan, 0.035); tube(n + "_fanbrace", (piv.x + 0.06, 0, 0.3), fan, 0.03)
+    tube(n + "_beltcover", C, fan, 0.03)
+    tube(n + "_monpost", piv + V((0, 0, 0.02)), piv + V((0.05, 0, 0.5)), 0.025); box(n + "_mon", piv + V((0.08, 0, 0.55)), (0.04, 0.2, 0.14), "frame", pitch=-20)
+    for s, sg in (("l", 1), ("r", -1)):
+        h = J["hand_" + s]; pv = piv + V((0, sg * AB_Y, 0)); u = (h - pv).normalized()
+        tube(n + "_lever" + s, pv, h + u * 0.06, 0.022, "chrome"); rod(n + "_grip" + s, h - u * 0.07, h + u * 0.07, 0.02, "rubber")
+        f = (J["ankle_" + s] + J["toe_" + s]) / 2 + V((0, 0, -0.045))
+        rod(n + "_crank" + s, C + V((0, sg * 0.1, 0)), f, 0.016, "steel"); box(n + "_pedal" + s, f, (0.11, 0.09, 0.02), "plate")
+
+# ---------- QA fix: treadmill ----------
+TM_B0, TM_S = 0.24, 0.10        # belt top height under the hips (m) and incline (10 % grade, 5.7 deg)
+def treadmill_qa(n, hx, hz=None):
+    """Inclined treadmill: belt top plane z = TM_B0 + TM_S*(x - hx), front (+X) end up; short rails clear of the swinging hands."""
+    th = math.atan(TM_S); deg = math.degrees(th); nn = V((-math.sin(th), 0, math.cos(th))); u = V((math.cos(th), 0, math.sin(th)))
+    top = lambda x: V((x, 0, TM_B0 + TM_S * (x - hx)))
+    c = top(hx + 0.1)
+    box(n + "_belt", c - nn * 0.006, (1.6, 0.6, 0.012), "rubber", pitch=-deg)
+    box(n + "_deck", c - nn * 0.062, (1.75, 0.82, 0.1), "frame", pitch=-deg)
+    for k, s in enumerate((0.38, -0.38)):
+        box(n + f"_side{k}", c - nn * 0.012 + V((0, s * 1.06, 0)), (1.75, 0.04, 0.03), "steel", pitch=-deg)
+    fx = hx + 0.95; fb = top(fx)
+    for k, s in enumerate((0.38, -0.38)):
+        tube(n + f"_up{k}", V((fx - 0.02, s, 0.03)), V((fx - 0.12, s, 1.55)), 0.04)
+        tube(n + f"_rail{k}", V((fx - 0.12, s, 1.38)), V((fx - 0.27, s, 1.36)), 0.025, "chrome")
+        box(n + f"_foot{k}", (fx - 0.02, s, 0.02), (0.3, 0.06, 0.04), "frame")
+        box(n + f"_rfoot{k}", (hx - 0.7, s, 0.02), (0.2, 0.06, 0.04), "frame")
+        tube(n + f"_rleg{k}", V((hx - 0.7, s, 0.03)), top(hx - 0.7) + V((0, s, -0.12)), 0.03)
+    box(n + "_console", (fx - 0.12, 0, 1.62), (0.18, 0.82, 0.22), "frame", pitch=20)
+
+# ---------- QA fix: bike ----------
+import math as _bkm
+BK_C, BK_R, BK_SEAT = V((0.27, 0, -0.62)), 0.17, 0.11     # crank centre / radius relative to the pelvis (x fwd, z up); saddle top below pelvis
+BK_G, BK_GY = V((0.56, 0, 0.20)), 0.20                       # handlebar grip centre rel. pelvis, grip half-width
+def bike_track(ctx):
+    """Pedals turn full circles 180 deg apart; hands stay on the bars."""
+    p = ctx["J0"]["pelvis"]; ph = ctx["phase"]; out = {}
+    for s, sg in (("l", 1), ("r", -1)):
+        a = 2 * _bkm.pi * ph + (0 if s == "l" else _bkm.pi)
+        pd = p + BK_C + V((BK_R * _bkm.sin(a), sg * 0.16, BK_R * _bkm.cos(a)))
+        out["foot_" + s] = (pd + V((-0.13, 0, 0.075)), pd + V((0.0, 0, 0.012)))
+        out["hand_" + s] = (p + BK_G + V((0, sg * BK_GY, 0)), None)
+    return out
+
+def bike_up(n, J0, J):
+    """Upright exercise bike: saddle + seat tube, crank with pedals, low enclosed flywheel in front, stem + handlebar at chest height."""
+    p = J0["pelvis"]; px = p.x; C = p + BK_C; g = p + BK_G
+    q = J["pelvis"]; top = min([b.z for b in body_bbox() if q.x - 0.22 <= b.x <= q.x + 0.04 and b.z > q.z - 0.2] or [p.z - BK_SEAT]) + 0.004   # saddle flush under the lowest buttock point every frame
+    box(n + "_saddle", (px + 0.02, 0, top - 0.03), (0.26, 0.19, 0.06), "uphol")
+    box(n + "_rbase", (px - 0.45, 0, 0.035), (0.09, 0.62, 0.07), "frame"); box(n + "_fbase", (px + 1.05, 0, 0.035), (0.09, 0.62, 0.07), "frame")
+    tube(n + "_beam", (px - 0.45, 0, 0.07), (px + 1.05, 0, 0.07), 0.04)
+    tube(n + "_seattube", C + V((-0.04, 0, 0)), (px - 0.06, 0, top - 0.07), 0.04)
+    tube(n + "_seatpost", (px - 0.06, 0, top - 0.09), (px - 0.02, 0, top - 0.02), 0.022, "chrome")
+    tube(n + "_cranktube", (C.x, 0, 0.07), C, 0.04)
+    fw = V((px + 0.88, 0, 0.30))
+    tube(n + "_main", C, V((px + 0.70, 0, 0.5)), 0.04)
+    rod(n + "_fly", fw + V((0, -0.04, 0)), fw + V((0, 0.04, 0)), 0.22, "steel"); rod(n + "_flyhub", fw + V((0, -0.07, 0)), fw + V((0, 0.07, 0)), 0.04, "chrome")
+    for k, sy in enumerate((0.07, -0.07)): tube(n + f"_fork{k}", V((px + 1.0, sy, 0.07)), fw + V((0, sy, 0)), 0.02)
+    tube(n + "_stem", V((px + 0.70, 0, 0.45)), g + V((0.0, 0, -0.04)), 0.035)
+    handle_bar(n + "_bars", g + V((0, BK_GY + 0.06, 0)), g + V((0, -BK_GY - 0.06, 0)))
+    box(n + "_console", g + V((0.05, 0, 0.1)), (0.1, 0.22, 0.12), "frame", pitch=20)
+    for s, sg in (("l", 1), ("r", -1)):
+        f = (J["ankle_" + s] + J["toe_" + s]) / 2 + V((0, 0, -0.045))
+        rod(n + "_crank" + s, C + V((0, sg * 0.1, 0)), f, 0.016, "steel"); box(n + "_pedal" + s, f, (0.11, 0.09, 0.02), "plate")
+    rod(n + "_axle", C + V((0, 0.12, 0)), C + V((0, -0.12, 0)), 0.02, "steel")
+
+# ---------- QA fix: tbar-row ----------
+TBR_DL = 0.0
+TBR_PIV = (-1.335, -0.43)  # lever pivot relative to the start-pose hands (x, z)
+def tbar_chest_machine(n, J0, J):
+    """Chest-supported T-bar row: inclined chest pad under the torso, raised foot platform, V-handle lever pivoting at the front, plates on the lever."""
+    sh, hp = J0["shoulders"], J0["hips"]
+    u = (sh - hp).normalized(); nrm = V((0, 1, 0)).cross(u).normalized()
+    if nrm.z > 0: nrm = -nrm                                          # pad normal, pointing down under the chest
+    a, b = sh - u * 0.30 + nrm * 0.125, sh + u * 0.06 + nrm * 0.125   # pad top lies on the chest, upper end at the collarbones (clear of the face)
+    slab(n + "_pad", a, b, 0.32, 0.09, normal_hint=-nrm, extend=0.0)
+    low = a + nrm * 0.03; top = b + nrm * 0.03
+    pc =low + (top - low) * 0.4                                      # one sturdy column under the pad (nothing rises above the pad's top edge) + base
+    tube(n + "_post", (pc.x, 0, 0.06), pc, 0.05); foot_base(n + "_pbase2", pc.x - 0.3, pc.x + 0.3, w=0.6)
+    sole = min(J0["ankle_l"].z, J0["ankle_r"].z) - 0.14
+    an = (J0["ankle_l"] + J0["ankle_r"]) / 2
+    box(n + "_platform", (an.x + 0.04, 0, sole - 0.02), (0.44, 0.50, 0.04), "steel")
+    for k, sg in enumerate((1, -1)):
+        tube(n + f"_pleg{k}", (an.x - 0.12, sg * 0.2, 0.05), (an.x - 0.12, sg * 0.2, sole - 0.03), 0.025); tube(n + f"_pleg{k}b", (an.x + 0.2, sg * 0.2, 0.05), (an.x + 0.2, sg * 0.2, sole - 0.03), 0.025)
+    tube(n + "_pbase", (an.x - 0.12, 0, 0.05), (an.x + 0.2, 0, 0.05), 0.03)
+    H0 = J0["hands"]; piv = V((H0.x + TBR_PIV[0], 0, H0.z + TBR_PIV[1]))
+    J["tbar_pivot"] = piv                                             # framing point (catalog focus list)
+    rod(n + "_axle", piv - V((0, 0.61, 0)), piv + V((0, 0.61, 0)), 0.03, "steel")        # rear floor pivot behind the foot platform (levers pivot well outside it)
+    for k, sg in enumerate((1, -1)): box(n + f"_pivblk{k}", (piv.x, sg * 0.59, piv.z / 2), (0.12, 0.06, piv.z + 0.04), "frame")
+    box(n + "_pivbase", (piv.x, 0, 0.02), (0.14, 1.26, 0.04), "frame")
+    for k, s in enumerate(("l", "r")):
+        sg = 1 if s == "l" else -1; hnd = J["hand_" + s]; h0 = J0["hand_" + s]
+        p_ = V((piv.x, sg * 0.55, piv.z)); L = (h0 - p_).length - TBR_DL        # rigid lever: fixed length L from the fixed pivot, rotating to follow the hands (handle at the tip)
+        tip = p_ + (hnd - p_).normalized() * L
+        rod(n + f"_grip{s}", tip + V((-0.04, 0, 0)), tip + V((0.04, 0, 0)), 0.017, "rubber"); tube(n + f"_lev{s}", tip, p_, 0.022, "chrome")
+        pl = p_ + (tip - p_) * 0.78; rod(n + f"_sleeve{s}", pl, pl + V((0, sg * 0.26, 0)), 0.02, "steel")   # plates loaded well outboard of the arms and hips, clear of pad and body
+        plate_between(n + f"_pl{s}", pl + V((0, sg * 0.18, 0)), pl + V((0, sg * 0.23, 0)), 0.15)# ---------- QA fix: assisted-pullup ----------
+# bar + frame fixed at the (symmetric) grip; ONE knee pad under BOTH knees and shins rides with the body on a lever arm to a stack well behind the shins
+def apu_station(n, J0, J):
+    hx = J0["hands"].x; hz = J0["hands"].z + 0.03
+    for k, s in enumerate((0.7, -0.7)):
+        tube(n + f"_up{k}", (hx - 0.25, s, 0), (hx - 0.25, s, hz + 0.25), 0.05)
+        tube(n + f"_arm{k}", (hx - 0.25, s, hz + 0.2), (hx + 0.05, s * 0.85, hz), 0.035)
+    handle_bar(n + "_bar", V((hx, 0.62, hz)), V((hx, -0.62, hz)), 0.017)
+    foot_base(n + "_base", hx - 1.3, hx + 0.4, w=1.5)
+    kn = (J["knee_l"] + J["knee_r"]) / 2; an = (J["ankle_l"] + J["ankle_r"]) / 2
+    x1, x0 = kn.x + 0.12, an.x - 0.12; pz = kn.z - 0.062 - 0.03
+    pad(n + "_kneepad", ((x0 + x1) / 2, 0, pz), (x1 - x0, 0.46, 0.06))
+    sx = x0 - 0.45
+    tube(n + "_kneearm", (x0, 0, pz - 0.01), (sx + 0.26, 0, pz - 0.01), 0.03)
+    stack(n + "_stack", sx, 0, 1.6)
+    rod(n + "_cab", V((sx + 0.26, 0, 1.64)), V((sx + 0.26, 0, pz - 0.01)), 0.006, "cable")
+
+# ---------- QA fix: step-mill ----------
+SMILL_P0, SMILL_ZB, SMILL_RUN, SMILL_RISE, SMILL_XC = 0.25, 0.03, 0.30, 0.20, -0.07   # base height of the lowest tread under the lifter, tread top (rel. P0) at s=0, run, rise, tread-0 centre x rel. hips
+def stepmill_qa(n, J0, s, hz):
+    """Revolving staircase (StairMaster StepMill style, hz = fixed hip height): full-width treads with risers slide down-and-back along the 34 deg slope (s = 0..1 moves each tread one step; the set repeats), emerging from a
+    low front housing and sinking into a low rear housing; open side frames (base tubes, struts, sloped stringers), two slim console posts with a tilted screen at chest height, long hip-height handrails back from the posts."""
+    hx = J0["hips"].x; P0, ZB, RUN, RISE, XC = SMILL_P0, SMILL_ZB, SMILL_RUN, SMILL_RISE, SMILL_XC
+    for j in range(0, 4):
+        cx = hx + XC + RUN * (j - s); top = P0 + ZB + RISE * (j - s)
+        box(n + f"_t{j}", (cx, 0, top - 0.03), (RUN, 0.62, 0.06), "steel")
+        box(n + f"_n{j}", (cx + RUN / 2 - 0.02, 0, top - 0.0045), (0.04, 0.62, 0.011), "accent")      # nosing strip
+        box(n + f"_r{j}", (cx - RUN / 2 + 0.01, 0, top - RISE / 2 - 0.03), (0.02, 0.62, RISE), "frame")
+    hh = P0 + ZB + 0.02; xr = hx + XC - RUN / 2 - 0.01                                                      # rear housing: front face just behind the lowest visible tread
+    box(n + "_rear", (xr - 0.175, 0, hh / 2), (0.35, 0.74, hh), "frame")
+    xt = hx + XC + RUN * 2 + RUN / 2 - 0.04; TH = P0 + ZB + RISE * 3 + 0.03                             # front housing: face just ahead of tread 2's centre, top just over tread 3's top at s=0
+    box(n + "_tower", (xt + 0.2, 0, TH / 2), (0.4, 0.74, TH), "frame")
+    ang = math.degrees(math.atan2(RISE, RUN)); L = (xt - xr) / math.cos(math.radians(ang))
+    for k, sy in enumerate((0.335, -0.335)):                                                           # side skirts under the tread edges, following the slope
+        xm = (xt + xr) / 2; zm = P0 + ZB + RISE * ((xm - hx - XC) / RUN - 0.5) - 0.09
+        box(n + f"_skirt{k}", (xm, sy, zm), (L, 0.04, 0.16), "frame", pitch=-ang)
+    rz = hz - 0.04; xp = xt + 0.1; cz = hz + 0.42; ca = math.radians(20)                              # rail height / console post x / screen centre height
+    for k, sy in enumerate((0.34, -0.34)):
+        tube(n + f"_rail{k}", (hx - 0.08, sy, rz), (xp, sy, rz), 0.024, "chrome")
+        ball(n + f"_cap{k}", (hx - 0.08, sy, rz), 0.03, "chrome")
+        tube(n + f"_post{k}", (xp, sy, TH), (xp, sy, cz + 0.1), 0.03, "frame")
+        tube(n + f"_base{k}", (xr - 0.35, sy, 0.03), (xt + 0.4, sy, 0.03), 0.03, "frame")
+        for xs in (xr + 0.08, xt - 0.08): tube(n + f"_strut{k}_{int(xs * 100)}", (xs, sy, 0.03), (xs, sy, P0 + ZB + RISE * ((xs - hx - XC) / RUN - 0.5) - 0.17), 0.025, "frame")
+    box(n + "_con", (xp - 0.02, 0, cz), (0.1, 0.64, 0.26), "frame", pitch=20)
+    box(n + "_scr", (xp - 0.02 - 0.055 * math.cos(ca), 0, cz + 0.055 * math.sin(ca) + 0.01), (0.012, 0.46, 0.17), "accent", pitch=20)
+
+# ---------- QA fix: machine-high-row ----------
+HR_H0, HR_H1 = (0.501, 0.308), (0.237, -0.103)          # start / end hand (x, z) relative to the first-key shoulders: the lever pivot sits on their bisector so the handle swings on a rigid arc
+def hr_machine(n, J0, J, t=0.85):
+    """Hammer-style high row: seat, chest pad on a post, two rigid lever arms pivoting low in front (handles rise back to head height),
+    counter-arms with plate horns pointing forward-down away from the body."""
+    hips, ch, sh = J0["hips"], J0["chest"], J0["shoulders"]
+    top = seat_pad(n + "_seat", J0, h=0.45)
+    a, b = V((sh.x + HR_H0[0], 0, sh.z + HR_H0[1])), V((sh.x + HR_H1[0], 0, sh.z + HR_H1[1]))
+    m, d = (a + b) / 2, (b - a); perp = V((-d.z, 0, d.x)).normalized()
+    if perp.x < 0: perp = -perp
+    pv = m + perp * t; px = pv.x; HR_L = (a - pv).length   # (HR_L read by the lever code below)
+    foot_base(n + "_base", hips.x - 0.55, px + 0.3, w=1.1)
+    pad(n + "_chest", (ch.x + 0.17, 0, ch.z - 0.04), (0.1, 0.36, 0.4), pitch=6)
+    tube(n + "_cpost", (ch.x + 0.24, 0, 0.07), (ch.x + 0.24, 0, ch.z - 0.25), 0.04)
+    tx = hips.x - 0.4                                                                                                         # tall frame behind the seat back (never in front of the body)
+    for k, sy in enumerate((0.45, -0.45)): tube(n + f"_tw{k}", (tx, sy, 0.07), (tx, sy, 1.62), 0.04)
+    tube(n + "_twtop", (tx, 0.45, 1.62), (tx, -0.45, 1.62), 0.04)
+    tube(n + "_twlow", (tx, 0.45, 0.3), (tx, -0.45, 0.3), 0.04)
+    tube(n + "_cross", (px, 0.28, pv.z - 0.12), (px, -0.28, pv.z - 0.12), 0.045)
+    for s, sg in (("l", 1), ("r", -1)):
+        piv = V((px, sg * 0.28, pv.z)); hnd = J["hand_" + s]
+        tube(n + f"_up{s}", (px, sg * 0.28, 0.06), piv, 0.045)
+        rod(n + f"_axle{s}", piv - V((0, 0.06, 0)), piv + V((0, 0.06, 0)), 0.05, "steel")
+        dr = (hnd - piv); dr.y = 0; dr = dr.normalized(); end = piv + dr * HR_L    # rigid arm: fixed length in its swing plane, only its angle follows the hand
+        tube(n + f"_lever{s}", piv, end, 0.035)
+        rod(n + f"_h{s}", end - V((0, 0.11, 0)), end + V((0, 0.11, 0)), 0.017, "rubber")   # long grip bar: the hand slides a little along it as the arm swings
+        back = -dr; tip = piv + back * 0.26
+        tube(n + f"_ctr{s}", piv, tip, 0.035)
+        tube(n + f"_horn{s}", tip, tip + V((0, sg * 0.2, 0)), 0.025, "chrome")
+        plate_between(n + f"_plt{s}", tip + V((0, sg * 0.08, 0)), tip + V((0, sg * 0.14, 0)), 0.2)

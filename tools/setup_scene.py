@@ -88,9 +88,16 @@ def import_female():
         if o.type == 'MESH' and o.name.startswith(("Icosphere", "Eyebrows")): o.hide_render = True   # eyebrows aren't skinned
     col.hide_render = col.hide_viewport = True
 
+def fig_aov(m):
+    """Mark a material as part of the figure cutout: AOV 'fig' = 1 (floor/world never get this node, so they stay 0)."""
+    nt = m.node_tree
+    if "DR_fig" not in nt.nodes:
+        n = nt.nodes.new("ShaderNodeOutputAOV"); n.name = "DR_fig"; n.aov_name = "fig"; n.inputs["Value"].default_value = 1.0
+
 def mat(name, col, rough):
     m = bpy.data.materials.get(name) or bpy.data.materials.new(name); m.use_nodes = True
     b = m.node_tree.nodes["Principled BSDF"]; b.inputs["Base Color"].default_value = col; b.inputs["Roughness"].default_value = rough
+    fig_aov(m)
     return m
 
 # Athletic kit painted in the skin shader from rest-pose position (Generated coords = undeformed mesh):
@@ -143,6 +150,7 @@ def kit_shader(body_name, kit):
         skin = math('SUBTRACT', 1.0, mk, f"s{i}") if skin is None else math('MULTIPLY', skin, math('SUBTRACT', 1.0, mk, f"s{i}"), f"sm{i}")
     L.new(col, bsdf.inputs["Base Color"]); L.new(rough, bsdf.inputs["Roughness"])
     L.new(skin, N["DR_aov"].inputs["Value"])
+    fig_aov(m)   # body + clothes are all figure, regardless of the skin/clothes split above
 
 def dress(body_name, arm_name, hair_file):
     """Buzz-cut / buns hairstyle parented to the Head bone in the rest pose."""
@@ -186,10 +194,13 @@ def neutral_skin(mat_name, albedo=0.9):
     aov.aov_name = "skin"; aov.inputs["Value"].default_value = 1.0
 
 def mask_pass():
-    """Compositor: beauty to the normal output, the 'skin' AOV to a PNG per frame (rig.render_anim names it)."""
+    """Compositor: beauty to the normal output, the 'skin' and 'fig' AOVs to a PNG per frame each
+    (rig.render_anim names them mask_NNN.png / fig_NNN.png)."""
     vl = sc.view_layers[0]
-    if "skin" not in [a.name for a in vl.aovs]:
-        a = vl.aovs.add(); a.name = "skin"; a.type = 'VALUE'
+    have = [a.name for a in vl.aovs]
+    for nm in ("skin", "fig"):
+        if nm not in have:
+            a = vl.aovs.add(); a.name = nm; a.type = 'VALUE'
     ng = bpy.data.node_groups.get("DR_comp") or bpy.data.node_groups.new("DR_comp", "CompositorNodeTree")
     ng.nodes.clear(); ng.interface.clear()
     ng.interface.new_socket("Image", in_out='OUTPUT', socket_type='NodeSocketColor')
@@ -198,8 +209,9 @@ def mask_pass():
     fo = ng.nodes.new("CompositorNodeOutputFile"); fo.name = "DR_mask"
     if hasattr(fo.format, "media_type"): fo.format.media_type = 'IMAGE'      # 5.x defaults to multilayer EXR
     fo.format.file_format = 'PNG'; fo.format.color_mode = 'BW'; fo.format.color_depth = '8'
-    fo.file_output_items.new('FLOAT', "skin")
-    ng.links.new(rl.outputs["skin"], fo.inputs["skin"])
+    for nm in ("skin", "fig"):
+        fo.file_output_items.new('FLOAT', nm)
+        ng.links.new(rl.outputs[nm], fo.inputs[nm])
     sc.compositing_node_group = ng
     sc.render.use_compositing = True
     return [s.name for s in rl.outputs]

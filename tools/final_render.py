@@ -4,7 +4,7 @@
 # (a template counts as finished when every frame has its mask) - use it after a crash.
 # Needs the namespace from qa_run.py / test_render.py for the same character (dn["cat"]).
 import bpy, os, glob, time, traceback, shutil
-SP = r"C:/Users/MATTGR~1/AppData/Local/Temp/claude/C--Git-Source-Code-WorkoutApp/acfa5728-297b-45e3-8295-fca078799ec9/scratchpad"
+SP = os.environ.get("DR_SP", r"C:/Users/MATTGR~1/AppData/Local/Temp/claude/C--Git-Source-Code-WorkoutApp/acfa5728-297b-45e3-8295-fca078799ec9/scratchpad")
 dn = bpy.app.driver_namespace
 ns = dn["cat"]
 base = SP + "/blender/full_" + dn.get("sex", "m")

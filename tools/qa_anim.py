@@ -7,7 +7,7 @@ from mathutils import Vector, Quaternion, Matrix
 from mathutils.bvhtree import BVHTree
 
 SP = r"C:/Users/MATTGR~1/AppData/Local/Temp/claude/C--Git-Source-Code-WorkoutApp/acfa5728-297b-45e3-8295-fca078799ec9/scratchpad"
-OUT = SP + "/qa_anim.json"
+OUT = bpy.app.driver_namespace.get("anim_out", SP + "/qa_anim.json")   # render_headless.py --audit sets its own
 dn = bpy.app.driver_namespace
 ns = dn["cat"]
 sc = bpy.data.scenes["DeskResetDemos"]; vl = sc.view_layers[0]
@@ -187,7 +187,10 @@ def tick():
     res = json.load(open(OUT)) if os.path.exists(OUT) else {}
     res[spec["name"]] = r; json.dump(res, open(OUT, "w"))
     return 0.02
-old = dn.get("anim_tick")
-if old and bpy.app.timers.is_registered(old): bpy.app.timers.unregister(old)
-dn["anim_tick"] = tick
-bpy.app.timers.register(tick, first_interval=0.2)
+if bpy.app.background:              # headless (render_headless.py --audit): no timers, run to the end
+    while tick() is not None: pass
+else:
+    old = dn.get("anim_tick")
+    if old and bpy.app.timers.is_registered(old): bpy.app.timers.unregister(old)
+    dn["anim_tick"] = tick
+    bpy.app.timers.register(tick, first_interval=0.2)

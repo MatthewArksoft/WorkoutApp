@@ -1,8 +1,8 @@
 # Blender: (re)load the demo pipeline and queue a QA preview pass over every catalogue template (or ONLY=[names]).
 # Results: <SP>/qa_results.json (audit + joint error per key), previews: <SP>/blender/cprev/<name>_NNN.png
 import bpy, json, os, glob, traceback
-SP = r"C:/Users/MATTGR~1/AppData/Local/Temp/claude/C--Git-Source-Code-WorkoutApp/acfa5728-297b-45e3-8295-fca078799ec9/scratchpad"
-TOOLS = r"C:/Git Source Code/WorkoutApp/tools/"
+SP = os.environ.get("DR_SP", r"C:/Users/MATTGR~1/AppData/Local/Temp/claude/C--Git-Source-Code-WorkoutApp/acfa5728-297b-45e3-8295-fca078799ec9/scratchpad")
+TOOLS = os.environ.get("DR_TOOLS", os.path.dirname(os.path.abspath(__file__)) + "/")
 dn = bpy.app.driver_namespace
 old = dn.get("qa_tick")
 if old and bpy.app.timers.is_registered(old): bpy.app.timers.unregister(old)
