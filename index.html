@@ -1,42 +1,23 @@
-<!doctype html><html><head><meta charset=utf-8><title>Desk Reset Program</title><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#F4F5F7"><link rel="icon" href="icon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Desk Reset"><script>try{const t=JSON.parse(localStorage.getItem("dr-theme"));if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html><head><meta charset=utf-8><title>Desk Reset Program</title><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#5B3DF5"><link rel="icon" href="icon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Desk Reset"><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600;700&display=swap">
 <style>
-/* Design tokens: slate neutrals, energy orange (action), green (done), rose (cardio), amber (caution). Hero stays dark in both themes. */
+/* Design tokens: one light theme. Electric Indigo (action/brand), Soft Lilac (tint), green (done), rose (cardio), amber (caution). Hero is solid indigo. */
 :root{
-  --bg:#F4F5F7; --surface:#FFFFFF; --surface-2:#F1F4F8; --ink:#0F172A; --muted:#526075; --line:#E2E8F0;
-  --accent:#F97316; --on-accent:#0F172A; --accent-ink:#C2410C; --accent-soft:#FFF1E6;
+  --bg:#F7F4FF; --surface:#FFFFFF; --surface-2:#F1ECFF; --ink:#1B1446; --muted:#5D5782; --line:#E4DBFB;
+  --accent:#5B3DF5; --on-accent:#FFFFFF; --accent-ink:#4A2BE0; --accent-soft:#E8DEFF;
   --done:#16A34A; --done-ink:#166534; --done-soft:#DCFCE7;
   --warn-ink:#B45309; --warn-soft:#FEF3C7;
   --cardio:#E11D48; --cardio-ink:#BE123C; --cardio-soft:#FFE4E6;
-  --hero-bg:var(--surface); --hero-line:var(--line); --hero-ink:var(--ink); --hero-muted:var(--muted); --hero-eyebrow:var(--accent-ink);
-  --glow-a:rgb(249 115 22 / .16); --glow-b:rgb(225 29 72 / .07); --hero-chip:var(--surface-2); --hero-chip-line:var(--line); --hero-chip-ink:#334155;
-  --hero-btn:var(--surface-2); --hero-btn-line:var(--line); --hero-btn-hover:var(--line);
-  --shadow:0 1px 2px rgb(15 23 42 / .04),0 6px 20px rgb(15 23 42 / .06);
+  --hero-bg:#5B3DF5; --hero-line:#4A2BE0; --hero-ink:#FFFFFF; --hero-muted:#E8DEFF; --hero-eyebrow:#E8DEFF;
+  --glow-a:rgb(232 222 255 / .38); --glow-b:rgb(27 20 70 / .35); --hero-chip:rgb(255 255 255 / .14); --hero-chip-line:rgb(255 255 255 / .26); --hero-chip-ink:#FFFFFF;
+  --hero-btn:rgb(255 255 255 / .14); --hero-btn-line:rgb(255 255 255 / .28); --hero-btn-hover:rgb(255 255 255 / .26);
+  --shadow:0 1px 2px rgb(27 20 70 / .05),0 8px 24px rgb(91 61 245 / .10);
   --f-display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
   --f-body:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
   --r:16px; --ease:cubic-bezier(.2,.7,.2,1);
 }
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#0B1120; --surface:#131B2E; --surface-2:#0F172A; --ink:#F1F5F9; --muted:#9AA8BC; --line:#22304A;
-  --accent:#FB923C; --accent-ink:#FDBA74; --accent-soft:#2A1A0E;
-  --done:#22C55E; --done-ink:#4ADE80; --done-soft:#0E2A1A;
-  --warn-ink:#FBBF24; --warn-soft:#2A2010;
-  --cardio:#FB7185; --cardio-ink:#FDA4AF; --cardio-soft:#2E1220;
-  --hero-bg:#0F172A; --hero-line:#22304A; --hero-ink:#F8FAFC; --hero-muted:#CBD5E1; --hero-eyebrow:#FDBA74;
-  --glow-a:rgb(249 115 22 / .38); --glow-b:rgb(225 29 72 / .18); --hero-chip:rgb(255 255 255 / .08); --hero-chip-line:rgb(255 255 255 / .14); --hero-chip-ink:#E2E8F0;
-  --hero-btn:rgb(255 255 255 / .08); --hero-btn-line:rgb(255 255 255 / .16); --hero-btn-hover:rgb(255 255 255 / .16); --shadow:none; color-scheme:dark}}
-:root[data-theme="dark"]{
-  --bg:#0B1120; --surface:#131B2E; --surface-2:#0F172A; --ink:#F1F5F9; --muted:#9AA8BC; --line:#22304A;
-  --accent:#FB923C; --accent-ink:#FDBA74; --accent-soft:#2A1A0E;
-  --done:#22C55E; --done-ink:#4ADE80; --done-soft:#0E2A1A;
-  --warn-ink:#FBBF24; --warn-soft:#2A2010;
-  --cardio:#FB7185; --cardio-ink:#FDA4AF; --cardio-soft:#2E1220;
-  --hero-bg:#0F172A; --hero-line:#22304A; --hero-ink:#F8FAFC; --hero-muted:#CBD5E1; --hero-eyebrow:#FDBA74;
-  --glow-a:rgb(249 115 22 / .38); --glow-b:rgb(225 29 72 / .18); --hero-chip:rgb(255 255 255 / .08); --hero-chip-line:rgb(255 255 255 / .14); --hero-chip-ink:#E2E8F0;
-  --hero-btn:rgb(255 255 255 / .08); --hero-btn-line:rgb(255 255 255 / .16); --hero-btn-hover:rgb(255 255 255 / .16); --shadow:none; color-scheme:dark}
-*{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.55;padding-inline:16px;padding-block:0 48px;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
 .wrap{max-width:720px;margin:0 auto}
 .ic{width:18px;height:18px;flex:0 0 auto;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
@@ -58,7 +39,7 @@ h1{font-family:var(--f-display);font-weight:700;font-size:clamp(34px,8vw,48px);l
 .menu{position:relative;flex:0 0 auto}
 .menubtn{width:44px;height:44px;display:grid;place-items:center;border:1px solid var(--hero-btn-line);background:var(--hero-btn);color:var(--hero-ink);border-radius:12px;cursor:pointer;padding:0}
 .menubtn:hover,.menubtn[aria-expanded="true"]{background:var(--hero-btn-hover)}
-.menupanel{position:absolute;right:0;top:52px;z-index:10;outline:1px solid rgb(255 255 255 / .04);width:min(288px,calc(100vw - 32px));background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:var(--r);padding:16px;display:grid;gap:12px;box-shadow:0 16px 40px rgb(2 6 23 / .28)}
+.menupanel{position:absolute;right:0;top:52px;z-index:10;outline:1px solid rgb(255 255 255 / .04);width:min(288px,calc(100vw - 32px));background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:var(--r);padding:16px;display:grid;gap:12px;box-shadow:0 16px 40px rgb(27 20 70 / .22)}
 
 /* Sticky controls: day tabs only */
 .bar{position:sticky;top:0;z-index:5;margin-inline:-16px;padding:calc(env(safe-area-inset-top,0px) + 8px) 16px 8px;display:grid;gap:10px;border-bottom:1px solid var(--line);
@@ -68,7 +49,7 @@ h1{font-family:var(--f-display);font-weight:700;font-size:clamp(34px,8vw,48px);l
 .seg{display:flex;gap:2px;background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:3px}
 .seg button{flex:1;min-width:0;min-height:40px;border:0;background:transparent;color:var(--muted);font:600 14px var(--f-body);padding:6px;border-radius:9px;cursor:pointer;line-height:1.2}
 .seg button:hover{color:var(--ink)}
-.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgb(15 23 42 / .12),0 0 0 1px var(--line)}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgb(91 61 245 / .18),0 0 0 1px var(--line)}
 .tabs{display:grid;gap:8px;margin-inline:-16px;max-width:none!important;width:auto!important}
 /* Equipment picker: icon + label tiles, selected tile in accent */
 .tabrow{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;scroll-snap-type:x proximity;padding-inline:16px}
@@ -88,9 +69,10 @@ body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
 .tabrow.days .today{position:absolute;top:6px;right:7px;font-size:0;gap:0}
 .tabs button{flex:0 0 auto;scroll-snap-align:start;min-height:40px;display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:600 15px var(--f-body);padding:0 14px;border-radius:999px;cursor:pointer}
 .tabs button:hover{border-color:var(--muted)}
-.tabs button[aria-selected="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.tabs button[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
 .tabs .today{display:inline-flex;align-items:center;gap:4px;font:700 11px var(--f-body);letter-spacing:.06em;text-transform:uppercase;opacity:.8}
 .tabs .today::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--accent)}
+.tabs button[aria-selected="true"] .today::before{background:var(--accent-soft)}
 
 /* Day header */
 .dayhead{padding-block:28px 4px;display:grid;gap:6px}
@@ -135,12 +117,6 @@ details.warm[open] summary .ic{transform:rotate(180deg)}
 .gif{margin:0;border-radius:12px;overflow:hidden;background:var(--surface-2);border:1px solid var(--line);aspect-ratio:3/2}
 .gif canvas,.gifdlg canvas{display:block;width:100%;height:auto;aspect-ratio:3/2}
 .gifdlg canvas{border-radius:12px;background:var(--surface-2)}
-.tone{-webkit-appearance:none;appearance:none;display:block;width:100%;height:44px;margin:0;background:transparent;cursor:pointer;touch-action:pan-y}
-.tone::-webkit-slider-runnable-track{height:14px;border-radius:999px;border:1px solid var(--line);background:linear-gradient(90deg,#f7dbc5,#ecc09e,#dba67c,#c0875f,#9c6644,#724a32,#4e3324)}
-.tone::-moz-range-track{height:14px;border-radius:999px;border:1px solid var(--line);background:linear-gradient(90deg,#f7dbc5,#ecc09e,#dba67c,#c0875f,#9c6644,#724a32,#4e3324)}
-.tone::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:28px;height:28px;margin-top:-8px;border-radius:50%;background:var(--sw,#dba67c);border:3px solid #fff;box-shadow:0 0 0 1px rgb(15 23 42 / .25),0 2px 8px rgb(15 23 42 / .3)}
-.tone::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--sw,#dba67c);border:3px solid #fff;box-shadow:0 0 0 1px rgb(15 23 42 / .25),0 2px 8px rgb(15 23 42 / .3)}
-.tone:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:12px}
 .gifdlg{border:1px solid var(--line);border-radius:var(--r);padding:0;background:var(--surface);color:var(--ink);width:min(420px,calc(100vw - 32px));box-shadow:0 20px 60px rgb(2 6 23 / .35)}
 .gifdlg::backdrop{background:rgb(2 6 23 / .55)}
 .gifdlg form{display:grid;gap:12px;padding:16px}
@@ -249,19 +225,11 @@ td:first-child{font:700 15px var(--f-display);white-space:nowrap;color:var(--acc
           <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
         </button>
         <div class="menupanel" id="menu" hidden>
-          <div class="label" id="themelabel">Theme</div>
-          <div class="seg" role="group" aria-labelledby="themelabel" id="theme">
-            <button type="button" data-theme="auto">Auto</button>
-            <button type="button" data-theme="light">Light</button>
-            <button type="button" data-theme="dark">Dark</button>
-          </div>
           <div class="label" id="sexlabel">Demo model</div>
           <div class="seg" role="group" aria-labelledby="sexlabel" id="sex">
             <button type="button" data-sex="m">Male</button>
             <button type="button" data-sex="f">Female</button>
           </div>
-          <div><label class="label" for="tone">Skin tone</label>
-          <input type="range" class="tone" id="tone" min="0" max="100" step="1"></div>
           <button type="button" class="share" id="install"></button>
           <p class="vnote" id="installhelp" hidden></p>
           <div class="label" id="remindlabel">Reminders · weekdays 17:30</div>
@@ -305,7 +273,7 @@ td:first-child{font:700 15px var(--f-display);white-space:nowrap;color:var(--acc
   </form>
 </dialog>
 
-<script src="track.js?v=23"></script><!-- ?v= forces a fresh copy past old service workers / HTTP cache; match sw.js VERSION -->
+<script src="track.js?v=24"></script><!-- ?v= forces a fresh copy past old service workers / HTTP cache; match sw.js VERSION -->
 <script>
 const ICONS = {
   play:'<polygon points="6 3 20 12 6 21 6 3"/>',
@@ -871,13 +839,10 @@ view.addEventListener("change",e=>{
 view.addEventListener("keydown",e=>{ if(e.key==="Enter" && (e.target.id==="act" || e.target.id==="actx")){ e.preventDefault(); document.getElementById("addact").click(); } });
 view.addEventListener("input",e=>{ if(e.target.id==="name") S.set("dr-name", e.target.value.trim()); });
 view.addEventListener("toggle",e=>{ if(e.target.matches("details.warm")) warmOpen[day]=e.target.open; }, true);
-// Demo player. Each sprite sheet holds the frames (top) and matching skin masks (bottom). Skin renders in a neutral
-// tone; a sheet is re-toned once per tone (gamma-correct per-pixel LUT where the mask says skin), then frames just blit.
-const FW = 480, FH = 320, COLS = 4, REF = 190;   // REF: the neutral render skin's typical lit value
-const TONES = [[247,219,197],[236,192,158],[219,166,124],[192,135,95],[156,102,68],[114,74,50],[78,51,36]];
-let look = S.get("dr-look", {sex: "m", tone: 45});
-const toneRGB = (tone = look.tone) => { const x = tone / 100 * (TONES.length - 1), i = Math.min(TONES.length - 2, Math.floor(x)), f = x - i;
-  return TONES[i].map((c, k) => Math.round(c + (TONES[i + 1][k] - c) * f)); };
+// Demo player. Each sprite sheet holds the frames (top) and skin masks (bottom); demos show the neutral grey render
+// as-is, so frames blit straight from the top half of the decoded sheet.
+const FW = 480, FH = 320, COLS = 4;
+let look = S.get("dr-look", {sex: "m"});
 const keep = (m, k, v, max) => { m.delete(k); m.set(k, v); while(m.size > max) m.delete(m.keys().next().value); return v; };
 const sheets = new Map(), layers = new Map(), phase = {};   // small LRU caches: a decoded sheet can be ~40 MB (phones!)
 const demoUrl = (sex, t) => `demos/${sex}/${t}.${DM[t] && DM[t][0] === 1 ? "png" : "webp"}` + (DM[t] && DM[t][3] ? `?v=${DM[t][3]}` : ""); // DM[t][3]: per-render content hash, absent on older entries
@@ -885,32 +850,11 @@ const sheet = (t, sex = look.sex) => { const k = sex + "/" + t;
   return keep(sheets, k, sheets.get(k) || new Promise((ok, no) => { const im = new Image();
     im.onload = () => ok(im); im.onerror = () => { sheets.delete(k); no(); }; im.src = demoUrl(sex, t); // drop a failed load so it retries later
   }), 3); };
-const layerKey = t => `${look.sex}/${t}/${look.tone}`;
-const lin = v => (v /= 255) <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
-const enc = v => 255 * (v <= 0.0031308 ? v * 12.92 : 1.055 * v ** (1 / 2.4) - 0.055);
-const luts = (tone = look.tone) => toneRGB(tone).map(c => { const g = lin(c) / lin(REF), t = new Uint8ClampedArray(256);
-  for(let v = 0; v < 256; v++) t[v] = enc(Math.min(1, lin(v) * g)); return t; });
+const layerKey = t => `${look.sex}/${t}`;
 async function layer(t){
-  const sex = look.sex, tone = look.tone, k = layerKey(t); // capture now: a sex/tone change mid-flight must not corrupt this entry
-  if(layers.has(k)) return keep(layers, k, layers.get(k), 4);
-  const p = (async () => {
-    await new Promise(r => setTimeout(r));   // yield: re-toning many visible sheets shares the main thread instead of blocking it in one go
-    if(layerKey(t) !== k) throw new Error("stale");   // sex/tone moved on while we yielded: bail, don't do the work or store it under this key
-    const im = await sheet(t, sex), n = DM[t][0], w = Math.min(COLS, n) * FW, h = Math.ceil(n / COLS) * FH;
-    const c = document.createElement("canvas"); c.width = w; c.height = 2 * h;
-    const x = c.getContext("2d", {willReadFrequently: true}); x.drawImage(im, 0, 0);
-    const img = x.getImageData(0, 0, w, 2 * h), px = img.data, sz = w * h * 4, [R, G, B] = luts(tone);
-    for(let i = 0; i < sz; i += 4){
-      const m = px[sz + i]; if(m < 3) continue;
-      const f = m / 255, r = px[i], g = px[i + 1], b = px[i + 2];
-      px[i] = r + (R[r] - r) * f; px[i + 1] = g + (G[g] - g) * f; px[i + 2] = b + (B[b] - b) * f;
-    }
-    c.height = h; c.getContext("2d").putImageData(img, 0, 0);     // keep only the toned frames
-    return {c};
-  })();
-  keep(layers, k, p, 4);   // in-flight promise: concurrent calls for the same tone+template share this one
-  try { const L = await p; keep(layers, k, L, 4); return L; }   // resolved: replace with the plain {c} buffer mountDemos reads synchronously
-  catch(e){ layers.delete(k); throw e; }   // failed or stale: don't poison the cache, let the next mount retry
+  const k = layerKey(t), L = layers.get(k);
+  if(L && L.c) return keep(layers, k, L, 4);
+  return keep(layers, k, {c: await sheet(t, look.sex)}, 4);   // keyed by the sex captured above: a switch mid-load files it under the old key
 }
 function frame(cv, s){
   const x = cv.getContext("2d"); x.clearRect(0, 0, cv.width, cv.height);   // sprites have alpha now: always clear first
@@ -948,20 +892,17 @@ const seen = new IntersectionObserver(es => es.forEach(e => e.isIntersecting ? p
 function mountDemos(){
   seen.disconnect(); live.clear();
   document.querySelectorAll("canvas[data-demo]").forEach(cv => {
-    const L = layers.get(layerKey(cv.dataset.demo));    // already toned (not still an in-flight promise): draw now so a re-render doesn't flash empty
+    const L = layers.get(layerKey(cv.dataset.demo));    // already loaded: draw now so a re-render doesn't flash empty
     if(L && L.c && DM[cv.dataset.demo]) frame(cv, {L, i: phase[cv.dataset.demo] || 0});
     seen.observe(cv);
   });
 }
 function renderLook(){
   document.querySelectorAll("#sex button").forEach(b => b.setAttribute("aria-pressed", b.dataset.sex === look.sex));
-  const t = document.getElementById("tone"); t.value = look.tone;
-  t.style.setProperty("--sw", `rgb(${toneRGB().join()})`);
-  t.setAttribute("aria-valuetext", ["Very light", "Light", "Light medium", "Medium", "Medium dark", "Dark", "Very dark"][Math.round(look.tone / 100 * 6)]);
 }
 document.getElementById("sex").addEventListener("click", e => {
   const b = e.target.closest("button[data-sex]"); if(!b) return;
-  look = {...look, sex: b.dataset.sex}; S.set("dr-look", look); renderLook(); mountDemos(); precacheDemos();
+  look = {sex: b.dataset.sex}; S.set("dr-look", look); renderLook(); mountDemos(); precacheDemos();
 });
 // Background-download every demo for the selected model so a workout with no signal still has them.
 let demoGen = 0;   // bumped on every call; a model switch mid-run makes the old loop see it's stale and stop (no double downloads)
@@ -982,9 +923,6 @@ async function precacheDemos(){
   }catch(e){}   // Cache Storage can throw (private mode, quota, ...)
 }
 addEventListener("load", precacheDemos);
-// Dragging only updates the swatch (cheap); re-toning every visible sheet (per-pixel work) waits for release.
-document.getElementById("tone").addEventListener("input", e => { look = {...look, tone: +e.target.value}; renderLook(); });
-document.getElementById("tone").addEventListener("change", () => { S.set("dr-look", look); mountDemos(); });
 renderLook();
 const gifDlg = document.getElementById("gifdlg");
 gifDlg.addEventListener("click", e => { if(e.target === gifDlg) gifDlg.close(); }); // tap the backdrop to close
@@ -1016,25 +954,12 @@ resetDlg.addEventListener("close",()=>{
   S.set("dr-checks",checks); record(resetDay); resetDay = null; render(); // clear resetDay so a stray close (e.g. navigating back) can't replay it
 });
 render();
-// Menu: theme + install
+// Menu: demo model, install, reminders
 const menuBtn = document.getElementById("menubtn"), menu = document.getElementById("menu");
 const setMenu = open => { menu.hidden = !open; menuBtn.setAttribute("aria-expanded", open); };
 menuBtn.addEventListener("click", () => setMenu(menu.hidden));
 document.addEventListener("click", e => { if(!menu.hidden && !e.target.closest(".menu")) setMenu(false); });
 document.addEventListener("keydown", e => { if(e.key==="Escape" && !menu.hidden){ setMenu(false); menuBtn.focus(); } });
-
-let theme = S.get("dr-theme","auto");
-function renderTheme(){
-  if(theme==="auto") delete document.documentElement.dataset.theme; else document.documentElement.dataset.theme = theme;
-  document.querySelectorAll("#theme button").forEach(b=>b.setAttribute("aria-pressed", b.dataset.theme===theme));
-  document.querySelector('meta[name="theme-color"]').content = getComputedStyle(document.documentElement).getPropertyValue("--bg").trim();
-}
-matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => renderTheme());
-document.getElementById("theme").addEventListener("click", e => {
-  const b = e.target.closest("button[data-theme]"); if(!b) return;
-  theme = b.dataset.theme; S.set("dr-theme", theme); renderTheme();
-});
-renderTheme();
 
 // Android/desktop Chrome give us beforeinstallprompt; iOS has no install API, so show the Share-sheet steps.
 let installEvt = null;
