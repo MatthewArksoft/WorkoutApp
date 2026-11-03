@@ -1984,3 +1984,12 @@ ST0 = dict(T=172, S=174, N=178, H=180, legL=[58, 6, -5, 6], legR=[0, 6, 0, 6], a
 ST1 = dict(T=178, S=178, N=180, H=182, legL=[0, 6, 0, 6], legR=[34, 6, -16, 6], armL=[10, 8, 25, 8], armR=[10, 8, 25, 8])
 _t("stair-step").update(keys=[P(**ST0), dict(P(**ST1), anchor={"z": ("ankle_l", None), "x": ("ankle_l", None)})], anchor={}, stance=None,
                         plant=["foot_l"], free=["foot_r"], hands="relaxed", cam=dict(az=-70, el=8))
+# v22: 90/90 legs back to the v20 windscreen wipers (heels stay planted wide on the mat, both knees drop to one side, rise
+# and drop to the other: the correct movement), with the v21 upper body (sitting tall on straight arms, palms flat behind).
+# HS_AMP below 90 keeps each femur inside its roll range at the bottom; at 90 the thighs over-rotated (thinning, bulging).
+HS_AMP = 85
+HSW_ANK.update({"l": (0.14, 0.48, 0.12), "r": (0.14, -0.48, 0.12)})   # heels sat 3-8 cm into the mat with the taller v21 trunk
+def _hs_wiper(amp):
+    return [P(T=200, S=198, N=194, H=188, legL=HSW_leg("l", amp * _m.cos(2 * _m.pi * f / 24)), legR=HSW_leg("r", amp * _m.cos(2 * _m.pi * f / 24)),
+              thighlim=180, **ARMS((-0.25, 0.3, -0.92))) for f in range(24)]   # the trailing knee drops inward past the default 100 deg roll cap: without this it bent backwards
+_t("hip-switch").update(keys=_hs_wiper(HS_AMP), steps=1, reach=HS_HANDS, plant=["foot_l", "foot_r"])

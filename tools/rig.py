@@ -80,11 +80,13 @@ def roll_to(name, want, max_deg=None):
     deg = math.degrees(math.atan2(ax.dot(cur.cross(want)), cur.dot(want)))
     if max_deg is None or abs(deg) <= max_deg: tilt(name, tuple(ax), deg)
 
+THIGH_ROLL_LIM = 100   # largest femur roll hinge() applies; a key's thighlim raises it (90/90: the knee drops inward past it)
+
 def hinge(upper, lower_dir, straight_hint=None):
     """Elbows and knees are hinges: roll the upper bone so the joint bends only toward the lower segment.
     Nearly straight limbs take the roll from straight_hint (e.g. knee faces where the toes point)."""
     ud = bone_dir(upper); bend = lower_dir - ud * lower_dir.dot(ud)
-    lim = None if upper.startswith("upperarm") else 100     # the humerus rotates freely; a femur never spins round
+    lim = None if upper.startswith("upperarm") else THIGH_ROLL_LIM   # the humerus rotates freely; a femur never spins round
     if bend.length > 0.12: roll_to(upper, bend, lim)
     elif straight_hint is not None: roll_to(upper, straight_hint, lim)
 
@@ -140,6 +142,7 @@ def apply_pose(P):
         # foot bone runs ankle -> ball, sloping 26 deg down when the sole is flat (pitch 64); planted shins are near vertical
         fp = g[4] if len(g) > 4 else (FOOT_FLAT if -50 <= g[2] <= 50 else g[2] + 90)
         fl = g[5] if len(g) > 5 else 0
+        global THIGH_ROLL_LIM; THIGH_ROLL_LIM = P.get("thighlim", 100)
         aim("thigh_" + s, d(g[0], g[1], sg)); hinge("thigh_" + s, d(g[2], g[3], sg), -d(90 if -15 <= fp <= 110 else fp, fl, sg))
         aim("calf_" + s, bent("thigh_" + s, d(g[2], g[3], sg)))
         aim("foot_" + s, d(fp, fl, sg))
