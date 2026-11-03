@@ -1,6 +1,6 @@
 // Bump VERSION after editing any (non-demo) file; it derives the precached track.js?v= below too, so
 // also bump the matching <script src="track.js?v="> in index.html to the same number.
-const VERSION = "v20";
+const VERSION = "v21";
 const TRACKJS = "track.js?v=" + VERSION.slice(1);
 const CORE = ["./", "index.html", TRACKJS, "manifest.webmanifest", "icon.svg", "icon-192.png", "icon-512.png"];
 

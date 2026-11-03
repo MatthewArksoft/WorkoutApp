@@ -1928,3 +1928,59 @@ _t("snow-angel")["hands"] = "relaxed"   # fingers carry on along the forearm; a 
 # rolled the humerus so far that a flat palm needed more forearm turn than a real one has.
 _pu_k = _t("push-up")["keys"]
 _t("push-up")["keys"] = _SexKeys([{**_pu_k[0], "_f": {}}, {**_pu_k[1], **both([-80, 35, 28, -22]), "_f": both([-82.5, 35, 26.5, -20])}])
+
+# ---------- v21: user review (split squat, 90/90, lateral walk, shoulder taps, crunch, child's pose, step-up, cross crunch) ----------
+# 90/90 hip switches: four hand-set keys (knees down left, up, down right, up). The 24 windscreen-wiper frames pinned the heels
+# and drove the knees past the femur's roll limit (knee_reversed / knee_sideways flags: thinning, bulging legs), and a 50 deg
+# clavicle tilt folded the shoulders behind the body. Front leg: thigh forward on the mat, shin across the midline; trailing
+# leg: thigh out to its side, shin back. Leaning back a little on straight arms, palms flat behind the hips, fingers back.
+HS_FRONT = ((0.92, 0.3, -0.08), (-0.25, -0.93, -0.12), (-0.45, -0.8, -0.35))   # thighs level (a sloping thigh held the pelvis 10 cm up)
+HS_TRAIL = ((0.35, 0.9, -0.08), (-0.95, 0.25, -0.12), (-0.9, 0.3, -0.3))
+HS_UP = ((0.6, 0.35, 0.72), (0.7, 0.1, -0.71), (0.85, 0.2, -0.45))   # knees up with the shins angled out to the feet (a vertical shin went through the floor and lifted the body)
+def _hsk(left, right): return P(T=200, S=198, N=194, H=188, legL=LEG("l", *left), legR=LEG("r", *right), **ARMS((-0.25, 0.3, -0.92)))
+HS_HANDS = {"hand_l": ("pelvis", (-0.22, 0.2, -HSW_Z + 0.025), "world"), "hand_r": ("pelvis", (-0.22, -0.2, -HSW_Z + 0.025), "world")}   # palms on the mat behind the hips
+# Half-way keys guide each switch: the knees lift ~20 deg with the feet still on the mat. A straight blend from a thigh lying
+# flat to a thigh pointing up swung the shins through the floor and the body was lifted 20 cm to clear them.
+HS_TRAIL_MID = ((0.5, 0.7, 0.4), (-0.6, 0.5, -0.27), (0.85, 0.3, -0.4))
+HS_FRONT_MID = ((0.8, 0.35, 0.4), (0.2, -0.75, -0.3), (0.85, -0.3, -0.4))
+_t("hip-switch").update(keys=[_hsk(HS_TRAIL, HS_FRONT), _hsk(HS_TRAIL_MID, HS_FRONT_MID), _hsk(HS_UP, HS_UP), _hsk(HS_FRONT_MID, HS_TRAIL_MID),
+                              _hsk(HS_FRONT, HS_TRAIL), _hsk(HS_FRONT_MID, HS_TRAIL_MID), _hsk(HS_UP, HS_UP), _hsk(HS_TRAIL_MID, HS_FRONT_MID)], steps=3,
+                        hands="flat", handdir=-100, reach=HS_HANDS, anchor={"z": ("pelvis", HSW_Z)}, cam=dict(az=-40, el=15))
+_t("hip-switch").pop("plant", None)
+# Supported split squat: hand-set split stance (the photo keys stood behind the chair and the front leg passed through it);
+# the chair stands on the far side of the camera, left hand on its back rail, right arm hanging.
+SS_ARMS = dict(armL=[-6, 26, -6, 26], armR=[6, 8, 6, 8])
+_SS2_TOP = dict(T=178, S=178, N=180, H=182, legL=[12, 6, -4, 6], legR=[-26, 6, -26, 6, -30], **SS_ARMS)
+_SS2_BTM = dict(T=174, S=174, N=176, H=178, legL=[74, 6, -8, 6], legR=[-8, 6, -96, 6, -40], **SS_ARMS)
+def _post_ss3(J0): return V((J0["shoulder_l"].x + 0.04, J0["shoulder_l"].y + 0.30, J0["shoulder_l"].z - 0.40))
+_t("supported-split").update(keys=[P(**_SS2_TOP), P(**_SS2_BTM)], props=lambda J, J0, *a: chair_back_at("chair", _post_ss3(J0), 1),
+                             track=lambda ctx: {"hand_l": (_post_ss3(ctx["J0"]), None)}, handL="grip", handR="relaxed", plant=["foot_l", "foot_r"],
+                             anchor={}, stance=None, cam=dict(az=-62, el=10))
+# Mini-band lateral walk: athletic quarter squat (hips back, chest up, hands on the hips), the left foot steps out wide against
+# the band and back in while the right foot stays planted (the photo keys shuffled upright with the feet sliding).
+LW_BODY = dict(T=168, S=171, N=177, H=181, armL=[-22, 38, 70, -24], armR=[-22, 38, 70, -24])
+LW_HIPS = {"hand_l": ("hip_l", (-0.03, 0.09, 0.09), "world"), "hand_r": ("hip_r", (-0.03, -0.09, 0.09), "world")}
+_t("lateral-walk").update(keys=[P(**LW_BODY, legL=[30, 18, -24, 16], legR=[30, 14, -24, 12]), P(**LW_BODY, legL=[30, 46, -24, 40], legR=[30, 14, -24, 12])],
+                          pingpong=True, reach=LW_HIPS, plant=["foot_r"], free=["foot_l"], anchor={"x": ("ankle_r", None)}, stance=None, cam=dict(az=-25, el=8),
+                          props=lambda J, J0, *a: mini_band("band", J["knee_l"] + V((0.02, 0.05, 0.06)), J["knee_r"] + V((0.02, -0.05, 0.06))))   # round the outside of the knees
+# Plank shoulder taps: the tapping hand relaxes (a "flat" hand at the shoulder bent the wrist 96 deg); the support palm is
+# seated flat on the mat every frame.
+def _stk2(side=None):
+    k = _stk(side)
+    if side: k["hand" + side] = "relaxed"
+    return k
+_t("shoulder-taps").update(keys=_SexKeys([_stk2(), _stk2("R"), _stk2(), _stk2("L")]), floor_palms=True)
+# Crunch: forearms crossed ON the chest (they sat inside it); cross-body crunch: fingertips at the temples, elbows wide (the
+# forearms passed through the head).
+_t("crunch")["reach"] = {"hand_l": ("shoulder_r", (0.06, 0.0, 0.16), "world"), "hand_r": ("shoulder_l", (0.11, 0.0, 0.12), "world")}
+_t("cross-crunch")["reach"] = {"hand_l": ("head", (0.0, 0.13, -0.08)), "hand_r": ("head", (0.0, -0.13, -0.08))}
+# Child's pose: hips sit back on the heels, back long and gently rounded, forehead toward the mat, arms stretched forward and
+# walked to the left, palms flat (the photo pose had the hips high and the back folded like a cat stretch).
+CP = dict(T=90, S1=88, S2=78, S3=66, N=56, H=50, legL=[58, 10, -90, 10, -96], legR=[58, 10, -90, 10, -96], armL=[74, 24, 74, 24], armR=[74, 4, 74, 4])   # solved: hips on the heels, knees, forehead and palms all on the mat (a steeper trunk put the chest through the floor and lifted the knees)
+_t("childs-pose").update(keys=[P(**CP)] * 2, on_knees=True, hands="flat", floor_palms=True, anchor={}, still=True, cam=dict(az=-75, el=12))
+# Stair step-up: left foot on the bottom step, drive up to standing on it with the right foot lifting to tap beside, then lower
+# (the photo keys stood in front of the stairs and only lifted a knee).
+ST0 = dict(T=172, S=174, N=178, H=180, legL=[58, 6, -5, 6], legR=[0, 6, 0, 6], armL=[10, 8, 25, 8], armR=[10, 8, 25, 8])
+ST1 = dict(T=178, S=178, N=180, H=182, legL=[0, 6, 0, 6], legR=[34, 6, -16, 6], armL=[10, 8, 25, 8], armR=[10, 8, 25, 8])
+_t("stair-step").update(keys=[P(**ST0), dict(P(**ST1), anchor={"z": ("ankle_l", None), "x": ("ankle_l", None)})], anchor={}, stance=None,
+                        plant=["foot_l"], free=["foot_r"], hands="relaxed", cam=dict(az=-70, el=8))

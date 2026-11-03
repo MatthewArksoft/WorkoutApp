@@ -98,6 +98,7 @@ def bent(upper, lower_dir, deg=4.0):
     if b.length < 1e-4: return lower_dir
     a = math.radians(deg); return (ud * math.cos(a) + b.normalized() * math.sin(a)).normalized()
 
+LUMBAR_FLAT = 8    # deg of lumbar flexion when lying face up (see apply_pose)
 SPINE3_REST = 12   # upper-spine bone leans back ~12 deg at rest (natural curve); aiming it along the trunk hunches the upper back
 def spine3_rest(face_up):
     """Natural upper-back curve, faded out as the back comes to rest on the floor or a bench (face_up: chest normal z)."""
@@ -111,7 +112,10 @@ def apply_pose(P):
     T = P["T"]; S = P.get("S", T)
     tilt("pelvis", (0, 1, 0), 180 - T)   # +Y rotation tips the body's up-axis toward +X
     if P.get("roll"): tilt("pelvis", tuple(d(T)), P["roll"])
-    aim("spine_01", d(P.get("S1", (T + S) / 2))); aim("spine_02", d(P.get("S2", S))); aim("spine_03", d(P.get("S3", S) + spine3_rest(math.sin(math.radians(T - 180)))))
+    face_up = math.sin(math.radians(T - 180))
+    # lying face up (and bridging): the lower back flattens toward the mat, ribs down; the rig's resting pelvic tilt alone
+    # read as an arched lower back in the bridges, dead bug and supine chin tuck
+    aim("spine_01", d(P.get("S1", (T + S) / 2 - LUMBAR_FLAT * max(0.0, face_up)))); aim("spine_02", d(P.get("S2", S))); aim("spine_03", d(P.get("S3", S) + spine3_rest(math.sin(math.radians(T - 180)))))
     if P.get("twist"): tilt("spine_02", tuple(d(P.get("S2", S))), P["twist"])
     H = P.get("H", P.get("S3", S))
     aim("neck_01", d(P.get("N", H))); aim("Head", d(H))
