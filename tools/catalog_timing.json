@@ -346,7 +346,7 @@
 },
 "floor-ytw": {
 "cyclic": false,
-"keys": 4,
+"keys": 8,
 "steps": 6
 },
 "front-plank": {

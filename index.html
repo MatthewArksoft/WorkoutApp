@@ -243,7 +243,7 @@ td:first-child{font:700 15px var(--f-display);white-space:nowrap;color:var(--acc
 <div class="wrap">
   <header class="top">
     <div class="tophead">
-      <div><p class="eyebrow">6-week program</p><h1>Desk Reset Program</h1></div>
+      <div><p class="eyebrow">8-week program</p><h1>Desk Reset Program</h1></div>
       <div class="menu">
         <button type="button" class="menubtn" id="menubtn" aria-label="Menu" aria-expanded="false" aria-controls="menu">
           <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
@@ -270,7 +270,7 @@ td:first-child{font:700 15px var(--f-display);white-space:nowrap;color:var(--acc
         </div>
       </div>
     </div>
-    <p class="lede">Five home sessions to open up the chest and hips, strengthen the upper back, glutes and core, and take load off your neck, lower back and knees. All you need is a yoga mat, mini bands, an ab wheel and a band bar. Each session ends with a walk or a bike ride.</p>
+    <p class="lede">Five home sessions of about 45 minutes, built on what the research on desk posture supports: strengthen the deep neck flexors, lower traps, serratus, glutes and abs, stretch the chest and hip flexors, and add a two-minute dose at the desk every workday. All you need is a yoga mat, mini bands, an ab wheel and a band bar. Each session ends with a walk or a bike ride.</p>
     <div class="meta">
       <span class="chip">Mon–Fri · weekends open</span>
       <span class="chip">~45 min incl. cardio</span>
@@ -285,6 +285,7 @@ td:first-child{font:700 15px var(--f-display);white-space:nowrap;color:var(--acc
 
   <main id="view" role="tabpanel"></main>
   <p class="note">Exercise animations: Quaternius Universal Base Characters (CC0), posed from <a href="https://github.com/yuhonas/free-exercise-db" target="_blank" rel="noopener">free-exercise-db</a> reference photos (public domain).</p>
+  <p class="note" style="margin-top:8px">App version <span id="appver"></span>. New versions install and reload on their own.</p>
   <p class="note" style="margin-top:8px">Not medical advice. With pain in your neck/shoulders, lower back and knees/hips together, a one-off physio assessment is worth it to confirm nothing here needs changing for you.</p>
 </div>
 <nav class="bottomnav" id="nav" aria-label="Sections"></nav>
@@ -304,7 +305,7 @@ td:first-child{font:700 15px var(--f-display);white-space:nowrap;color:var(--acc
   </form>
 </dialog>
 
-<script src="track.js?v=19"></script><!-- ?v= forces a fresh copy past old service workers / HTTP cache; match sw.js VERSION -->
+<script src="track.js?v=20"></script><!-- ?v= forces a fresh copy past old service workers / HTTP cache; match sw.js VERSION -->
 <script>
 const ICONS = {
   play:'<polygon points="6 3 20 12 6 21 6 3"/>',
@@ -334,8 +335,8 @@ const demoLink = n => DEMO[n]
   ? `<button type="button" class="iconlink" data-gif="${esc(n)}" aria-label="Show ${esc(n)} demo">${ic("play")}</button>`
   : `<a class="iconlink" href="${yt(n)}" target="_blank" rel="noopener" aria-label="Watch ${esc(n)} demo (opens YouTube)">${ic("ext")}</a>`;
 // Exercise name -> demo template (demos/m|f/<template>.webp): Blender renders posed from reference-photo pose estimation (tools/).
-const DEMO = {"90/90 hip switches":"hip-switch","Ab wheel rollout (from knees)":"ab-wheel","Band-bar Romanian deadlift":"bb-rdl-home","Band-bar bent-over row":"bb-bent-row-home","Band-bar biceps curl":"bb-curl-home","Band-bar deadlift":"bb-deadlift-home","Band-bar seated face pull":"bb-face-pull-home","Band-bar seated row":"bb-seated-row-home","Band-bar shoulder press":"bb-press-home","Band-bar split squat":"bb-split-home","Band-bar squat":"bb-squat-home","Banded glute bridge, feet on couch":"band-bridge-couch","Bear plank shoulder taps":"bear-taps","Bird dog":"bird-dog","Cat-cow + thread the needle":"cat-cow","Cat–cow":"cat-cow","Chair T-spine extension + world's greatest stretch + child's pose lat stretch":"t-spine-chair","Child's pose with side reach":"childs-pose","Chin tucks":"chin-tuck","Couch stretch":"couch-stretch","Cross-body crunch":"cross-crunch","Crunch (small range)":"crunch","Dead bug":"dead-bug","Dead bug (slow)":"dead-bug","Door towel row":"door-towel-row","Doorway or seated pec stretch":"pec-stretch","Doorway pec stretch":"pec-stretch","Figure-4 stretch + hip flexor stretch":"figure-4","Floor Y-T-W, no weight":"floor-ytw","Floor snow angels":"snow-angel","Front plank":"front-plank","Glute bridge":"glute-bridge","Glute squeezes":"glute-squeeze","Half-kneeling hip flexor stretch":"hk-hip-flexor","Hip hinge to wall":"hip-hinge-wall","Loaded backpack or shopping-bag carry":"bag-carry","Long neighbourhood walk":"walk","Lying hamstring stretch (towel) + couch stretch":"lying-ham-towel","McGill curl-up":"mcgill","Mini-band W pull-apart":"band-w","Mini-band glute bridge":"mb-bridge-home","Mini-band lateral walk or clamshell":"lateral-walk","Mini-band pull-apart":"band-pull-apart","Mini-band pulldown":"mb-pulldown-home","Neighbourhood walk":"walk","Pause push-up":"push-up","Plank shoulder taps":"shoulder-taps","Plank with reach":"plank-reach","Prone T raise":"prone-t","Prone W lift":"prone-w","Prone floor row":"prone-row","Prone swimmers":"swimmers","Prone towel pulldown":"prone-towel-pulldown","Push-up (hands elevated if needed)":"incline-push-up","Push-up plus":"push-up-plus","Reverse crunch":"reverse-crunch","Reverse lunge":"rev-lunge","Shoulder blade squeezes":"scap-squeeze","Side plank (knees or feet)":"side-plank","Side plank clamshell":"clamshell","Single-leg RDL":"single-leg-rdl-support","Single-leg RDL (hold a support)":"single-leg-rdl-support","Single-leg glute bridge":"single-leg-bridge","Slow reverse lunge":"rev-lunge","Slow step-down from stairs":"stair-step-down","Stair step-up":"stair-step","Standing hip flexor stretch":"standing-hip-flexor","Supine chin tuck + head lift":"supine-chin-tuck","Supported split squat":"supported-split","Tempo walk":"walk","Thoracic extension over chair":"t-spine-chair","Thoracic open book":"open-book","Tucked hollow hold":"tuck-hollow","Walk intervals":"walk","Wall Y-slide with lift-off":"wall-slide-liftoff","Wall chin tuck":"wall-chin-tuck","Wall sit or slow squat to a chair":"chair-squat","Wall slide with lift-off":"wall-slide-liftoff","Wall slides":"wall-slides"};
-const DM = {"ab-wheel":[12,6,0,"52199299"],"bag-carry":[20,5,1,"6f8a62ca"],"band-bridge-couch":[12,6,0,"0029357f"],"band-pull-apart":[12,6,0,"561bd4a0"],"band-w":[24,6,0,"e6d30acc"],"bb-bent-row-home":[12,6,0,"b63c3a96"],"bb-curl-home":[12,6,0,"bfa99fd9"],"bb-deadlift-home":[12,6,0,"41a7198a"],"bb-face-pull-home":[12,6,0,"15557b28"],"bb-press-home":[12,6,0,"1177af69"],"bb-rdl-home":[12,6,0,"e16adf0e"],"bb-seated-row-home":[12,6,0,"12cdca27"],"bb-split-home":[12,6,0,"b6d3a167"],"bb-squat-home":[12,6,0,"44f553d1"],"bear-taps":[24,6,0,"224368c4"],"bird-dog":[24,6,0,"b62d227e"],"cat-cow":[12,6,0,"5561b11f"],"chair-squat":[12,6,0,"fd5e7892"],"childs-pose":[1,1,0,"6adfa87a"],"chin-tuck":[12,6,0,"1d9c8a73"],"clamshell":[12,6,0,"47ea25a0"],"couch-stretch":[1,1,0,"a6ff0683"],"cross-crunch":[24,6,0,"e994979b"],"crunch":[12,6,0,"cea8fea9"],"dead-bug":[24,6,0,"6ab6a9fe"],"door-towel-row":[12,6,0,"fd3bf8fa"],"figure-4":[12,6,0,"ef400791"],"floor-ytw":[24,6,0,"75ce5ab3"],"front-plank":[1,1,0,"4f2b2c9a"],"glute-bridge":[12,6,0,"1e97f04a"],"glute-squeeze":[1,1,0,"6fd8ec0b"],"hip-hinge-wall":[12,6,0,"ae7aac19"],"hip-switch":[24,1,0,"5544586c"],"hk-hip-flexor":[1,1,0,"28bff94e"],"incline-push-up":[12,6,0,"54efc519"],"lateral-walk":[12,6,0,"4b95dba1"],"lying-ham-towel":[12,6,0,"e2926847"],"mb-bridge-home":[12,6,0,"1154dd1b"],"mb-pulldown-home":[12,6,0,"7f1923e5"],"mcgill":[12,6,0,"504dd5bb"],"open-book":[24,6,0,"ce5e0ab2"],"pec-stretch":[1,1,0,"94d0767f"],"plank-reach":[24,6,0,"4b8a889e"],"prone-row":[36,6,0,"49b3d078"],"prone-t":[12,6,0,"4f9d6c3c"],"prone-towel-pulldown":[12,6,0,"9361fe1c"],"prone-w":[12,6,0,"19bbcf45"],"push-up":[12,6,0,"452d56d6"],"push-up-plus":[12,6,0,"da6b21ec"],"rev-lunge":[12,6,0,"7730b0e6"],"reverse-crunch":[12,6,0,"6264c116"],"scap-squeeze":[12,6,0,"a4fcaaae"],"shoulder-taps":[24,6,0,"ef20f5bd"],"side-plank":[1,1,0,"c7db7480"],"single-leg-bridge":[12,6,0,"a9e0f890"],"single-leg-rdl-support":[12,6,0,"5019d30f"],"snow-angel":[24,6,0,"cdd8a10b"],"stair-step":[12,6,0,"d018afb6"],"stair-step-down":[24,6,0,"2353ee23"],"standing-hip-flexor":[12,6,0,"74f397c8"],"supine-chin-tuck":[12,6,0,"89aa2f8a"],"supported-split":[12,6,0,"614c9b04"],"swimmers":[36,6,0,"3b29da38"],"t-spine-chair":[12,6,0,"d00ec330"],"tuck-hollow":[1,1,0,"a647037b"],"walk":[20,5,1,"2d42ed75"],"wall-chin-tuck":[12,6,0,"c6cba9d2"],"wall-slide-liftoff":[24,6,0,"c545bd9a"],"wall-slides":[12,6,0,"5bbb19c1"]}; // template -> [frames, frames per key, cyclic, sprite hash]
+const DEMO = {"90/90 hip switches":"hip-switch","Ab wheel rollout (from knees)":"ab-wheel","Band-bar Romanian deadlift":"bb-rdl-home","Band-bar bent-over row":"bb-bent-row-home","Band-bar biceps curl":"bb-curl-home","Band-bar deadlift":"bb-deadlift-home","Band-bar seated row":"bb-seated-row-home","Banded glute bridge, feet on couch":"band-bridge-couch","Bear plank shoulder taps":"bear-taps","Bird dog":"bird-dog","Cat-cow + thread the needle":"cat-cow","Cat–cow":"cat-cow","Chair T-spine extension + world's greatest stretch + child's pose lat stretch":"t-spine-chair","Child's pose with side reach":"childs-pose","Chin tucks":"chin-tuck","Couch stretch":"couch-stretch","Cross-body crunch":"cross-crunch","Crunch (small range)":"crunch","Dead bug":"dead-bug","Dead bug (slow)":"dead-bug","Door towel row":"door-towel-row","Doorway or seated pec stretch":"pec-stretch","Doorway pec stretch":"pec-stretch","Figure-4 stretch + hip flexor stretch":"figure-4","Floor Y-T-W, no weight":"floor-ytw","Floor snow angels":"snow-angel","Front plank":"front-plank","Glute bridge":"glute-bridge","Glute squeezes":"glute-squeeze","Half-kneeling hip flexor stretch":"hk-hip-flexor","Hip hinge to wall":"hip-hinge-wall","Loaded backpack or shopping-bag carry":"bag-carry","Long neighbourhood walk":"walk","Lying hamstring stretch (towel) + couch stretch":"lying-ham-towel","McGill curl-up":"mcgill","Mini-band W pull-apart":"band-w","Mini-band glute bridge":"mb-bridge-home","Mini-band lateral walk or clamshell":"lateral-walk","Mini-band pull-apart":"band-pull-apart","Mini-band pulldown":"mb-pulldown-home","Neighbourhood walk":"walk","Pause push-up":"push-up","Plank shoulder taps":"shoulder-taps","Plank with reach":"plank-reach","Prone T raise":"prone-t","Prone W lift":"prone-w","Prone floor row":"prone-row","Prone swimmers":"swimmers","Prone towel pulldown":"prone-towel-pulldown","Push-up (hands elevated if needed)":"incline-push-up","Push-up plus":"push-up-plus","Reverse crunch":"reverse-crunch","Reverse lunge":"rev-lunge","Shoulder blade squeezes":"scap-squeeze","Side plank (knees or feet)":"side-plank","Side plank clamshell":"clamshell","Single-leg RDL":"single-leg-rdl-support","Single-leg RDL (hold a support)":"single-leg-rdl-support","Single-leg glute bridge":"single-leg-bridge","Slow reverse lunge":"rev-lunge","Slow step-down from stairs":"stair-step-down","Stair step-up":"stair-step","Standing hip flexor stretch":"standing-hip-flexor","Supine chin tuck + head lift":"supine-chin-tuck","Supported split squat":"supported-split","Tempo walk":"walk","Thoracic extension over chair":"t-spine-chair","Thoracic open book":"open-book","Tucked hollow hold":"tuck-hollow","Walk intervals":"walk","Wall Y-slide with lift-off":"wall-slide-liftoff","Wall chin tuck":"wall-chin-tuck","Wall sit or slow squat to a chair":"chair-squat","Wall slide with lift-off":"wall-slide-liftoff","Wall slides":"wall-slides"};
+const DM = {"ab-wheel":[12,6,0,"3d332078"],"bag-carry":[20,5,1,"9e366866"],"band-bridge-couch":[12,6,0,"f630fd41"],"band-pull-apart":[12,6,0,"622edd60"],"band-w":[24,6,0,"ac366d26"],"bb-bent-row-home":[12,6,0,"017e45a4"],"bb-curl-home":[12,6,0,"23f99a82"],"bb-deadlift-home":[12,6,0,"e5101cb7"],"bb-rdl-home":[12,6,0,"0936327e"],"bb-seated-row-home":[12,6,0,"2f8690a8"],"bear-taps":[24,6,0,"88a33c00"],"bird-dog":[24,6,0,"2792a4c6"],"cat-cow":[12,6,0,"5248d2a2"],"chair-squat":[12,6,0,"f374d866"],"childs-pose":[1,1,0,"3eaf05fa"],"chin-tuck":[12,6,0,"bf010852"],"clamshell":[12,6,0,"231243ea"],"couch-stretch":[1,1,0,"898da71c"],"cross-crunch":[24,6,0,"17702bb1"],"crunch":[12,6,0,"58eb751d"],"dead-bug":[24,6,0,"c5e562d8"],"door-towel-row":[12,6,0,"79b78737"],"figure-4":[12,6,0,"41a6da45"],"floor-ytw":[48,6,0,"da43e95a"],"front-plank":[1,1,0,"a2057429"],"glute-bridge":[12,6,0,"aa921d45"],"glute-squeeze":[1,1,0,"6d2b3a17"],"hip-hinge-wall":[12,6,0,"44f55368"],"hip-switch":[24,1,0,"c7a80ec9"],"hk-hip-flexor":[1,1,0,"67d727a8"],"incline-push-up":[12,6,0,"91a879ff"],"lateral-walk":[12,6,0,"ef67011f"],"lying-ham-towel":[12,6,0,"cb6aec67"],"mb-bridge-home":[12,6,0,"4c038f78"],"mb-pulldown-home":[12,6,0,"ea0fc933"],"mcgill":[12,6,0,"aebb02de"],"open-book":[24,6,0,"82fbf586"],"pec-stretch":[1,1,0,"f319bd7b"],"plank-reach":[24,6,0,"f23e4567"],"prone-row":[36,6,0,"fdb429e4"],"prone-t":[12,6,0,"d1b6c2b6"],"prone-towel-pulldown":[12,6,0,"cdcbfb21"],"prone-w":[12,6,0,"b346c492"],"push-up":[12,6,0,"cfd41475"],"push-up-plus":[12,6,0,"1a203db9"],"rev-lunge":[12,6,0,"4fda9462"],"reverse-crunch":[12,6,0,"fb2b5cbf"],"scap-squeeze":[12,6,0,"79fdf78d"],"shoulder-taps":[24,6,0,"35db5b0a"],"side-plank":[1,1,0,"a247ddc1"],"single-leg-bridge":[12,6,0,"fc5b76f5"],"single-leg-rdl-support":[12,6,0,"b1315112"],"snow-angel":[24,6,0,"3d98f3f8"],"stair-step":[12,6,0,"0474153a"],"stair-step-down":[24,6,0,"b7dc8033"],"standing-hip-flexor":[12,6,0,"277b4f8a"],"supine-chin-tuck":[12,6,0,"53eb4c59"],"supported-split":[12,6,0,"9933f028"],"swimmers":[36,6,0,"894cddc7"],"t-spine-chair":[12,6,0,"6fda83a2"],"tuck-hollow":[1,1,0,"b1f8120a"],"walk":[20,5,1,"165dbd17"],"wall-chin-tuck":[12,6,0,"a5fcefbb"],"wall-slide-liftoff":[24,6,0,"faa1df63"],"wall-slides":[12,6,0,"7ac34be4"]}; // template -> [frames, frames per key, cyclic, sprite hash]
 const demoCanvas = n => `<canvas data-demo="${DEMO[n]}" width="480" height="320" role="img" aria-label="${esc(n)} demonstration"></canvas>`;
 const yt = q => "https://www.youtube.com/results?search_query=" + encodeURIComponent(q + " proper form");
 
@@ -365,15 +366,15 @@ const DAYS = [
     cues:["Start by pulling the shoulders down, then bend the elbows","Elbows travel down and in toward the ribs","Keep the band tight at the top"],
     avoid:"Shrugging or arching the lower back to get the arms up.",
     pain:"Shoulder pinch overhead? Start lower, with the arms in front of your face."},
-   {slot:"Face pull", dose:"3 × 15", rest:"45 s",
-    o:{body:["Band-bar seated face pull","Sit as for the row, feet on the platform. Pull the bar toward your forehead with the elbows high and wide."]},
-    cues:["Elbows up and out at shoulder height","Bar finishes at forehead height","Hold 1 s, squeeze between the shoulder blades"],
-    avoid:"Going heavy or leaning back. This is a 'feel it' exercise for rear shoulders and rotator cuff."},
+   {slot:"Rear shoulders & cuff", dose:"3 × 12", rest:"45 s",
+    o:{body:["Mini-band W pull-apart","Band round both wrists, elbows bent at your sides. Rotate the hands out against the band, then raise the arms into a W."]},
+    cues:["Elbows stay tucked to your sides as you rotate out","Raise to a W: elbows down, hands up by your ears","Hold 1 s, slow on the way back"],
+    avoid:"Shrugging or arching the lower back. Small muscles: light band, strict reps."},
    {slot:"Prone Y–T–W", dose:"2 × 8 each letter", rest:"45 s",
     o:{body:["Floor Y-T-W, no weight","Face-down on the mat, forehead on a folded towel."]},
     cues:["Thumbs up for Y and T","Lift with the muscles between your shoulder blades","Keep neck neutral; don't lift your head"],
     avoid:"Arching the lower back to get the arms higher."},
-   {slot:"Deep neck flexors", dose:"2 × 10 × 5 s hold", rest:"30 s",
+   {slot:"Deep neck flexors", dose:"2 × 10 × 10 s hold", rest:"30 s",
     o:{body:["Supine chin tuck + head lift","Lie on your back, tuck the chin, lift the head 2 cm off the mat."]},
     cues:["Tuck first, then lift a tiny amount","Breathe normally","Stop when your chin starts poking forward"],
     avoid:"Big neck movements or jutting the chin. Small and controlled.",
@@ -397,20 +398,20 @@ const DAYS = [
     avoid:"Arching the lower back to finish. The movement ends when the hips are in line with the torso.",
     pain:"Low back pinch? Tuck the pelvis more and reduce the range."},
    {slot:"Split squat", dose:"3 × 8 / side", rest:"60 s",
-    o:{body:["Band-bar split squat","Front foot on the platform, back foot a long step behind. Bar on the front of the shoulders; lower the back knee to just above the floor."]},
+    o:{body:["Supported split squat","Hand on a chair back or wall for balance. Back foot a long step behind; lower the back knee to just above the floor over 3 s, then drive up through the front heel."]},
     cues:["Torso tall, slight forward lean is fine","Front knee tracks over the middle toes","3 s down, drive up through the front heel"],
     avoid:"Pushing off the back foot or letting the front knee cave in.",
-    pain:"Knee pain? Shorten the range, or do it without the band and hold a wall."},
+    pain:"Knee pain? Shorten the range or do the slow reverse lunge."},
    {slot:"Hip hinge", dose:"3 × 10", rest:"60 s",
     o:{body:["Band-bar Romanian deadlift","Stand on the platform, feet hip-width, bar in front of the thighs. Push the hips back with a flat back until you feel the hamstrings, then stand tall."]},
     cues:["Soft knees, hips travel back","Bar stays close to the legs","Finish by squeezing the glutes, not leaning back"],
     avoid:"Rounding the back to reach lower. Stop where your back stays flat.",
     pain:"Lower back aches? Shorten the range and use less tension."},
    {slot:"Squat", dose:"3 × 12", rest:"60 s",
-    o:{body:["Band-bar squat","Stand on the platform, bar across the front of the shoulders, elbows up. Sit back and down to a comfortable depth."]},
+    o:{body:["Wall sit or slow squat to a chair","Sit back to a chair over 3 s, touch it lightly and stand up; or hold a wall sit for 30–45 s. A mini band above the knees helps keep them out."]},
     cues:["Knees push out over the toes","Chest up, weight through the whole foot","Stand up through the heels"],
     avoid:"Letting the knees fall inward or the heels lift.",
-    pain:"Knee pain? Squat to a chair or do the wall sit instead."},
+    pain:"Knee pain? Use a higher chair or a shorter wall sit."},
    {slot:"Hip abduction", dose:"2 × 15", rest:"45 s",
     o:{body:["Mini-band lateral walk or clamshell","Band just above the knees. Stay low and keep tension the whole time."]},
     cues:["Feel it on the side of the hip","Toes point forward; knees stay out","Small steps, constant tension"],
@@ -467,11 +468,11 @@ const DAYS = [
     cues:["Flat back, neck long, eyes on the floor ahead","Pull the elbows back to the hips","Pause and squeeze 1 s"],
     avoid:"Standing up as you row or rounding the back.",
     pain:"Lower back tired? Do the seated row instead."},
-   {slot:"Shoulder press", dose:"3 × 10", rest:"60 s",
-    o:{body:["Band-bar shoulder press","Stand on the platform, bar at shoulder height. Press up until the arms are beside your ears, ribs down."]},
-    cues:["Squeeze the glutes and keep the ribs down","Press up and slightly back; let the shoulder blades move","Lower over 2–3 s"],
-    avoid:"Leaning back to get the bar up.",
-    pain:"Shoulder pinch at the top? Stop just short of straight arms, or do wall slides instead."},
+   {slot:"Overhead · shoulder-friendly", dose:"3 × 10", rest:"60 s",
+    o:{body:["Wall slide with lift-off","Forearms on the wall, slide up into a Y, lift the hands 2 cm off the wall for 2 s, then slide back down."]},
+    cues:["Ribs down; the lower back may come off the wall","Slide up without shrugging toward the ears","Lift off from the lower shoulder blades and hold 2 s"],
+    avoid:"Shrugging or arching the lower back to get higher.",
+    pain:"Shoulder pinch overhead? Stop lower, before the pinch."},
    {slot:"Rear-delt fly", dose:"2 × 15", rest:"45 s",
     o:{body:["Mini-band pull-apart","Band round both hands, arms straight at chest height. Pull apart as wide as the band allows."]},
     cues:["Lead with the back of the hand","Arms move out wide, not back","Stop when hands are level with the body"],
@@ -570,15 +571,14 @@ const CARDIO = {
 const EXTRA = {
  "mon:0":{body:[["Band-bar bent-over row","Stand on the platform, hinge to about 45° with a flat back, row the bar to your belly button."],["Prone floor row","Face-down, pull elbows back to your sides and squeeze the shoulder blades 2 s."]]},
  "mon:1":{body:[["Prone towel pulldown","Face-down on the mat, arms overhead holding a towel pulled tight. Lift your chest slightly and pull elbows down to your ribs; pause 2 s."]]},
- "mon:2":{body:[["Mini-band W pull-apart","Band round both wrists, elbows bent at your sides. Rotate hands out against the band, then raise into a W.",["Elbows stay tucked to your sides as you rotate out","Raise to a W: elbows down, hands up by your ears","Hold 1 s, slow on the way back"]],["Prone W lift","Face-down, elbows bent at your sides; lift and squeeze 2 s."]]},
+ "mon:2":{body:[["Prone W lift","Face-down, elbows bent at your sides; lift the arms a hand's width and squeeze 2 s."]]},
  "mon:3":{body:[["Wall Y-slide with lift-off","Forearms on a wall, slide up into a Y, lift hands off 2 cm."]]},
  "mon:4":{body:[["Wall chin tuck","Back of the head on a wall; tuck and slide the head up the wall, 5 s."]]},
  "mon:5":{body:[["Dead bug (slow)","Arms to ceiling, knees at 90°. Lower opposite arm and leg over 3 s."]]},
  "mon:6":{body:[["Floor snow angels","On your back, knees bent; slide arms overhead and back down slowly."]]},
  "tue:0":{body:[["Single-leg glute bridge","Lift one leg straight; push through the other heel and keep the hips level. Shoulders on the mat."],["Banded glute bridge, feet on couch","Mini band above the knees, heels on the couch edge."]]},
- "tue:1":{body:[["Supported split squat","Hold a wall, door frame or chair back for balance; slow 3 s down."],["Slow reverse lunge","Step back softly, 3 s down. Hold a wall if needed."]]},
+ "tue:1":{body:[["Slow reverse lunge","Step back softly, 3 s down. Hold a wall if needed."]]},
  "tue:2":{body:[["Single-leg RDL","Fingertips on a wall or chair for balance. Hold a full water bottle or backpack once it gets easy."],["Hip hinge to wall","Stand a foot from a wall, push hips back to touch it. Hold a backpack to load it."]]},
- "tue:3":{body:[["Wall sit or slow squat to a chair","Wall sit 30–45 s, or sit back to a chair over 3 s and stand. Mini band above the knees helps keep them out."]]},
  "tue:4":{body:[["Side plank clamshell","On your side, knees bent, hips up; open the top knee."]]},
  "tue:5":{body:[["Plank with reach","Forearm plank; reach one arm forward, return, swap. Knees down to make it easier."]]},
  "tue:6":{body:[["Couch stretch","Back knee on the folded mat in front of the couch or a wall, foot up behind you."]]},
@@ -587,7 +587,7 @@ const EXTRA = {
  "wed:5":{body:[["Thoracic open book","Side-lying, knees stacked. Rotate the top arm open, follow it with your eyes."],["Chair T-spine extension + world's greatest stretch + child's pose lat stretch","5 extensions over a chair back, 5 WGS per side, 30 s child's pose reaching each side.",["Chair back sits across your upper back, not your lower back","Hands support your head as you lean back","Move slowly and breathe"]]]},
  "thu:0":{body:[["Pause push-up","1 s pause just above the floor. Hands elevated if needed."]]},
  "thu:1":{body:[["Band-bar seated row","Sit on the mat, feet against the platform. Sit tall and row to your lower ribs."],["Door towel row","Throw a towel over the top of a sturdy door and close it so the towel is trapped. Stand on the side it opens away from you, hold an end in each hand, lean back and row your chest to the door."]]},
- "thu:2":{body:[["Wall slide with lift-off","Slide up the wall, then lift hands 2 cm off at the top."]]},
+ "thu:2":{body:[["Mini-band pulldown","Mini band round both wrists, arms up in a Y. Pull apart and drive the elbows down to your ribs."]]},
  "thu:3":{body:[["Prone T raise","Face-down, arms out wide, thumbs up; lift and hold 2 s."]]},
  "thu:7":{body:[["Doorway pec stretch","Forearm on the door frame at shoulder height, step through."]]},
  "fri:0":{body:[["Single-leg RDL (hold a support)","Hand on a wall or chair for balance; reach the free leg back. Hold a loaded backpack in the other hand to progress."],["Band-bar Romanian deadlift","Stand on the platform, bar in front of the thighs. Push the hips back with a flat back, then stand tall."]]},
@@ -612,7 +612,8 @@ const gear = n => /^Band-bar/.test(n) ? "Band bar" : /^Mini-band|^Banded/.test(n
   : /^Indoor|circuit/.test(n) ? "Indoor" : /walk|ride/i.test(n) ? "Outdoor" : /backpack/i.test(n) ? "Backpack" : /towel/i.test(n) ? "Towel" : "Bodyweight";
 
 const DESK = [
-  ["Chin tucks","10 reps","Sit tall, slide the head back. Undoes forward head posture."],
+  ["Chin tucks","10 × 10 s","Sit tall, slide the head straight back and hold. Trains the deep neck muscles that hold the head over the shoulders."],
+  ["Mini-band pull-aparts","1 set, ~2 min","Arms straight at chest height; pull apart and squeeze until the shoulders burn. Two minutes a day cut office workers' neck and shoulder pain by about 40%."],
   ["Doorway or seated pec stretch","30 s","Hands behind head, elbows back. Opens the chest."],
   ["Standing hip flexor stretch","30 s / side","Step back, tuck pelvis, squeeze the back glute."],
   ["Glute squeezes","10 × 5 s","Standing or seated. Wakes up the glutes."],
@@ -650,6 +651,7 @@ if(S.get("dr-ver",1) < 3){ // v3: log keyed by planned slot, not the date touche
 }
 const thisWeek = dkey(monday(new Date()));
 if(S.get("dr-ver",1) < 4){ checks = {}; S.set("dr-checks",checks); S.set("dr-swaps",{}); S.set("dr-ver",4); } // v4: home-only program, every slot changed (history in log is kept)
+if(S.get("dr-ver",1) < 5){ S.set("dr-swaps",{}); S.set("dr-ver",5); } // v5: band-bar press, squat, split squat and face pull removed; a saved swap could still point at them
 const weekendKey = w => dkey(addDays(new Date(thisWeek + "T12:00"), w.off));
 if(S.get("dr-week")!==thisWeek){ checks={}; S.set("dr-checks",checks); S.set("dr-week",thisWeek); } // ticks reset each Monday; history lives in log
 let overrides = S.get("dr-swaps", {}); // per-equipment, per-exercise swap: {eq: {cardKey: {k, i}}}, persists
@@ -779,23 +781,29 @@ function renderRules(){
     <li><b>Band bar:</b> stand on the platform (or put your feet against it when seated) and work the bar. More tension = a thicker band, a wider stance or a lower grip on the bar.</li>
     <li><b>Mini bands:</b> just above the knees for glute work, round the wrists or hands for upper back work. Go up a band colour when the top of the rep range feels easy.</li>
     <li><b>Ab wheel:</b> always from the knees on the mat. Roll out only as far as your lower back stays flat.</li>
-    <li><b>No anchor needed:</b> nothing here hooks onto a door or a pole.</li></ul></div>
+    <li><b>No anchor needed:</b> nothing here hooks onto a door or a pole. The band bar's cords only reach hip to chest height, so there is no pressing or squatting with it.</li></ul></div>
+  <div class="panel"><h3>Why this programme</h3><ul>
+    <li><b>Strengthen what sitting weakens, stretch what it shortens.</b> Trials on forward-head, rounded-shoulder posture that strengthened the deep neck flexors, lower and middle traps and serratus and stretched the chest and neck improved head, shoulder and upper-back angles in 8–10 weeks, with the gains kept a month after stopping (<a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC7692548/" target="_blank" rel="noopener">trial</a>, <a href="https://pubmed.ncbi.nlm.nih.gov/42210327/" target="_blank" rel="noopener">meta-analysis</a>). Monday and Thursday are built on this.</li>
+    <li><b>Glutes and abs on, hip flexors long.</b> An 8-week programme that stretched the hip flexors and lower back first, then activated the glutes and abs, reduced the lumbar arch and raised glute activity in people with the sitting-shaped lower back (<a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC12959714/" target="_blank" rel="noopener">trial</a>). Tuesday and Friday follow that order: warm-up stretch, activate, then load.</li>
+    <li><b>Two minutes a day works.</b> Office workers doing one set of band shoulder work to near-failure, five days a week, cut neck and shoulder pain by about 40% in 10 weeks (<a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC3892746/" target="_blank" rel="noopener">trial</a>). That is the Desk breaks tab.</li>
+    <li><b>Small lifts, long arms.</b> In the prone Y, T and W the hands only need to rise a hand's width off the floor; the lower traps work hardest with the arms long and the shoulders pulled down, not with height.</li>
+    <li><b>Honest expectations.</b> Posture angles improve reliably in these studies; pain and function improve less consistently. Expect to stand and sit taller in 8 weeks, and treat pain changes as a bonus.</li></ul></div>
   <div class="panel"><h3>Effort</h3><ul>
     <li>Finish each set with <b>2–3 reps left in the tank</b> (RPE 7–8). No grinding, no failure.</li>
     <li>Lower every rep over <b>2–3 seconds</b>. Control matters more than load here.</li>
     <li>If a band lets you hit the top of the rep range on all sets with good form, add tension next session.</li></ul></div>
-  <div class="panel"><h3>6-week block</h3>
+  <div class="panel"><h3>8-week block</h3>
     <div class="tbl"><table><thead><tr><th>Weeks</th><th>Focus</th><th>What to do</th></tr></thead><tbody>
-      <tr><td>1–2</td><td>Learn</td><td>Lighter than you think. Bottom of each rep range. Nail the cues.</td></tr>
-      <tr><td>3–4</td><td>Build</td><td>Add band tension or reps each week while staying at 2–3 reps in reserve.</td></tr>
-      <tr><td>5</td><td>Push</td><td>Top of the rep ranges. Add a set to the A and B exercises if recovering well.</td></tr>
-      <tr><td>6</td><td>Deload</td><td>Same exercises, half the sets, a lighter band. Then restart week 1 with more tension.</td></tr>
+      <tr><td>1–2</td><td>Learn</td><td>2 sets of everything, a light band, 10 s holds. Nail the cues and do every stretch.</td></tr>
+      <tr><td>3–5</td><td>Build</td><td>3 sets, 15 s holds. Add 1–2 reps or a band colour each week while staying at 2–3 reps in reserve.</td></tr>
+      <tr><td>6–7</td><td>Push</td><td>Top of the rep ranges, 3 s lowering. Add a set to the first two exercises if recovering well.</td></tr>
+      <tr><td>8</td><td>Deload</td><td>Same exercises, half the sets, a lighter band. Then restart week 1 with more tension.</td></tr>
     </tbody></table></div></div>
   <div class="panel"><h3>Cardio for fat loss</h3><ul>
     <li><b>Order:</b> strength first, cardio after. Your strength work gets fresh energy, and cardio uses what's left.</li>
     <li><b>Walk or ride:</b> every cardio card lets you pick a neighbourhood walk, a bike ride, or an indoor option when the weather is bad.</li>
     <li><b>Mix:</b> 3 easy Zone 2 sessions (Tue, Wed, Fri) and 2 harder ones (Mon intervals, Thu tempo), put on upper-body days so your legs are fresh.</li>
-    <li><b>Weeks 1–2:</b> lower end of each time, 4 interval rounds on Monday. <b>Weeks 3–5:</b> add 5 min to Zone 2 sessions and work up to 8 Monday rounds. <b>Week 6:</b> Zone 2 only.</li>
+    <li><b>Weeks 1–2:</b> lower end of each time, 4 interval rounds on Monday. <b>Weeks 3–5:</b> add 5 min to Zone 2 sessions and work up to 8 Monday rounds. <b>Weeks 6–7:</b> hold there. <b>Week 8:</b> Zone 2 only.</li>
     <li><b>Steps:</b> aim for 8,000–10,000 a day, desk breaks included. Over a week this burns as much as your planned cardio.</li>
     <li><b>Weekends:</b> no plan, but a 30–60 min walk or ride helps fat loss and stiff hips. Log it on the Sat or Sun tab so it counts.</li>
     <li><b>Food does most of the work:</b> a modest deficit (roughly 300–500 kcal/day) and about 1.6–2.2 g protein per kg of bodyweight so you lose fat, not muscle. Expect 0.5–1% of bodyweight per week.</li>
@@ -921,7 +929,7 @@ function tick(now){
   for(const [cv, s] of live){
     if(!s.L || now < s.next) continue;
     const [n, steps, cyc] = DM[s.t];
-    frame(cv, s); s.next = now + (cyc ? 90 : s.i % steps ? 85 : 600); s.i = phase[s.t] = (s.i + 1) % n;
+    frame(cv, s); s.next = now + (cyc ? 90 : s.i % steps ? 110 : 600); s.i = phase[s.t] = (s.i + 1) % n;   // ~0.7 s per phase: a controlled rep, not a twitch
   }
   raf = live.size ? requestAnimationFrame(tick) : 0;
 }
@@ -1085,7 +1093,13 @@ remindBtn.addEventListener("click", async () => {
 });
 renderRemind();
 
-if("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");
+document.getElementById("appver").textContent = "v" + document.querySelector('script[src^="track.js?v="]').getAttribute("src").split("v=")[1];
+if("serviceWorker" in navigator){
+  navigator.serviceWorker.register("sw.js").then(r => document.addEventListener("visibilitychange", () => { if(!document.hidden) r.update(); })); // installed PWAs resume without a navigation: look for a deploy on every return
+  // a new sw.js took over (it skips waiting and claims the page): reload once so index.html, track.js and the demo list all come from the same version
+  let had = !!navigator.serviceWorker.controller;
+  navigator.serviceWorker.addEventListener("controllerchange", () => { if(had) location.reload(); had = true; });
+}
 </script>
 
 </body></html>

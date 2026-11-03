@@ -1861,31 +1861,12 @@ T("bb-deadlift-home", ["Band-bar deadlift"], [_bbs(), _bbs(122, legL=[58, 8, -36
 # Bent-over row: fixed ~45 deg hinge, arms hang -> elbows drive back to the hips, bar to the belly button.
 _BR = dict(legL=[18, 7, -6, 7], legR=[18, 7, -6, 7])
 T("bb-bent-row-home", ["Band-bar bent-over row"], [_bbs(132, **_BR, **both([0, 4, 0, 4])), _bbs(132, **_BR, **both([-62, 16, 8, 6]))], _bb_stand, **_BB)
-# Squat: bar across the front of the shoulders (fists by the collarbones, elbows up), sit back and down.
-_SQ_HANDS = {"hand_l": ("shoulder_l", (0.10, -0.06, -0.02)), "hand_r": ("shoulder_r", (0.10, 0.06, -0.02))}
-_SQ_ARM = [60, 30, 170, 10]
-T("bb-squat-home", ["Band-bar squat"], [_bbs(**both(_SQ_ARM)), _bbs(152, legL=[76, 14, -28, 12], legR=[76, 14, -28, 12], **both(_SQ_ARM))],
-  _bb_stand, reach=_SQ_HANDS, **_BB)
-# Shoulder press: bar from the front of the shoulders to overhead (arms by the ears), ribs down.
-T("bb-press-home", ["Band-bar shoulder press"], [_bbs(**both([35, 40, 175, 12])), _bbs(**both([176, 16, 178, 10]))], _bb_stand, **_BB)
 # Biceps curl: elbows pinned at the sides, palms forward -> bar to the shoulders.
 T("bb-curl-home", ["Band-bar biceps curl"], [_bbs(**both([3, 9, 6, 9]), palm="forward"), _bbs(**both([8, 9, 150, 9]), palm="back")], _bb_stand, **_BB)
-# Split squat: front (left) foot on the platform, back foot a long step behind on the floor; bar on the front of the shoulders.
-_SS_TOP = dict(legL=[12, 6, -4, 6], legR=[-26, 6, -26, 6, -30])
-_SS_BTM = dict(legL=[74, 6, -8, 6], legR=[-8, 6, -96, 6, -40])
-def _ss_front_foot(ctx):   # front foot stays on the platform top (raised by its thickness)
-    st = ctx["states"][0]["foot_l"]; dz = V((0, 0, BB_PLAT_H))
-    return {"foot_l": (st["tip"] + dz, st["toe"] + dz)}
-def _bb_split(J, J0, *a):
-    c = J0["ankle_l"] + V((0.05, 0, 0)); box("splat", (c.x, c.y - 0.06, BB_PLAT_H / 2), (0.30, 0.58, BB_PLAT_H), "plate")
-    band_bar("bb", J, [V((c.x, c.y + 0.21, BB_PLAT_H)), V((c.x, c.y - 0.33, BB_PLAT_H))])
-T("bb-split-home", ["Band-bar split squat"], [_bbs(176, **_SS_TOP, **both(_SQ_ARM)), _bbs(172, **_SS_BTM, **both(_SQ_ARM))], _bb_split,
-  reach=_SQ_HANDS, track=_ss_front_foot, **_BB)
 # Seated row / face pull: sitting tall on the mat, legs out with soft knees, soles flat against the upright platform.
 _SEAT = dict(T=180, S=180, N=182, H=184, legL=[84, 8, 96, 8, 158], legR=[84, 8, 96, 8, 158])
 _BBSEAT = dict(hands="grip", stance=None, anchor={"z": ("seat", 0.012)}, cam=dict(az=-65, el=12))
 T("bb-seated-row-home", ["Band-bar seated row"], [P(**_SEAT, **both([86, 10, 86, 10])), P(**_SEAT, **both([-38, 14, 78, 6]))], _bb_seat, **_BBSEAT)
-T("bb-face-pull-home", ["Band-bar seated face pull"], [P(**_SEAT, **both([96, 12, 96, 12])), P(**_SEAT, **both([96, 70, 72, -40]))], _bb_seat, **_BBSEAT)   # elbows high and wide, bar finishing in front of the forehead
 # Mini-band pulldown: band round the wrists, arms up in a Y -> pull apart and drive the elbows down to the ribs (W).
 T("mb-pulldown-home", ["Mini-band pulldown"], [_bbs(**both([166, 26, 166, 26])), _bbs(**both([14, 52, 150, 22]))],
   lambda J, J0, *a: mini_band("band", J["hand_l"], J["hand_r"]), hands="grip", stance=None, anchor={}, cam=dict(az=-28, el=8))
@@ -1900,3 +1881,50 @@ CLAM_T, CLAM_TF = 102.6, 94.4
 def _clk(t, legR): return P(T=t, H=t, roll=-90, armL=[0, 0, 90, -90], armR=[-10, 0, 40, 0], legL=[-60.5, 0, 0, 88, 0, 88], legR=legR)
 _t("clamshell").update(keys=_SexKeys([{**_clk(CLAM_T, L), "_f": _clk(CLAM_TF, L)} for L in ([-42.3, 0, 0, -86, 0, -86], [-90, 0, 15, -45, 15, -45])]),
                        anchor={"x": ("knee_l", None)}, on_knees=True)   # bottom shin + knee set the height (the foot pointed slightly down and was the lowest point)
+
+# ---------- v20: posture review ----------
+# Prone Y/T/W, row and swimmers: the hands rest ~3 cm above the mat between lifts and rise to about shoulder level
+# (10-15 cm) at the top; the upper arm never points above the floor plane. v19 lifted the hands 35-40 cm (upper arm
+# 15-20 deg above horizontal), which read as pressing the arms at the ceiling. Each letter now starts from the floor.
+Y_DN, Y_UP = ARMS((0.86, 0.5, -0.18)), ARMS((0.84, 0.48, -0.03))
+T_DN, T_UP = ARMS((0.02, 0.99, -0.14)), ARMS((0.02, 0.96, -0.03))
+W_DN, W_UP = ARMS((-0.6, 0.8, -0.18), (0.75, 0.62, -0.2)), ARMS((-0.55, 0.75, -0.05), (0.72, 0.55, 0.1))
+_PRONE_CAM = dict(az=-155, el=32)
+_set("prone-t", [prone(**T_DN), prone(**T_UP, S=97, H=96)], cam=_PRONE_CAM)
+_set("prone-w", [prone(**W_DN), prone(**W_UP, S=98, H=96)], cam=_PRONE_CAM)
+# letters change at the top (hands ~15 cm up): a direct T-up -> W-down blend swept the hands 5 cm through the mat
+_set("floor-ytw", [prone(**Y_DN), prone(**Y_UP, S=97, H=96), prone(**T_UP, S=97, H=96), prone(**T_DN), prone(**T_UP, S=97, H=96),
+                   prone(**W_UP, S=98, H=96), prone(**W_DN), prone(**W_UP, S=98, H=96)], pingpong=False, cam=_PRONE_CAM)
+_set("prone-row", [prone(**ARMS((0.97, 0.2, -0.18))), prone(**ARMS((0.62, 0.3, -0.12), (0.95, 0.12, -0.1)), S=95, H=94),
+                   prone(**ARMS((0.0, 0.3, 0.0), (0.8, 0.3, -0.25)), S=96, H=95), prone(**PRONE_ROW_END, S=98, H=96)], pingpong=True, cam=_PRONE_CAM)
+_set("swimmers", [prone(**ARMS((0.94, 0.18, -0.12)), S=97, H=96), prone(**ARMS((0.05, 0.95, -0.12)), S=97, H=96),
+                  prone(**ARMS((-0.65, 0.68, -0.12)), S=97, H=96), prone(**ARMS((-0.95, 0.15, -0.12)), S=97, H=96)], pingpong=True, cam=_PRONE_CAM)
+for _n in ("prone-t", "prone-w", "floor-ytw", "prone-row", "swimmers"): _t(_n)["free"] = ["hand_l", "hand_r"]
+# Ab wheel: kneel with the hips over the knees and the wheel under the shoulders, roll out until knees, hips and hands
+# are one line (the photo keys crouched with the hips high and the head down, which read as a cat stretch).
+AW_KNEEL, AW_OUT = dict(legL=[-8, 6, -90, 6, -96], legR=[-8, 6, -90, 6, -96]), dict(legL=[-52, 6, -90, 6, -96], legR=[-52, 6, -90, 6, -96])
+_t("ab-wheel").update(keys=[P(T=114, S=112, N=110, H=104, **AW_KNEEL, **both([8, 8, 8, 8])), P(T=97, S=99, N=97, H=96, **AW_OUT, **both([58, 8, 58, 8]))], on_knees=True)
+# Cat-cow: a visible cow (belly drops, tailbone and eyes come up); v19's cow read as the neutral table-top.
+QCOW = dict(S1=-28, S2=-14, S3=-3, N=28, H=36)
+_t("cat-cow").update(keys=_SexKeys([_qk(98.2, 103.9, **QCOW), _qk(92.1, 96.2, **QCAT)]), on_knees=True)
+_t("couch-stretch")["cam"] = dict(az=-80, margin=1.12)   # v19's 1.3 left the figure small in the frame
+# Prone legs: PRONE's horizontal legs sat at hip height with the ankles above the knees, so the feet only reached the
+# mat when the toe-plant rule happened to catch them (swimmers yes, floor-ytw and prone-row no: feet 7-12 cm up).
+# Thigh and shin now slope down onto the mat and the toes rest just off it, with no planting needed.
+PRONE_LEGS20 = [-86, 3, -85, 3, -75]
+for _n in ("prone-t", "prone-w", "floor-ytw", "prone-row", "swimmers", "prone-towel-pulldown"):
+    for _P in _t(_n)["keys"]: _P["legL"] = list(PRONE_LEGS20); _P["legR"] = list(PRONE_LEGS20)
+# The female's legs sit ~6 cm higher in the same prone FK (shorter legs, hip joint set differently), so her thigh and
+# shin slope a few degrees more; without this her feet only touched the mat when the toe-plant rule happened to fire.
+PRONE_LEGS20_F = [-82, 3, -80, 3, -75]
+for _n in ("prone-t", "prone-w", "floor-ytw", "prone-row", "swimmers", "prone-towel-pulldown"):
+    _t(_n)["keys"] = _SexKeys([{**_P, "_f": dict(legL=list(PRONE_LEGS20_F), legR=list(PRONE_LEGS20_F))} for _P in _t(_n)["keys"]])
+# Snow angels are done with the backs of the hands and forearms on the floor (palms up): v19 forced the palms down
+# onto the mat, which needed a half-turn of the forearm and twisted the elbows.
+_t("snow-angel").update(floor_palms=False, hands="flat", palm="up")
+_t("snow-angel")["hands"] = "relaxed"   # fingers carry on along the forearm; a "flat" hand bent them back toward the feet (wrist 145 deg)
+# Push-up bottom: arms solved per character so the FK wrists land exactly on the top key's (the planted hands); elbows ~35 deg
+# out and back, forearms angled in to the hands. The old bottom arms left the pins 4 cm away, and closing that gap with IK
+# rolled the humerus so far that a flat palm needed more forearm turn than a real one has.
+_pu_k = _t("push-up")["keys"]
+_t("push-up")["keys"] = _SexKeys([{**_pu_k[0], "_f": {}}, {**_pu_k[1], **both([-80, 35, 28, -22]), "_f": both([-82.5, 35, 26.5, -20])}])

@@ -2,7 +2,7 @@
 # Loaded inside Blender via MCP:  exec(open(r".../tools/rig.py").read(), ns)
 # Works only in scene "DeskResetDemos" (character collection DR_character, props prefixed DR_p_).
 import bpy, glob, itertools, math, os
-from mathutils import Vector, Matrix
+from mathutils import Vector, Matrix, Quaternion
 
 sc = bpy.data.scenes["DeskResetDemos"]
 vl = sc.view_layers[0]
@@ -311,6 +311,17 @@ def capture():
     """The pose a key resolved to (whatever drove it: angles, landmarks, IK-free): every bone's local transform."""
     return {"_hand": dict(HAND_MODE), **{pb.name: (pb.matrix_basis.to_quaternion(), pb.matrix_basis.to_translation()) for pb in arm.pose.bones}}
 
+def _hinge_slerp(qa, qb, t):
+    """Elbow in-between: interpolate the bend (swing) and the forearm roll (twist about the bone axis) separately.
+    A plain slerp between two keys whose forearm roll differs a lot swings the forearm sideways off the hinge."""
+    def split(q):
+        tw = Quaternion((q.w, 0, q.y, 0)); tw = tw.normalized() if tw.magnitude > 1e-6 else Quaternion()
+        return q @ tw.inverted(), 2 * math.atan2(tw.y, tw.w)
+    sa, ta = split(qa); sb, tb = split(qb)
+    if sa.dot(sb) < 0: sb = -sb
+    dt = (tb - ta + math.pi) % (2 * math.pi) - math.pi
+    return sa.slerp(sb, t) @ Quaternion((0, 1, 0), ta + dt * t)
+
 def blend(A, B, t):
     """In-between pose: shortest-arc slerp of each bone's local rotation between two captured keys.
     Continuous by construction - no parameter can snap half-way between keys."""
@@ -318,7 +329,8 @@ def blend(A, B, t):
     for pb in arm.pose.bones:
         qa, la = A[pb.name]; qb, lb = B[pb.name]
         if qa.dot(qb) < 0: qb = -qb
-        pb.rotation_mode = 'QUATERNION'; pb.rotation_quaternion = qa.slerp(qb, t); pb.location = la.lerp(lb, t); pb.scale = (1, 1, 1)
+        q = _hinge_slerp(qa, qb, t) if pb.name.startswith("lowerarm_") else qa.slerp(qb, t)
+        pb.rotation_mode = 'QUATERNION'; pb.rotation_quaternion = q; pb.location = la.lerp(lb, t); pb.scale = (1, 1, 1)
     HAND_MODE.update(A["_hand"] if t < 0.5 else B["_hand"])
     vl.update()
 
@@ -371,15 +383,66 @@ def palm_target(kw, s, sg, mode, S3, fdir, hdir):
         if v.length > 0.35: return words[w]
     return None
 
-def set_palm(s, fdir, hdir, want):
-    """Roll the forearm about its own axis (pronation/supination) so that after the wrist bends from fdir to hdir the palm faces `want`."""
-    if want is None: return
-    pre = fdir.rotation_difference(hdir).inverted() @ want
-    pre = pre - fdir * pre.dot(fdir)
-    cur = palm_world(s); cur = cur - fdir * cur.dot(fdir)
+TWIST_LIM = 85   # forearm pronation/supination either side of the rig's rest (T-pose palm down = mid-range); a real forearm turns ~85 deg each way
+
+def forearm_twist(s):
+    """Forearm roll about its own axis relative to the upper arm, degrees (0 = rest)."""
+    pu, pl = arm.pose.bones["upperarm_" + s], arm.pose.bones["lowerarm_" + s]
+    rest = arm.data.bones[pu.name].matrix_local.inverted() @ arm.data.bones[pl.name].matrix_local
+    q = (rest.inverted() @ (pu.matrix.inverted() @ pl.matrix)).to_quaternion()
+    t = math.degrees(2 * math.atan2(q.y, q.w))
+    return (t + 180) % 360 - 180
+
+def _twist_fore(s, deg):
+    """Roll the forearm about its own axis. A pinned (IK) arm is rolled in its basis: tilt() would bake the solver's
+    result into the basis and the solver then applies it again."""
+    pl = arm.pose.bones["lowerarm_" + s]
+    if pl.constraints["DR_IK"].influence > 0: pl.matrix_basis = pl.matrix_basis @ Matrix.Rotation(math.radians(deg), 4, 'Y'); vl.update()
+    else: tilt(pl.name, tuple(bone_dir(pl.name)), deg)
+
+def _roll_palm(s, fdir, hdir, want):
+    fd = bone_dir("lowerarm_" + s)
+    pre = fd.rotation_difference(hdir).inverted() @ want
+    pre = pre - fd * pre.dot(fd)
+    # the current palm as it would face with the wrist straight: callers that re-level an already bent hand compared the bent
+    # palm with the straight-wrist target, and the forearm spun 120-180 deg to make up the difference (a twisted rubber elbow)
+    cur = fd.rotation_difference(bone_dir("hand_" + s)).inverted() @ palm_world(s); cur = cur - fd * cur.dot(fd)
     if pre.length < 1e-3 or cur.length < 1e-3: return
     pre.normalize(); cur.normalize()
-    tilt("lowerarm_" + s, tuple(fdir), math.degrees(math.atan2(fdir.dot(cur.cross(pre)), cur.dot(pre))))
+    deg = math.degrees(math.atan2(fd.dot(cur.cross(pre)), cur.dot(pre)))
+    _twist_fore(s, deg); return deg
+
+def set_palm(s, fdir, hdir, want):
+    """Roll the forearm about its own axis (pronation/supination) so that after the wrist bends from fdir to hdir the palm faces `want`.
+    A forearm only turns ~85 deg either way: past that, a near-straight free arm turns the humerus instead (palm kept),
+    otherwise the forearm stops at the limit. Rolling the forearm alone up to 180 deg skinned as a twisted rubber elbow."""
+    if want is None: return
+    up, lo = "upperarm_" + s, "lowerarm_" + s
+    _roll_palm(s, fdir, hdir, want)
+    tw = forearm_twist(s)
+    if abs(tw) <= TWIST_LIM: return
+    if arm.pose.bones[lo].constraints["DR_IK"].influence > 0:   # pinned: the solver owns the humerus; the forearm stops at its limit
+        _twist_fore(s, math.copysign(TWIST_LIM, tw) - tw); return
+    save = {n: arm.pose.bones[n].matrix_basis.copy() for n in (up, lo)}
+    def restore():
+        for n, m in save.items(): arm.pose.bones[n].matrix_basis = m
+        vl.update()
+    best = None
+    if bone_dir(up).angle(bone_dir(lo)) < math.radians(40):
+        ex = tw - math.copysign(TWIST_LIM, tw)
+        for sg in (1, -1):
+            tilt(up, tuple(bone_dir(up)), sg * ex); _roll_palm(s, bone_dir(lo), hdir, want)
+            t2 = forearm_twist(s)
+            if abs(t2) <= TWIST_LIM + 1 and (best is None or abs(t2) < best[0]):
+                best = (abs(t2), {n: arm.pose.bones[n].matrix_basis.copy() for n in (up, lo)})
+            restore()
+    if best:
+        for n, m in best[1].items(): arm.pose.bones[n].matrix_basis = m
+        vl.update(); return
+    for sg in (1, -1):   # bent elbow: the humerus roll sets the bend plane, so the forearm stops at its limit
+        tilt(lo, tuple(bone_dir(lo)), sg * (abs(tw) - TWIST_LIM))
+        if abs(forearm_twist(s)) <= TWIST_LIM + 1: return
+        restore()
 
 def calibrate_hands():
     """Palm axis (T-pose palms face down), finger curl sign, thumb pose per hand mode."""
