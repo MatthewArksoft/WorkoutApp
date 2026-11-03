@@ -401,8 +401,8 @@
 },
 "hip-switch": {
 "cyclic": false,
-"keys": 8,
-"steps": 3
+"keys": 4,
+"steps": 6
 },
 "hip-thrust": {
 "cyclic": false,
